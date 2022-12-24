@@ -1,9 +1,7 @@
 use std::{
     ffi::{CStr, CString},
-    mem::MaybeUninit,
     os::raw::c_char,
-    ptr::{null, null_mut},
-    slice,
+    ptr::null_mut,
 };
 
 #[repr(C)]
@@ -63,26 +61,23 @@ impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItem
     }
 }
 
-impl Into<checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItems>>
-    for CChecksCheckResult
+impl From<CChecksCheckResult>
+    for checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItems>
 {
-    fn into(self) -> checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItems> {
-        let status = self.status.into();
+    fn from(value: CChecksCheckResult) -> Self {
+        let status = value.status.into();
         let message = unsafe {
-            if self.message.is_null() {
+            if value.message.is_null() {
                 ""
             } else {
-                match CStr::from_ptr(self.message).to_str() {
-                    Ok(msg) => msg,
-                    Err(_) => "",
-                }
+                CStr::from_ptr(value.message).to_str().unwrap_or("")
             }
         };
-        let items = if self.items.is_null() {
+        let items = if value.items.is_null() {
             None
         } else {
             unsafe {
-                let items = self.items;
+                let items = value.items;
                 let ptr = (*items).ptr;
                 let item_size = (*items).item_size;
                 let length = (*items).length;
@@ -102,15 +97,14 @@ impl Into<checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItem
                 })
             }
         };
-        let can_fix = self.can_fix;
-        let can_skip = self.can_skip;
-        let error = if self.error.is_null() {
+        let can_fix = value.can_fix;
+        let can_skip = value.can_skip;
+        let error = if value.error.is_null() {
             None
         } else {
-            let msg = match unsafe { CStr::from_ptr(self.error) }.to_str() {
-                Ok(msg) => msg,
-                Err(_) => "",
-            };
+            let msg = unsafe { CStr::from_ptr(value.error) }
+                .to_str()
+                .unwrap_or("");
 
             Some(checks::Error::new(msg))
         };
@@ -139,6 +133,7 @@ impl Drop for CChecksCheckResult {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 impl CChecksCheckResult {
     pub(crate) fn new(
         status: crate::CChecksStatus,
@@ -307,8 +302,9 @@ pub extern "C" fn cchecks_check_result_failed(
     )
 }
 
+#[allow(clippy::missing_safety_doc)] // TODO: Remove when documenting
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_destroy(result: *mut CChecksCheckResult) {
+pub unsafe extern "C" fn cchecks_check_result_destroy(result: *mut CChecksCheckResult) {
     unsafe { result.drop_in_place() }
 }
 

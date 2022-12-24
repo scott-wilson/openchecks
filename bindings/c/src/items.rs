@@ -70,7 +70,7 @@ impl Clone for CChecksItems {
         }
 
         Self {
-            ptr: ptr,
+            ptr,
             item_size: self.item_size,
             length: self.length,
             destroy_fn: destroy_cloned_items,
@@ -114,7 +114,7 @@ impl CChecksItemsIterator {
             let result = (*self.items)
                 .ptr
                 .cast::<u8>()
-                .offset((self.index * (*self.items).item_size) as isize)
+                .add(self.index * (*self.items).item_size)
                 .cast::<crate::CChecksItem>();
 
             Some(crate::item::ChecksItemWrapper::new(result))

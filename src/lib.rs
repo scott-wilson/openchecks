@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 mod check;
 mod error;
 mod item;

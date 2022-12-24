@@ -21,29 +21,23 @@ pub struct CChecksBaseCheck {
 
 impl checks::CheckMetadata for CChecksBaseCheck {
     fn title(&self) -> Cow<str> {
-        let ptr = (self.title_fn)(&self);
+        let ptr = (self.title_fn)(self);
 
         if ptr.is_null() {
             return "".into();
         }
 
-        match unsafe { CStr::from_ptr(ptr) }.to_str() {
-            Ok(title) => title.into(),
-            Err(_) => "".into(),
-        }
+        unsafe { CStr::from_ptr(ptr) }.to_str().unwrap_or("").into()
     }
 
     fn description(&self) -> Cow<str> {
-        let ptr = (self.description_fn)(&self);
+        let ptr = (self.description_fn)(self);
 
         if ptr.is_null() {
             return "".into();
         }
 
-        match unsafe { CStr::from_ptr(ptr) }.to_str() {
-            Ok(description) => description.into(),
-            Err(_) => "".into(),
-        }
+        unsafe { CStr::from_ptr(ptr) }.to_str().unwrap_or("").into()
     }
 
     fn hint(&self) -> checks::CheckHint {
@@ -70,10 +64,9 @@ impl checks::Check for CChecksBaseCheck {
                         let message = if result.message.is_null() {
                             ""
                         } else {
-                            match unsafe { CStr::from_ptr(result.message) }.to_str() {
-                                Ok(msg) => msg,
-                                Err(_) => "",
-                            }
+                            unsafe { CStr::from_ptr(result.message) }
+                                .to_str()
+                                .unwrap_or("")
                         };
                         Err(checks::Error::new(message))
                     }
@@ -133,8 +126,11 @@ pub extern "C" fn cchecks_check_auto_fix_ok() -> CChecksAutoFixResult {
     }
 }
 
+#[allow(clippy::missing_safety_doc)] // TODO: Remove after documenting
 #[no_mangle]
-pub extern "C" fn cchecks_check_auto_fix_error(message: *const c_char) -> CChecksAutoFixResult {
+pub unsafe extern "C" fn cchecks_check_auto_fix_error(
+    message: *const c_char,
+) -> CChecksAutoFixResult {
     let message = if message.is_null() {
         unsafe { CString::from_vec_unchecked(b"".to_vec()).into_raw() }
     } else {

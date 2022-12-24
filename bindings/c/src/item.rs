@@ -138,7 +138,7 @@ impl checks::Item for ChecksItemWrapper {
             }
             &(*self.0)
         };
-        (item.value_fn)(&item)
+        (item.value_fn)(item)
     }
 }
 
@@ -158,7 +158,7 @@ pub extern "C" fn cchecks_item_clone(item: &CChecksItem, new_item: &mut CChecksI
 }
 
 #[no_mangle]
-pub extern "C" fn cchecks_item_destroy(item: &mut CChecksItem) -> () {
+pub extern "C" fn cchecks_item_destroy(item: &mut CChecksItem) {
     (item.destroy_fn)(item)
 }
 

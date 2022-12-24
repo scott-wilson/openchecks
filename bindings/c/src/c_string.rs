@@ -1,5 +1,5 @@
 use std::{
-    ffi::{c_char, CStr, CString},
+    ffi::{c_char, CString},
     ptr::null_mut,
 };
 
@@ -25,21 +25,12 @@ impl CChecksString {
             },
         }
     }
-
-    pub(crate) fn to_str(&self) -> Option<&str> {
-        match unsafe { self.string.as_ref() } {
-            Some(ptr) => match unsafe { CStr::from_ptr(ptr) }.to_str() {
-                Ok(string) => Some(string),
-                Err(_) => None,
-            },
-            None => None,
-        }
-    }
 }
 
+#[allow(clippy::missing_safety_doc)] // TODO: Remove after documenting
 #[no_mangle]
-pub extern "C" fn cchecks_string_destroy(string: *mut CChecksString) {
-    drop(string)
+pub unsafe extern "C" fn cchecks_string_destroy(string: *mut CChecksString) {
+    unsafe { string.drop_in_place() }
 }
 
 #[repr(C)]

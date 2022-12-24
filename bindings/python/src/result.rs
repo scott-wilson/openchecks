@@ -113,11 +113,8 @@ impl CheckResult {
         self.inner.message()
     }
 
-    pub(crate) fn items(&self, py: Python<'_>) -> Option<Vec<Item>> {
-        match self.inner.items() {
-            Some(items) => Some(items.to_vec()),
-            None => None,
-        }
+    pub(crate) fn items(&self, _py: Python<'_>) -> Option<Vec<Item>> {
+        self.inner.items().as_ref().map(|items| items.to_vec())
     }
 
     pub(crate) fn can_fix(&self) -> bool {

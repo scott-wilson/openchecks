@@ -24,15 +24,15 @@ impl std::convert::From<checks::Status> for Status {
     }
 }
 
-impl std::convert::Into<checks::Status> for Status {
-    fn into(self) -> checks::Status {
-        match self {
-            Self::Pending => checks::Status::Pending,
-            Self::Skipped => checks::Status::Skipped,
-            Self::Passed => checks::Status::Passed,
-            Self::Warning => checks::Status::Warning,
-            Self::Failed => checks::Status::Failed,
-            Self::SystemError => checks::Status::SystemError,
+impl std::convert::From<Status> for checks::Status {
+    fn from(status: Status) -> Self {
+        match status {
+            Status::Pending => Self::Pending,
+            Status::Skipped => Self::Skipped,
+            Status::Passed => Self::Passed,
+            Status::Warning => Self::Warning,
+            Status::Failed => Self::Failed,
+            Status::SystemError => Self::SystemError,
         }
     }
 }
