@@ -1,0 +1,6 @@
+[submodule "bindings/c/cmocka"]
+	path = bindings/c/cmocka
+	url = https://github.com/clibs/cmocka.git
+[submodule "bindings/c/corrosion"]
+	path = bindings/c/corrosion
+	url = https://github.com/corrosion-rs/corrosion.git
