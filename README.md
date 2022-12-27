@@ -20,6 +20,20 @@ Features
 - Marking checks with whether they are skippable or not.
 - Exposing the result of checks in a user interface.
 
+Requirements
+------------
+
+- Rust: 1.66 or later (This is not the guaranteed minimum supported Rust
+  version)
+
+Install
+-------
+
+```bash
+cd /to/your/project
+cargo add --git https://github.com/scott-wilson/checks.git
+```
+
 Design
 ------
 

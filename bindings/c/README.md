@@ -20,6 +20,28 @@ Features
 - Marking checks with whether they are skippable or not.
 - Exposing the result of checks in a user interface.
 
+Requirements
+------------
+
+- Make
+- CMake: 3.15 or later
+- Rust: 1.66 or later (This is not the guaranteed minimum supported Rust
+  version)
+- Doxygen (optional, for documentation)
+- Python (optional, for documentation): 3.7 or later
+- Poetry (optional, for documentation)
+
+Install
+-------
+
+# For development
+
+```bash
+cd /path/to/checks/bindings/c
+
+make build
+```
+
 Design
 ------
 

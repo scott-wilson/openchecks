@@ -20,6 +20,26 @@ Features
 - Marking checks with whether they are skippable or not.
 - Exposing the result of checks in a user interface.
 
+Requirements
+------------
+
+- Make
+- Rust: 1.66 or later (This is not the guaranteed minimum supported Rust
+  version)
+- Python: 3.7 or later
+- Poetry
+
+Install
+-------
+
+# For development
+
+```bash
+cd /path/to/checks/bindings/python
+
+make build
+```
+
 Design
 ------
 
