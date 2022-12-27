@@ -50,6 +50,14 @@ coverage: cargo-test dev-packages install ## Intall pychecks module and run test
 build-profile: ## Builds binary for profiling
 	cd profiling && poetry run cargo build --release
 
+.PHONY: clean-docs
+clean-docs: ## Clean the documentation build folder
+	rm -rf docs/build
+
+.PHONY: build-docs
+build-docs: dev-packages install clean-docs ## Build documentation
+	poetry run sphinx-build -b html docs/source docs/build
+
 # Setup instructions here:
 # https://gist.github.com/dlaehnemann/df31787c41bd50c0fe223df07cf6eb89
 .PHONY: profile

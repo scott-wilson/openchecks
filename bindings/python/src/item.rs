@@ -3,6 +3,36 @@ use pyo3::pyclass::CompareOp;
 use pyo3::types::{PyDict, PyFunction, PyString};
 use pyo3::{intern, prelude::*};
 
+/// Item(value: T, type_hint: Optional[str] = None, debug_fn: Optional[Callable[[T], str]] = None, display_fn: Optional[Callable[[T], str]] = None, lt_fn: Optional[Callable[[T, T], bool]] = None, eq_fn: Optional[Callable[[T, T], bool]] = None)
+///
+/// The item is a wrapper to make a result item more user interface friendly.
+///
+/// Result items represent the objects that caused a result. For example, if a
+/// check failed because the bones in a character rig are not properly named,
+/// then the items would contain the bones that are named incorrectly.
+///
+/// The item wrapper makes the use of items user interface friendly because it
+/// implements item sorting and a string representation of the item.
+///
+/// Args:
+///     value (T): The wrapped value
+///     type_hint (Optional[str]): A hint to add extra context to the value.
+///         For example, if the value is a string, and that string represents a
+///         scene path, then a user interface could use that knowledge to select
+///         the scene path in the application. Default to the type having no
+///         meaning outside of itself.
+///     debug_fn (Optional[Callable[[T], str]]): The debug function for the
+///         item. Should be accessed via the :code:`repr(item)` function.
+///         Defaults to calling :code:`repr(value)`.
+///     display_fn (Optional[Callable[[T], str]]): The display function for the
+///         item. Should be accessed via the :code:`str(item)` function.
+///         Defaults to calling :code:`str(value)`.
+///     lt_fn (Optional[Callable[[T, T], bool]]): The less than function. Should
+///         be accessed by the :code:`item_a < item_b` operation. Defaults to
+///         calling :code:`value_a < value_b`.
+///     eq_fn (Optional[Callable[[T, T], bool]]): The equal function. Should be
+///         accessed by the :code:`item_a == item_b` operation. Defaults to
+///         calling :code:`value_a == value_b`.
 #[pyclass]
 #[derive(Debug, Clone)]
 pub(crate) struct Item {
@@ -143,10 +173,27 @@ impl Item {
         }
     }
 
+    /// value(self) -> T
+    ///
+    /// The value that is wrapped.
+    ///
+    /// Returns:
+    ///     T: The wrapped value.
     fn value(&self) -> &PyObject {
         &self.value
     }
 
+    /// type_hint(self) -> Optional[str]
+    ///
+    /// A type hint can be used to add a hint to a system that the given type
+    /// represents something else. For example, the value could be a string, but
+    /// this is a scene path.
+    ///
+    /// A user interface could use this hint to select the item in the
+    /// application.
+    ///
+    /// Returns:
+    ///     Optional[str]: The type hint.
     fn type_hint<'a>(&'a self, py: Python<'a>) -> Option<&'a PyString> {
         match &self.type_hint {
             Some(type_hint) => Some(type_hint.as_ref(py)),
