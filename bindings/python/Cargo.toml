@@ -9,5 +9,5 @@ name = "pychecks"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.17.3", features = ["extension-module"] }
+pyo3 = { version = "0.17.3", features = ["extension-module", "abi3-py37"] }
 checks = { path = "../../" }

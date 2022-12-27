@@ -1,6 +1,6 @@
 use pyo3::exceptions::{PyAttributeError, PyValueError};
 use pyo3::pyclass::CompareOp;
-use pyo3::types::{PyDict, PyFunction, PyString};
+use pyo3::types::{PyDict, PyString};
 use pyo3::{intern, prelude::*};
 
 /// Item(value: T, type_hint: Optional[str] = None, debug_fn: Optional[Callable[[T], str]] = None, display_fn: Optional[Callable[[T], str]] = None, lt_fn: Optional[Callable[[T, T], bool]] = None, eq_fn: Optional[Callable[[T, T], bool]] = None)
@@ -84,10 +84,10 @@ impl Item {
         py: Python<'_>,
         value: PyObject,
         type_hint: Option<Py<PyString>>,
-        debug_fn: Option<Py<PyFunction>>,
-        display_fn: Option<Py<PyFunction>>,
-        lt_fn: Option<Py<PyFunction>>,
-        eq_fn: Option<Py<PyFunction>>,
+        debug_fn: Option<PyObject>,
+        display_fn: Option<PyObject>,
+        lt_fn: Option<PyObject>,
+        eq_fn: Option<PyObject>,
     ) -> PyResult<Self> {
         let debug_fn = match debug_fn {
             Some(func) => func.extract::<PyObject>(py)?,
