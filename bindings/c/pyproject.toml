@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "untitled checks framework"
+version = "0.1.0"
+description = ""
+authors = ["Scott Wilson <scott@propersquid.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.group.dev.dependencies]
+sphinx = "^5.3.0"
+sphinx-rtd-theme = "^1.1.1"
+myst-parser = "^0.18.1"
+breathe = "^4.34.0"
+black = "*"
+isort = "*"
+flake8 = "*"
+bandit = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

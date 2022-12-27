@@ -2,11 +2,23 @@ use std::ptr::{null, null_mut};
 
 use crate::item::cchecks_item_clone;
 
+/// The CChecksItems iterable container is used to iterate over any number of
+/// and any sized objects.
 #[repr(C)]
 pub struct CChecksItems {
+    /// The pointer to the check item array. Must be `item_size * length` in
+    /// memory, or is invalid.
     pub ptr: *mut crate::CChecksItem,
+    /// The size of an item in the array. Must be `sizeof(item)`, and not
+    /// `sizeof(item_value)`. For example, if there's an `IntItem` container
+    /// that represents integers, then `item_size == sizeof(IntItem)`.
     pub item_size: usize,
+    /// The length of the array is the number of items in the array. If there's
+    /// 5 items, then the length is 5.
     pub length: usize,
+    /// The destroy function is responsible for freeing the pointer once the
+    /// items have been destroyed. Trying to destroy the items in this function
+    /// will cause double frees.
     pub destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
 }
 
@@ -78,6 +90,15 @@ impl Clone for CChecksItems {
     }
 }
 
+/// Create a new item container.
+///
+/// # Safety
+///
+/// The items pointer must be not null, and the size must be
+/// `item_size * length` in bytes.
+///
+/// The destroy function must only free the items pointer. Trying to destroy the
+/// items will cause a double free error.
 #[no_mangle]
 pub extern "C" fn cchecks_items_new(
     items: *mut crate::CChecksItem,
@@ -93,6 +114,11 @@ pub extern "C" fn cchecks_items_new(
     }
 }
 
+/// Create a new iterator to iterate over the items.
+///
+/// # Safety
+///
+/// The items pointer must not be null.
 #[no_mangle]
 pub extern "C" fn cchecks_items_iterator_new(items: &CChecksItems) -> CChecksItemsIterator {
     CChecksItemsIterator { items, index: 0 }
@@ -139,6 +165,12 @@ impl CChecksItemsIterator {
     }
 }
 
+/// Return the pointer to the next item. A null pointer represents no more
+/// items.
+///
+/// # Safety
+///
+/// The iterator pointer must not be null.
 #[no_mangle]
 pub extern "C" fn cchecks_item_iterator_next(
     iterator: *mut CChecksItemsIterator,
@@ -151,6 +183,12 @@ pub extern "C" fn cchecks_item_iterator_next(
     }
 }
 
+/// Return the pointer to the current item. A null pointer represents no more
+/// items.
+///
+/// # Safety
+///
+/// The iterator pointer must not be null.
 #[no_mangle]
 pub extern "C" fn cchecks_item_iterator_item(
     iterator: *mut CChecksItemsIterator,
@@ -163,6 +201,11 @@ pub extern "C" fn cchecks_item_iterator_item(
     }
 }
 
+/// Return if the iterator has finished.
+///
+/// # Safety
+///
+/// The iterator pointer must not be null.
 #[no_mangle]
 pub extern "C" fn cchecks_item_iterator_is_done(iterator: *const CChecksItemsIterator) -> bool {
     unsafe {
