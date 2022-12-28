@@ -28,6 +28,7 @@ Requirements
   version)
 - Python: 3.7 or later
 - Poetry
+- Maturin
 
 Install
 -------
