@@ -48,6 +48,5 @@ jobs:
         run: |
           source .venv/bin/activate
           cargo test
-          poetry install
           poetry run maturin develop
           poetry run pytest --hypothesis-profile default  -n=auto tests/
