@@ -91,7 +91,7 @@ pub struct CChecksItem {
     /// memory outside of the context in which the memory was created. For
     /// example, if the string was created with `malloc`, it should be deleted
     /// with `free`.
-    pub debug_fn: extern "C" fn(&Self) -> *mut c_char,
+    pub debug_fn: extern "C" fn(&Self) -> crate::CChecksString,
     /// The display function is used to create a string for displaying to a
     /// user.
     ///
@@ -102,7 +102,7 @@ pub struct CChecksItem {
     /// memory outside of the context in which the memory was created. For
     /// example, if the string was created with `malloc`, it should be deleted
     /// with `free`
-    pub display_fn: extern "C" fn(&Self) -> *mut c_char,
+    pub display_fn: extern "C" fn(&Self) -> crate::CChecksString,
     /// The order function is used to order items in user interfaces.
     pub lt_fn: extern "C" fn(&Self, &Self) -> bool,
     /// The compare function is used to order items in user interfaces.
@@ -131,17 +131,16 @@ impl std::fmt::Display for CChecksItem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let c_display = (self.display_fn)(self);
 
-        if c_display.is_null() {
+        if c_display.string.is_null() {
             return Err(std::fmt::Error);
         }
 
         unsafe {
-            let c_str = CStr::from_ptr(c_display);
+            let c_str = CStr::from_ptr(c_display.string);
             let result = match c_str.to_str() {
                 Ok(s) => write!(f, "{}", s),
                 Err(_) => Err(std::fmt::Error),
             };
-            libc::free(c_display as *mut c_void);
 
             result
         }
@@ -152,17 +151,16 @@ impl std::fmt::Debug for CChecksItem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let c_display = (self.debug_fn)(self);
 
-        if c_display.is_null() {
+        if c_display.string.is_null() {
             return Err(std::fmt::Error);
         }
 
         unsafe {
-            let c_str = CStr::from_ptr(c_display);
+            let c_str = CStr::from_ptr(c_display.string);
             let result = match c_str.to_str() {
                 Ok(s) => write!(f, "Item({})", s),
                 Err(_) => Err(std::fmt::Error),
             };
-            libc::free(c_display as *mut c_void);
 
             result
         }

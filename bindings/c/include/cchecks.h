@@ -56,6 +56,40 @@ typedef enum CChecksStatus {
 } CChecksStatus;
 
 /**
+ * The CChecksString contains an owned pointer to a C style string.
+ *
+ * # Safety
+ *
+ * The pointer to the string must be destroyed with `cchecks_string_destroy`
+ * once it is no longer needed. Also, the pointer must not be modified at all
+ * by any functions not exposed by the validation library.
+ *
+ * Internally, if a CChecksString is created, the system will create a copy of
+ * the string being pointed to.
+ */
+typedef struct CChecksString {
+  /**
+   * The owned pointer to a string.
+   *
+   * # Safety
+   *
+   * This should not be modified at all outside of the validation library.
+   * Also, it should only be destroyed with `cchecks_string_destroy`.
+   */
+  char *string;
+  /**
+   * Destroy the owned data.
+   *
+   * # Safety
+   *
+   * The destroy function should be called once at most.
+   *
+   * The destroy function should handle if the string pointer is null.
+   */
+  void (*destroy_fn)(struct CChecksString*);
+} CChecksString;
+
+/**
  * The item is a wrapper to make a result item more user interface friendly.
  *
  * Result items represent the objects that caused a result. For example, if a
@@ -127,7 +161,7 @@ typedef struct CChecksItem {
    * example, if the string was created with `malloc`, it should be deleted
    * with `free`.
    */
-  char *(*debug_fn)(const struct CChecksItem*);
+  struct CChecksString (*debug_fn)(const struct CChecksItem*);
   /**
    * The display function is used to create a string for displaying to a
    * user.
@@ -140,7 +174,7 @@ typedef struct CChecksItem {
    * example, if the string was created with `malloc`, it should be deleted
    * with `free`
    */
-  char *(*display_fn)(const struct CChecksItem*);
+  struct CChecksString (*display_fn)(const struct CChecksItem*);
   /**
    * The order function is used to order items in user interfaces.
    */
@@ -296,30 +330,6 @@ typedef struct CChecksStringView {
    */
   const char *string;
 } CChecksStringView;
-
-/**
- * The CChecksString contains an owned pointer to a C style string.
- *
- * # Safety
- *
- * The pointer to the string must be destroyed with `cchecks_string_destroy`
- * once it is no longer needed. Also, the pointer must not be modified at all
- * by any functions not exposed by the validation library.
- *
- * Internally, if a CChecksString is created, the system will create a copy of
- * the string being pointed to.
- */
-typedef struct CChecksString {
-  /**
-   * The owned pointer to a string.
-   *
-   * # Safety
-   *
-   * This should not be modified at all outside of the validation library.
-   * Also, it should only be destroyed with `cchecks_string_destroy`.
-   */
-  char *string;
-} CChecksString;
 
 typedef struct CChecksItemsIterator {
   const struct CChecksItems *items;

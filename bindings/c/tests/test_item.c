@@ -9,6 +9,12 @@
 
 #include "cchecks.h"
 
+void destroy_string_ptr(CChecksString *string) {
+  if (string->string != NULL) {
+    free((void *)string->string);
+  }
+}
+
 /* ----------------------------------------------------------------------------
   Int Item
 */
@@ -56,17 +62,21 @@ void int_item_destroy_fn(CChecksItem *item) {
   }
 }
 
-char *int_item_debug_fn(const CChecksItem *item) {
+CChecksString int_item_debug_fn(const CChecksItem *item) {
   return item->display_fn(item);
 }
 
-char *int_item_display_fn(const CChecksItem *item) {
+CChecksString int_item_display_fn(const CChecksItem *item) {
   int value = ((IntItem *)item)->value;
   size_t length = snprintf(NULL, 0, "%d", value);
   char *display_string = malloc(length + 1);
   sprintf(display_string, "%d", value);
 
-  return display_string;
+  CChecksString result;
+  result.string = display_string;
+  result.destroy_fn = destroy_string_ptr;
+
+  return result;
 }
 
 bool int_item_lt_fn(const CChecksItem *item, const CChecksItem *other_item) {
@@ -163,17 +173,21 @@ void string_item_destroy_fn(CChecksItem *item) {
   }
 }
 
-char *string_item_debug_fn(const CChecksItem *item) {
+CChecksString string_item_debug_fn(const CChecksItem *item) {
   return item->display_fn(item);
 }
 
-char *string_item_display_fn(const CChecksItem *item) {
+CChecksString string_item_display_fn(const CChecksItem *item) {
   char *value = ((StringItem *)item)->value;
   size_t display_str_len = strlen(value);
   char *display_str = (char *)malloc(display_str_len + 1);
   strcpy(display_str, value);
 
-  return display_str;
+  CChecksString result;
+  result.string = display_str;
+  result.destroy_fn = destroy_string_ptr;
+
+  return result;
 }
 
 size_t size_min(size_t a, size_t b) {

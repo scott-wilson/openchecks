@@ -21,24 +21,37 @@ pub struct CChecksString {
     ///
     /// This should not be modified at all outside of the validation library.
     /// Also, it should only be destroyed with `cchecks_string_destroy`.
-    string: *mut c_char,
+    pub string: *mut c_char,
+    /// Destroy the owned data.
+    ///
+    /// # Safety
+    ///
+    /// The destroy function should be called once at most.
+    ///
+    /// The destroy function should handle if the string pointer is null.
+    pub destroy_fn: extern "C" fn(&mut Self) -> (),
 }
 
 impl Drop for CChecksString {
     fn drop(&mut self) {
-        if !self.string.is_null() {
-            unsafe { CString::from_raw(self.string) };
-        }
+        (self.destroy_fn)(self)
     }
 }
 
 impl CChecksString {
     pub(crate) fn new<T: AsRef<str>>(text: T) -> Self {
+        extern "C" fn destroy_fn(string: &mut CChecksString) {
+            if !string.string.is_null() {
+                unsafe { CString::from_raw(string.string) };
+            }
+        }
+
         Self {
             string: match CString::new(text.as_ref()) {
                 Ok(r) => r.into_raw(),
                 Err(_) => null_mut(),
             },
+            destroy_fn: destroy_fn,
         }
     }
 }

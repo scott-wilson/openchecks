@@ -13,6 +13,12 @@
 /* ----------------------------------------------------------------------------
   Int Item
 */
+void destroy_string_ptr(CChecksString *string) {
+  if (string->string != NULL) {
+    free((void *)string->string);
+  }
+}
+
 typedef struct IntItem {
   CChecksItem header;
   char *type_hint;
@@ -57,17 +63,21 @@ void int_item_destroy_fn(CChecksItem *item) {
   }
 }
 
-char *int_item_debug_fn(const CChecksItem *item) {
+CChecksString int_item_debug_fn(const CChecksItem *item) {
   return item->display_fn(item);
 }
 
-char *int_item_display_fn(const CChecksItem *item) {
+CChecksString int_item_display_fn(const CChecksItem *item) {
   int value = ((IntItem *)item)->value;
   size_t length = snprintf(NULL, 0, "%d", value);
   char *display_string = malloc(length + 1);
   sprintf(display_string, "%d", value);
 
-  return display_string;
+  CChecksString result;
+  result.string = display_string;
+  result.destroy_fn = destroy_string_ptr;
+
+  return result;
 }
 
 bool int_item_lt_fn(const CChecksItem *item, const CChecksItem *other_item) {
