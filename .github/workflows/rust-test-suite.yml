@@ -1,0 +1,19 @@
+name: Rust Test Suite
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: cargo test
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo clippy
+      - run: cargo test --all-features
