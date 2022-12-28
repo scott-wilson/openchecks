@@ -13,10 +13,6 @@ sphinx = "^5.3.0"
 sphinx-rtd-theme = "^1.1.1"
 myst-parser = "^0.18.1"
 breathe = "^4.34.0"
-black = "*"
-isort = "*"
-flake8 = "*"
-bandit = "*"
 
 [build-system]
 requires = ["poetry-core"]
