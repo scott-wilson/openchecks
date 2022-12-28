@@ -7,6 +7,7 @@ jobs:
     defaults:
       run:
         working-directory: bindings/python
+        shell: bash
     strategy:
       matrix:
         os:
@@ -46,7 +47,6 @@ jobs:
         run: poetry install --no-interaction
       - name: Run tests
         run: |
-          source .venv/bin/activate
           cargo test
           poetry run maturin develop
           poetry run pytest --hypothesis-profile default  -n=auto tests/
