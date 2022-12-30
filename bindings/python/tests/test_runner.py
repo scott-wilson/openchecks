@@ -25,7 +25,7 @@ def test_run_passed_success():
     check = MockCheck()
     result = pychecks.run(check)
     assert result.check_duration() >= 0.001
-    assert result.check_duration() <= 0.01
+    assert result.check_duration() <= 0.1
 
     assert result.status() == pychecks.Status.Passed
 
@@ -47,7 +47,7 @@ def test_run_failed_success():
 
     assert result.status() == pychecks.Status.Failed
     assert result.check_duration() >= 0.001
-    assert result.check_duration() <= 0.01
+    assert result.check_duration() <= 0.1
 
 
 def test_run_failed_check_returns_not_result():
@@ -124,14 +124,14 @@ def test_auto_fix_passed_success():
 
     assert result.status() == pychecks.Status.Failed
     assert result.check_duration() >= 0.001
-    assert result.check_duration() <= 0.01
+    assert result.check_duration() <= 0.1
 
     result = pychecks.auto_fix(check)
     assert result.status() == pychecks.Status.Passed
     assert result.check_duration() >= 0.001
-    assert result.check_duration() <= 0.01
+    assert result.check_duration() <= 0.1
     assert result.fix_duration() >= 0.002
-    assert result.fix_duration() <= 0.02
+    assert result.fix_duration() <= 0.2
 
 
 def test_auto_fix_failed_check_does_not_inherit_base_check():

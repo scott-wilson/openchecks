@@ -51,7 +51,7 @@ impl CChecksString {
                 Ok(r) => r.into_raw(),
                 Err(_) => null_mut(),
             },
-            destroy_fn: destroy_fn,
+            destroy_fn,
         }
     }
 }
