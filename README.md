@@ -111,19 +111,31 @@ Wishlist
 --------
 
 - [ ] A unique name for the package
+  [Issue](https://github.com/scott-wilson/checks/issues/5)
 - [ ] To have the Python package named the same as the Rust package. (Currently,
   the Python package is called `pycheck`.)
+  [Issue](https://github.com/scott-wilson/checks/issues/6)
 - [ ] A C++ API (using the C API as a base)
+  [Issue](https://github.com/scott-wilson/checks/issues/9)
 - [ ] A scheduler to manage running the checks and returning results. This could
   also include having checks depend on other checks.
+  [Issue](https://github.com/scott-wilson/checks/issues/7)
 - [ ] Test discovery for situations where a context is given (a character rig
   for project XYZ or animating the shot ABC_010), and a list of checks are
   produced, ready to be ran.
-- [ ] A Qt GUI
+  [Issue](https://github.com/scott-wilson/checks/issues/8)
+- [ ] A Qt GUI [Issue](https://github.com/scott-wilson/checks/issues/10)
 - [ ] Blender integration
+  [Issue](https://github.com/scott-wilson/checks/issues/11)
 - [ ] Gaffer integration
+  [Issue](https://github.com/scott-wilson/checks/issues/11)
 - [ ] Natron integration
+  [Issue](https://github.com/scott-wilson/checks/issues/11)
 - [ ] Houdini integration
+  [Issue](https://github.com/scott-wilson/checks/issues/11)
 - [ ] Katana integration
+  [Issue](https://github.com/scott-wilson/checks/issues/11)
 - [ ] Maya integration
+  [Issue](https://github.com/scott-wilson/checks/issues/11)
 - [ ] Nuke integration
+  [Issue](https://github.com/scott-wilson/checks/issues/11)
