@@ -27,9 +27,11 @@ namespace CPPCHECKS_NAMESPACE
         constexpr operator Value() const { return _value; }
         explicit operator bool() const = delete;
 
-        bool is_pending();
-        bool has_passed();
-        bool has_failed();
+        bool is_pending() const;
+        bool has_passed() const;
+        bool has_failed() const;
+
+        CChecksStatus c_status() const;
 
     private:
         Value _value;

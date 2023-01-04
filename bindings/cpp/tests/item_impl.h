@@ -1,14 +1,15 @@
 #pragma once
 
+#include <cppchecks/core.h>
 #include <cppchecks/item.h>
 #include <string>
 #include <sstream>
 #include <optional>
 
-class IntItem : public cppchecks::Item<int>
+class IntItem : public CPPCHECKS_NAMESPACE::Item<int>
 {
 public:
-    IntItem(int value, std::optional<std::string> type_hint) : cppchecks::Item<int>(value, type_hint) {}
+    IntItem(int value, std::optional<std::string> type_hint) : CPPCHECKS_NAMESPACE::Item<int>(value, type_hint) {}
 
     virtual std::string display() const
     {

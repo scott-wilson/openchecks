@@ -27,14 +27,14 @@ namespace CPPCHECKS_NAMESPACE
         static CheckResult failed(const std::string &message, const std::optional<std::vector<CPPCHECKS_NAMESPACE::Item<T>>> &items, bool can_fix, bool can_skip);
         ~CheckResult();
 
-        const CPPCHECKS_NAMESPACE::Status &status();
-        std::string message();
-        std::optional<CPPCHECKS_NAMESPACE::Items<T>> items();
-        bool can_fix();
-        bool can_skip();
-        std::optional<std::string> error();
-        double check_duration();
-        double fix_duration();
+        const CPPCHECKS_NAMESPACE::Status status() const;
+        std::string message() const;
+        std::optional<CPPCHECKS_NAMESPACE::Items<T>> items() const;
+        bool can_fix() const;
+        bool can_skip() const;
+        std::optional<std::string> error() const;
+        double check_duration() const;
+        double fix_duration() const;
 
     private:
         CheckResult() {}

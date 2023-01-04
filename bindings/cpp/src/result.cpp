@@ -15,12 +15,12 @@ namespace CPPCHECKS_NAMESPACE
     template <class T>
     CheckResult<T>::CheckResult(CPPCHECKS_NAMESPACE::Status status, const std::string &message, const std::optional<std::vector<CPPCHECKS_NAMESPACE::Item<T>>> &items, bool can_fix, bool can_skip, std::optional<std::string> error)
     {
-        CChecksStatus cstatus = (CChecksStatus)(status);
-        char *cmessage = message.c_str();
+        CChecksStatus cstatus = status.c_status();
+        const char *cmessage = message.c_str();
         CChecksItem *citems = nullptr;
         size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
         size_t item_count = 0;
-        char *cerror = nullptr;
+        const char *cerror = nullptr;
 
         if (items)
         {
@@ -39,7 +39,7 @@ namespace CPPCHECKS_NAMESPACE
     template <class T>
     CheckResult<T> CheckResult<T>::passed(const std::string &message, const std::optional<std::vector<CPPCHECKS_NAMESPACE::Item<T>>> &items, bool can_fix, bool can_skip)
     {
-        char *cmessage = message.c_str();
+        const char *cmessage = message.c_str();
         CChecksItem *citems = nullptr;
         size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
         size_t item_count = 0;
@@ -59,7 +59,7 @@ namespace CPPCHECKS_NAMESPACE
     template <class T>
     CheckResult<T> CheckResult<T>::skipped(const std::string &message, const std::optional<std::vector<CPPCHECKS_NAMESPACE::Item<T>>> &items, bool can_fix, bool can_skip)
     {
-        char *cmessage = message.c_str();
+        const char *cmessage = message.c_str();
         CChecksItem *citems = nullptr;
         size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
         size_t item_count = 0;
@@ -79,7 +79,7 @@ namespace CPPCHECKS_NAMESPACE
     template <class T>
     CheckResult<T> CheckResult<T>::warning(const std::string &message, const std::optional<std::vector<CPPCHECKS_NAMESPACE::Item<T>>> &items, bool can_fix, bool can_skip)
     {
-        char *cmessage = message.c_str();
+        const char *cmessage = message.c_str();
         CChecksItem *citems = nullptr;
         size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
         size_t item_count = 0;
@@ -99,7 +99,7 @@ namespace CPPCHECKS_NAMESPACE
     template <class T>
     CheckResult<T> CheckResult<T>::failed(const std::string &message, const std::optional<std::vector<CPPCHECKS_NAMESPACE::Item<T>>> &items, bool can_fix, bool can_skip)
     {
-        char *cmessage = message.c_str();
+        const char *cmessage = message.c_str();
         CChecksItem *citems = nullptr;
         size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
         size_t item_count = 0;
@@ -123,19 +123,19 @@ namespace CPPCHECKS_NAMESPACE
     }
 
     template <class T>
-    const CPPCHECKS_NAMESPACE::Status &CheckResult<T>::status()
+    const CPPCHECKS_NAMESPACE::Status CheckResult<T>::status() const
     {
         return CPPCHECKS_NAMESPACE::Status(cchecks_check_result_status(&_result));
     }
 
     template <class T>
-    std::string CheckResult<T>::message()
+    std::string CheckResult<T>::message() const
     {
         return std::string(cchecks_check_result_message(&_result).string);
     }
 
     template <class T>
-    std::optional<CPPCHECKS_NAMESPACE::Items<T>> CheckResult<T>::items()
+    std::optional<CPPCHECKS_NAMESPACE::Items<T>> CheckResult<T>::items() const
     {
         const CChecksItems *citems = cchecks_check_result_items(&_result);
 
@@ -150,19 +150,19 @@ namespace CPPCHECKS_NAMESPACE
     }
 
     template <class T>
-    bool CheckResult<T>::can_fix()
+    bool CheckResult<T>::can_fix() const
     {
         return cchecks_check_result_can_fix(&_result);
     }
 
     template <class T>
-    bool CheckResult<T>::can_skip()
+    bool CheckResult<T>::can_skip() const
     {
         return cchecks_check_result_can_skip(&_result);
     }
 
     template <class T>
-    std::optional<std::string> CheckResult<T>::error()
+    std::optional<std::string> CheckResult<T>::error() const
     {
         CChecksStringView cerr = cchecks_check_result_error(&_result);
 
@@ -177,13 +177,13 @@ namespace CPPCHECKS_NAMESPACE
     }
 
     template <class T>
-    double CheckResult<T>::check_duration()
+    double CheckResult<T>::check_duration() const
     {
         return cchecks_check_result_check_duration(&_result);
     }
 
     template <class T>
-    double CheckResult<T>::fix_duration()
+    double CheckResult<T>::fix_duration() const
     {
         return cchecks_check_result_fix_duration(&_result);
     }
