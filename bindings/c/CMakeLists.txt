@@ -24,7 +24,7 @@ endif()
 
 corrosion_import_crate(MANIFEST_PATH "${CCHECKS_SOURCE_DIR}/Cargo.toml")
 
-if (BUILD_TESTING)
+if (BUILD_CCHECKS_TESTS)
     enable_testing()
     add_subdirectory(cmocka)
     add_subdirectory(tests)
