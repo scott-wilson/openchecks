@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 import hypothesis
 from hypothesis import strategies
+
 import pychecks
 
 if TYPE_CHECKING:
-    from typing import Optional, List
+    from typing import List, Optional
 
 
 @hypothesis.given(

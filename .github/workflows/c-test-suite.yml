@@ -1,5 +1,20 @@
 name: C Test Suite
-on: [push, pull_request]
+
+on:
+  push:
+    paths:
+      - "bindings/c/**"
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/**"
+  pull_request:
+    paths:
+      - "bindings/c/**"
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/**"
 
 jobs:
   test:

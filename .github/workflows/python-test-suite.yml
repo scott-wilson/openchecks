@@ -1,5 +1,12 @@
 name: Python Test Suite
-on: [push, pull_request]
+
+on:
+  push:
+    paths:
+      - "bindings/python/**"
+  pull_request:
+    paths:
+      - "bindings/python/**"
 
 jobs:
   test:
@@ -22,8 +29,6 @@ jobs:
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
       - name: Setup Python ${{matrix.python-version}}
         uses: actions/setup-python@v4
         with:
@@ -45,9 +50,6 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install project
         run: poetry install --no-interaction
-      - run: cargo clippy
       - name: Run tests
         run: |
-          cargo test
-          poetry run maturin develop
           poetry run pytest --hypothesis-profile default  -n=auto tests/
