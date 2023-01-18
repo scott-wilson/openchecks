@@ -1,5 +1,12 @@
 name: Python Test Suite
-on: [push, pull_request]
+
+on:
+  push:
+    paths:
+      - "bindings/python"
+  pull_request:
+    paths:
+      - "bindings/python"
 
 jobs:
   test:

@@ -1,5 +1,12 @@
 name: Rust Test Suite
-on: [push, pull_request]
+
+on:
+  push:
+    paths-ignore:
+      - "bindings"
+  pull_request:
+    paths-ignore:
+      - "bindings"
 
 jobs:
   test:

@@ -1,5 +1,12 @@
 name: C Test Suite
-on: [push, pull_request]
+
+on:
+  push:
+    paths:
+      - "bindings/c"
+  pull_request:
+    paths:
+      - "bindings/c"
 
 jobs:
   test:
