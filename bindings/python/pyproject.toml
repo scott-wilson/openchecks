@@ -1,6 +1,6 @@
 [build-system]
-requires = ["maturin>=0.13,<0.14"]
-build-backend = "maturin"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "pychecks"
@@ -14,7 +14,6 @@ readme = "README.md"
 python = "^3.7"
 
 [tool.poetry.group.dev.dependencies]
-maturin = "^0.13.7"
 pytest = "^7.2.0"
 pytest-xdist = "^3.0.2"
 pytest-cov = "^4.0.0"
@@ -22,3 +21,4 @@ hypothesis = "^6.57.1"
 sphinx = "^5.3.0"
 sphinx-rtd-theme = "^1.1.1"
 myst-parser = "^0.18.1"
+pytest-asyncio = "^0.20.3"

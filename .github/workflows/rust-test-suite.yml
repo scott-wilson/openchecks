@@ -1,5 +1,14 @@
 name: Rust Test Suite
-on: [push, pull_request]
+
+on:
+  push:
+    paths-ignore:
+      - "bindings/**"
+      - ".github/workflows/**"
+  pull_request:
+    paths-ignore:
+      - "bindings/**"
+      - ".github/workflows/**"
 
 jobs:
   test:
