@@ -3,10 +3,10 @@ name: Python Test Suite
 on:
   push:
     paths:
-      - "bindings/python"
+      - "bindings/python/**"
   pull_request:
     paths:
-      - "bindings/python"
+      - "bindings/python/**"
 
 jobs:
   test:

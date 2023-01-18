@@ -3,10 +3,12 @@ name: Rust Test Suite
 on:
   push:
     paths-ignore:
-      - "bindings"
+      - "bindings/**"
+      - ".github/workflows/**"
   pull_request:
     paths-ignore:
-      - "bindings"
+      - "bindings/**"
+      - ".github/workflows/**"
 
 jobs:
   test:

@@ -3,10 +3,12 @@ name: C Test Suite
 on:
   push:
     paths:
-      - "bindings/c"
+      - "bindings/c/**"
+      - ".github/workflows/**"
   pull_request:
     paths:
-      - "bindings/c"
+      - "bindings/c/**"
+      - ".github/workflows/**"
 
 jobs:
   test:
