@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 import pytest
-import pychecks
 
-if TYPE_CHECKING:
-    pass
+import pychecks
 
 
 @pytest.mark.parametrize(
