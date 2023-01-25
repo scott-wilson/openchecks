@@ -52,9 +52,11 @@ jobs:
         run: ctest -C Debug -VV --output-on-failure
       - name: Run Valgrind
         working-directory: bindings/c/build
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          valgrind tests/test_check
-          valgrind tests/test_item
-          valgrind tests/test_result
-          valgrind tests/test_runner
-          valgrind tests/test_status
+          sudo apt install -y valgrind
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_check
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_item
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_result
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_runner
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_status
