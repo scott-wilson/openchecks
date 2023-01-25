@@ -1,0 +1,31 @@
+version: 2
+
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # C Bindings
+  - package-ecosystem: "cargo"
+    directory: "/bindings/c"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gitsubmodule"
+    directory: "/bindings/c"
+    schedule:
+      interval: "weekly"
+
+  # Python Bindings
+  - package-ecosystem: "pip"
+    directory: "/bindings/python"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gitsubmodule"
+    directory: "/bindings/python"
+    schedule:
+      interval: "weekly"
