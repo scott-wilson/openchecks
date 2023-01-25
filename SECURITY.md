@@ -6,4 +6,4 @@ Currently only the latest minor version will get security updates, but that will
 
 ## Reporting a Vulnerability
 
-If there is a potential vulnerability in the checks framework, please email scott@propersquid.com. Only the project owner will have access to these messages. Please include detailed steps to reproduce the issue, preferably with code examples, and any other information that could aid an investigation. Our policy is to respond within 14 days, and address security vulnerabilities as quickly as possible.
+If there is a potential vulnerability in the checks framework, please submit the report to https://github.com/scott-wilson/checks/security/advisories/new. Only the project maintainers will have access to these messages. Please include detailed steps to reproduce the issue, preferably with code examples, and any other information that could aid an investigation. Our policy is to respond within 14 days, and address security vulnerabilities as quickly as possible.
