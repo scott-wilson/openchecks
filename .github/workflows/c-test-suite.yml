@@ -50,3 +50,11 @@ jobs:
       - name: Run Test
         working-directory: bindings/c/build
         run: ctest -C Debug -VV --output-on-failure
+      - name: Run Valgrind
+        working-directory: bindings/c/build
+        run: |
+          valgrind tests/test_check
+          valgrind tests/test_item
+          valgrind tests/test_result
+          valgrind tests/test_runner
+          valgrind tests/test_status
