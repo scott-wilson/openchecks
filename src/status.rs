@@ -58,7 +58,7 @@ impl Status {
     /// assert_eq!(status.has_passed(), true);
     ///
     /// let status = Status::Skipped;
-    /// assert_eq!(status.has_passed(), true);
+    /// assert_eq!(status.has_passed(), false);
     ///
     /// let status = Status::Warning;
     /// assert_eq!(status.has_passed(), true);
@@ -67,7 +67,7 @@ impl Status {
     /// assert_eq!(status.has_passed(), false);
     /// ```
     pub fn has_passed(&self) -> bool {
-        matches!(self, Self::Passed | Self::Skipped | Self::Warning)
+        matches!(self, Self::Passed | Self::Warning)
     }
 
     /// Return if a check has failed.
