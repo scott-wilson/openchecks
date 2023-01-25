@@ -23,29 +23,29 @@ pub struct CChecksBaseCheck {
     /// The human readable title for the check.
     ///
     /// User interfaces should use the title for displaying the check.
-    pub title_fn: extern "C" fn(&Self) -> *const c_char,
+    pub title_fn: unsafe extern "C" fn(*const Self) -> *const c_char,
 
     /// The human readable description for the check.
     ///
     /// This should include information about what the check is looking for,
     /// what are the conditions for the different statuses it supports, and if
     /// there's an auto-fix, what the auto-fix will do.
-    pub description_fn: extern "C" fn(&Self) -> *const c_char,
+    pub description_fn: unsafe extern "C" fn(*const Self) -> *const c_char,
 
     /// The hint gives information about what features the check supports.
-    pub hint_fn: extern "C" fn(&Self) -> CChecksCheckHint,
+    pub hint_fn: unsafe extern "C" fn(*const Self) -> CChecksCheckHint,
 
     /// Run a validation on the input data and output the result of the
     /// validation.
-    pub check_fn: extern "C" fn(&Self) -> crate::CChecksCheckResult,
+    pub check_fn: unsafe extern "C" fn(*const Self) -> crate::CChecksCheckResult,
 
     /// Automatically fix the issue detected by the check method.
-    pub auto_fix_fn: Option<extern "C" fn(&Self) -> CChecksAutoFixResult>,
+    pub auto_fix_fn: Option<unsafe extern "C" fn(*mut Self) -> CChecksAutoFixResult>,
 }
 
 impl checks::CheckMetadata for CChecksBaseCheck {
     fn title(&self) -> Cow<str> {
-        let ptr = (self.title_fn)(self);
+        let ptr = unsafe { (self.title_fn)(self) };
 
         if ptr.is_null() {
             return "".into();
@@ -55,7 +55,7 @@ impl checks::CheckMetadata for CChecksBaseCheck {
     }
 
     fn description(&self) -> Cow<str> {
-        let ptr = (self.description_fn)(self);
+        let ptr = unsafe { (self.description_fn)(self) };
 
         if ptr.is_null() {
             return "".into();
@@ -65,7 +65,7 @@ impl checks::CheckMetadata for CChecksBaseCheck {
     }
 
     fn hint(&self) -> checks::CheckHint {
-        cchecks_check_hint_into_check_hint((self.hint_fn)(self))
+        cchecks_check_hint_into_check_hint(unsafe { (self.hint_fn)(self) })
     }
 }
 
@@ -74,14 +74,14 @@ impl checks::Check for CChecksBaseCheck {
     type Items = crate::CChecksItems;
 
     fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
-        let c_result = (self.check_fn)(self);
+        let c_result = unsafe { (self.check_fn)(self) };
         c_result.into()
     }
 
     fn auto_fix(&mut self) -> Result<(), checks::Error> {
         match self.auto_fix_fn {
             Some(auto_fix_fn) => {
-                let result = auto_fix_fn(self);
+                let result = unsafe { auto_fix_fn(self) };
                 match result.status {
                     CChecksAutoFixStatus::CChecksAutoFixStatusOk => Ok(()),
                     CChecksAutoFixStatus::CChecksAutoFixStatusError => {
@@ -104,9 +104,15 @@ impl checks::Check for CChecksBaseCheck {
 /// The human readable title for the check.
 ///
 /// User interfaces should use the title for displaying the check.
+///
+/// # Safety
+///
+/// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub extern "C" fn cchecks_check_title(check: &CChecksBaseCheck) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr((check.title_fn)(check))
+pub unsafe extern "C" fn cchecks_check_title(
+    check: *const CChecksBaseCheck,
+) -> crate::CChecksStringView {
+    crate::CChecksStringView::from_ptr(((*check).title_fn)(check))
 }
 
 /// The human readable description for the check.
@@ -114,15 +120,25 @@ pub extern "C" fn cchecks_check_title(check: &CChecksBaseCheck) -> crate::CCheck
 /// This should include information about what the check is looking for, what
 /// are the conditions for the different statuses it supports, and if there's an
 /// auto-fix, what the auto-fix will do.
+///
+/// # Safety
+///
+/// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub extern "C" fn cchecks_check_description(check: &CChecksBaseCheck) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr((check.description_fn)(check))
+pub unsafe extern "C" fn cchecks_check_description(
+    check: *const CChecksBaseCheck,
+) -> crate::CChecksStringView {
+    crate::CChecksStringView::from_ptr(((*check).description_fn)(check))
 }
 
 /// Run a validation on the input data and output the result of the validation.
+///
+/// # Safety
+///
+/// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub extern "C" fn cchecks_check_hint(check: &CChecksBaseCheck) -> CChecksCheckHint {
-    (check.hint_fn)(check)
+pub unsafe extern "C" fn cchecks_check_hint(check: *const CChecksBaseCheck) -> CChecksCheckHint {
+    ((*check).hint_fn)(check)
 }
 
 fn cchecks_check_hint_into_check_hint(hint: CChecksCheckHint) -> checks::CheckHint {
@@ -139,10 +155,10 @@ fn cchecks_check_hint_into_check_hint(hint: CChecksCheckHint) -> checks::CheckHi
 #[repr(C)]
 pub struct CChecksAutoFixResult {
     /// The status of the auto-fix.
-    pub(crate) status: CChecksAutoFixStatus,
+    pub status: CChecksAutoFixStatus,
 
     /// The error message. Null means no message.
-    pub(crate) message: *mut c_char,
+    pub message: *mut c_char,
 }
 
 impl Drop for CChecksAutoFixResult {
@@ -162,8 +178,12 @@ pub enum CChecksAutoFixStatus {
 }
 
 /// The auto-fix was successful, and did not return any errors.
+///
+/// # Safety
+///
+/// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub extern "C" fn cchecks_check_auto_fix_ok() -> CChecksAutoFixResult {
+pub unsafe extern "C" fn cchecks_check_auto_fix_ok() -> CChecksAutoFixResult {
     CChecksAutoFixResult {
         status: CChecksAutoFixStatus::CChecksAutoFixStatusOk,
         message: null_mut(),

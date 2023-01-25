@@ -60,7 +60,11 @@ impl std::convert::From<CChecksStatus> for checks::Status {
 ///
 /// The status must not be a null pointer.
 #[no_mangle]
-pub extern "C" fn cchecks_status_is_pending(status: &CChecksStatus) -> bool {
+pub unsafe extern "C" fn cchecks_status_is_pending(status: *const CChecksStatus) -> bool {
+    let status = match unsafe { status.as_ref() } {
+        Some(s) => s,
+        None => panic!("cchecks_status_is_pending received a null pointer."),
+    };
     let status: checks::Status = (*status).into();
     status.is_pending()
 }
@@ -71,7 +75,11 @@ pub extern "C" fn cchecks_status_is_pending(status: &CChecksStatus) -> bool {
 ///
 /// The status must not be a null pointer.
 #[no_mangle]
-pub extern "C" fn cchecks_status_has_passed(status: &CChecksStatus) -> bool {
+pub unsafe extern "C" fn cchecks_status_has_passed(status: *const CChecksStatus) -> bool {
+    let status = match unsafe { status.as_ref() } {
+        Some(s) => s,
+        None => panic!("cchecks_status_has_passed received a null pointer."),
+    };
     let status: checks::Status = (*status).into();
     status.has_passed()
 }
@@ -82,7 +90,11 @@ pub extern "C" fn cchecks_status_has_passed(status: &CChecksStatus) -> bool {
 ///
 /// The status must not be a null pointer.
 #[no_mangle]
-pub extern "C" fn cchecks_status_has_failed(status: &CChecksStatus) -> bool {
+pub unsafe extern "C" fn cchecks_status_has_failed(status: *const CChecksStatus) -> bool {
+    let status = match unsafe { status.as_ref() } {
+        Some(s) => s,
+        None => panic!("cchecks_status_has_failed received a null pointer."),
+    };
     let status: checks::Status = (*status).into();
     status.has_failed()
 }

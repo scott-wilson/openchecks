@@ -10,13 +10,16 @@ pub use c_string::{cchecks_string_destroy, CChecksString, CChecksStringView};
 pub use check::{
     cchecks_check_auto_fix_error, cchecks_check_auto_fix_ok, cchecks_check_description,
     cchecks_check_hint, cchecks_check_title, CChecksAutoFixResult, CChecksAutoFixStatus,
-    CChecksBaseCheck, CCHECKS_CHECK_HINT_AUTO_FIX, CCHECKS_CHECK_HINT_NONE,
+    CChecksBaseCheck, CChecksCheckHint, CCHECKS_CHECK_HINT_AUTO_FIX, CCHECKS_CHECK_HINT_NONE,
 };
 pub use item::{
-    cchecks_item_debug, cchecks_item_display, cchecks_item_eq, cchecks_item_lt,
-    cchecks_item_type_hint, cchecks_item_value, CChecksItem,
+    cchecks_item_clone, cchecks_item_debug, cchecks_item_destroy, cchecks_item_display,
+    cchecks_item_eq, cchecks_item_lt, cchecks_item_type_hint, cchecks_item_value, CChecksItem,
 };
-pub use items::{cchecks_items_new, CChecksItems, CChecksItemsIterator};
+pub use items::{
+    cchecks_item_iterator_is_done, cchecks_item_iterator_item, cchecks_item_iterator_next,
+    cchecks_items_iterator_new, cchecks_items_new, CChecksItems, CChecksItemsIterator,
+};
 pub use result::{
     cchecks_check_result_can_fix, cchecks_check_result_can_skip,
     cchecks_check_result_check_duration, cchecks_check_result_destroy, cchecks_check_result_error,

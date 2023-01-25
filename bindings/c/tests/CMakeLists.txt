@@ -11,6 +11,7 @@ foreach(TEST ${TESTS})
     target_include_directories(${TEST} PRIVATE
         "${PROJECT_SOURCE_DIR}/include"
         "${PROJECT_SOURCE_DIR}/cmocka/include"
+        "${PROJECT_SOURCE_DIR}/tests/common"
     )
     target_link_libraries(${TEST}
         PUBLIC

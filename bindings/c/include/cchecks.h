@@ -309,7 +309,7 @@ typedef struct CChecksBaseCheck {
   /**
    * Automatically fix the issue detected by the check method.
    */
-  struct CChecksAutoFixResult (*auto_fix_fn)(const struct CChecksBaseCheck*);
+  struct CChecksAutoFixResult (*auto_fix_fn)(struct CChecksBaseCheck*);
 } CChecksBaseCheck;
 
 /**
@@ -386,6 +386,10 @@ struct CChecksAutoFixResult cchecks_check_auto_fix_error(const char *message);
 
 /**
  * The auto-fix was successful, and did not return any errors.
+ *
+ * # Safety
+ *
+ * The pointer should not be null, and point to valid memory.
  */
 struct CChecksAutoFixResult cchecks_check_auto_fix_ok(void);
 
@@ -395,11 +399,19 @@ struct CChecksAutoFixResult cchecks_check_auto_fix_ok(void);
  * This should include information about what the check is looking for, what
  * are the conditions for the different statuses it supports, and if there's an
  * auto-fix, what the auto-fix will do.
+ *
+ * # Safety
+ *
+ * The pointer should not be null, and point to valid memory.
  */
 struct CChecksStringView cchecks_check_description(const struct CChecksBaseCheck *check);
 
 /**
  * Run a validation on the input data and output the result of the validation.
+ *
+ * # Safety
+ *
+ * The pointer should not be null, and point to valid memory.
  */
 CChecksCheckHint cchecks_check_hint(const struct CChecksBaseCheck *check);
 
@@ -639,6 +651,10 @@ struct CChecksCheckResult cchecks_check_result_warning(const char *message,
  * The human readable title for the check.
  *
  * User interfaces should use the title for displaying the check.
+ *
+ * # Safety
+ *
+ * The pointer should not be null, and point to valid memory.
  */
 struct CChecksStringView cchecks_check_title(const struct CChecksBaseCheck *check);
 
