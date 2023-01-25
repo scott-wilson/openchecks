@@ -6,7 +6,13 @@ license = "MIT OR Apache-2.0"
 
 [lib]
 name = "cchecks"
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["staticlib", "cdylib", "lib"]
+
+[profile.release]
+panic = "abort"
+
+[profile.dev]
+panic = "abort"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -17,3 +23,6 @@ libc = "0.2.138"
 
 [build-dependencies]
 cbindgen = "0.24.3"
+
+[dev-dependencies]
+lazy_static = "1.4.0"
