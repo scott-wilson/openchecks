@@ -24,7 +24,7 @@ def test_status_is_pending_success(status: pychecks.Status, expected: bool):
     "status, expected",
     [
         (pychecks.Status.Pending, False),
-        (pychecks.Status.Skipped, True),
+        (pychecks.Status.Skipped, False),
         (pychecks.Status.Passed, True),
         (pychecks.Status.Warning, True),
         (pychecks.Status.Failed, False),

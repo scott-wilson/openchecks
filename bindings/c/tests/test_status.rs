@@ -26,7 +26,7 @@ fn test_status_has_passed_success() {
         let status = CChecksStatus::CChecksStatusPending;
         assert!(!cchecks_status_has_passed(&status));
         let status = CChecksStatus::CChecksStatusSkipped;
-        assert!(cchecks_status_has_passed(&status));
+        assert!(!cchecks_status_has_passed(&status));
         let status = CChecksStatus::CChecksStatusPassed;
         assert!(cchecks_status_has_passed(&status));
         let status = CChecksStatus::CChecksStatusWarning;

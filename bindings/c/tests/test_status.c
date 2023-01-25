@@ -30,7 +30,7 @@ static void test_status_has_passed_success(void **state) {
   status = CChecksStatusPending;
   assert_false(cchecks_status_has_passed(&status));
   status = CChecksStatusSkipped;
-  assert_true(cchecks_status_has_passed(&status));
+  assert_false(cchecks_status_has_passed(&status));
   status = CChecksStatusPassed;
   assert_true(cchecks_status_has_passed(&status));
   status = CChecksStatusWarning;

@@ -77,7 +77,7 @@ class Status(enum.Enum):
         Returns:
             bool: Whether the check has passed or not.
         """
-        return self in (Status.Skipped, Status.Passed, Status.Warning)
+        return self in (Status.Passed, Status.Warning)
 
     def has_failed(self) -> bool:
         """Return if a check has failed.
