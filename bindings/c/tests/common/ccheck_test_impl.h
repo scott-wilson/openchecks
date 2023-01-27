@@ -44,7 +44,7 @@ CChecksCheckResult test_check_run_fn(const CChecksBaseCheck *check)
                                        noop_items_destroy_fn);
 }
 
-CChecksAutoFixResult test_check_auto_fix_fn(const CChecksBaseCheck *check)
+CChecksAutoFixResult test_check_auto_fix_fn(CChecksBaseCheck *check)
 {
     return cchecks_check_auto_fix_ok();
 }
@@ -180,7 +180,7 @@ CChecksCheckResult pass_on_fix_run_fn(const CChecksBaseCheck *check)
     }
 }
 
-CChecksAutoFixResult pass_on_fix_auto_fix_fn(const CChecksBaseCheck *check)
+CChecksAutoFixResult pass_on_fix_auto_fix_fn(CChecksBaseCheck *check)
 {
     ((PassOnFixCheck *)check)->value = 0;
     return cchecks_check_auto_fix_ok();
@@ -237,7 +237,7 @@ CChecksCheckResult fail_on_fix_run_fn(const CChecksBaseCheck *check)
     }
 }
 
-CChecksAutoFixResult fail_on_fix_auto_fix_fn(const CChecksBaseCheck *check)
+CChecksAutoFixResult fail_on_fix_auto_fix_fn(CChecksBaseCheck *check)
 {
     ((FailOnFixCheck *)check)->value = 2;
     return cchecks_check_auto_fix_ok();
