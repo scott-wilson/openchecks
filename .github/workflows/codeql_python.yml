@@ -15,6 +15,7 @@ on:
   push:
     branches: ["main"]
     paths:
+      - .github/workflows/codeql_python.yml
       - bindings/python/pychecks
       - bindings/python/tests
       - bindings/python/conftest.py
@@ -24,6 +25,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: ["main"]
     paths:
+      - .github/workflows/codeql_python.yml
       - bindings/python/pychecks
       - bindings/python/tests
       - bindings/python/conftest.py

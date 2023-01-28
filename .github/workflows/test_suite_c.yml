@@ -3,6 +3,7 @@ name: C Test Suite
 on:
   push:
     paths:
+      - .github/workflows/test_suite_c.yml
       - bindings/c/cmocka
       - bindings/c/corrosion
       - bindings/c/include
@@ -19,6 +20,7 @@ on:
       - deny.toml
   pull_request:
     paths:
+      - .github/workflows/test_suite_c.yml
       - bindings/c/cmocka
       - bindings/c/corrosion
       - bindings/c/include

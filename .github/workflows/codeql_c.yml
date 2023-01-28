@@ -15,6 +15,7 @@ on:
   push:
     branches: ["main"]
     paths:
+      - .github/workflows/codeql_c.yml
       - bindings/c/cmocka
       - bindings/c/corrosion
       - bindings/c/include
@@ -33,6 +34,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: ["main"]
     paths:
+      - .github/workflows/codeql_c.yml
       - bindings/c/cmocka
       - bindings/c/corrosion
       - bindings/c/include

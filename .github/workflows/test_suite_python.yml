@@ -3,6 +3,7 @@ name: Python Test Suite
 on:
   push:
     paths:
+      - .github/workflows/test_suite_python.yml
       - bindings/python/pychecks
       - bindings/python/tests
       - bindings/python/conftest.py
@@ -10,6 +11,7 @@ on:
       - bindings/python/pyproject.toml
   pull_request:
     paths:
+      - .github/workflows/test_suite_python.yml
       - bindings/python/pychecks
       - bindings/python/tests
       - bindings/python/conftest.py
