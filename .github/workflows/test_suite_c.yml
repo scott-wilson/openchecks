@@ -1,0 +1,88 @@
+name: C Test Suite
+
+on:
+  push:
+    paths:
+      - .github/workflows/test_suite_c.yml
+      - bindings/c/cmocka
+      - bindings/c/corrosion
+      - bindings/c/include
+      - bindings/c/src
+      - bindings/c/tests
+      - bindings/c/build.rs
+      - bindings/c/Cargo.toml
+      - bindings/c/Cargo.lock
+      - bindings/c/cbindgen.toml
+      - bindings/c/CMakeLists.txt
+      - src
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+  pull_request:
+    paths:
+      - .github/workflows/test_suite_c.yml
+      - bindings/c/cmocka
+      - bindings/c/corrosion
+      - bindings/c/include
+      - bindings/c/src
+      - bindings/c/tests
+      - bindings/c/build.rs
+      - bindings/c/Cargo.toml
+      - bindings/c/Cargo.lock
+      - bindings/c/cbindgen.toml
+      - bindings/c/CMakeLists.txt
+      - src
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+
+jobs:
+  test:
+    name: C test
+    defaults:
+      run:
+        working-directory: bindings/c
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - run: cargo clippy
+      - run: cargo llvm-cov --all-features --lcov --output-path lcov.info
+      - name: Make Build Directory
+        run: mkdir -p build
+      - name: CMake Configure
+        working-directory: bindings/c/build
+        run: |
+          # Make cmocka a static dependency when testing.
+          cmake ../ -DBUILD_SHARED_LIBS=OFF -DCODE_COVERAGE=ON
+      - name: CMake Build
+        working-directory: bindings/c/build
+        run: |
+          cmake --build . --config=Debug
+      - name: Run Test
+        working-directory: bindings/c/build
+        run: ctest -C Debug -VV --output-on-failure
+      - name: Run Valgrind
+        working-directory: bindings/c/build
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt install -y valgrind
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_check
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_item
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_result
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_runner
+          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_status
+      - uses: codecov/codecov-action@v3
+        with:
+          files: lcov.info

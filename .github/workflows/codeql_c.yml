@@ -1,0 +1,150 @@
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+#
+# ******** NOTE ********
+# We have attempted to detect the languages in your repository. Please check
+# the `language` matrix defined below to confirm you have the correct set of
+# supported CodeQL languages.
+#
+name: "CodeQL"
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - .github/workflows/codeql_c.yml
+      - bindings/c/cmocka
+      - bindings/c/corrosion
+      - bindings/c/include
+      - bindings/c/src
+      - bindings/c/tests
+      - bindings/c/build.rs
+      - bindings/c/Cargo.toml
+      - bindings/c/Cargo.lock
+      - bindings/c/cbindgen.toml
+      - bindings/c/CMakeLists.txt
+      - src
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: ["main"]
+    paths:
+      - .github/workflows/codeql_c.yml
+      - bindings/c/cmocka
+      - bindings/c/corrosion
+      - bindings/c/include
+      - bindings/c/src
+      - bindings/c/tests
+      - bindings/c/build.rs
+      - bindings/c/Cargo.toml
+      - bindings/c/Cargo.lock
+      - bindings/c/cbindgen.toml
+      - bindings/c/CMakeLists.txt
+      - src
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+  schedule:
+    - cron: "0 0 * * 1"
+
+jobs:
+  analyze_python:
+    name: Analyze Python
+    defaults:
+      run:
+        working-directory: bindings/python
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: python
+
+      # Build Python Project
+      - name: Setup Python ${{matrix.python-version}}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Python - Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Python - Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Python - Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Python - Install project
+        run: poetry install --no-interaction
+
+      # Run the analysis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:python"
+
+  analyze_c:
+    name: Analyze C
+    defaults:
+      run:
+        working-directory: bindings/c
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: cpp
+
+      # Build C Project
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Make Build Directory
+        run: mkdir -p build
+      - name: CMake Configure
+        working-directory: bindings/c/build
+        run: |
+          # Make cmocka a static dependency when testing.
+          cmake ../ -DBUILD_SHARED_LIBS=OFF
+      - name: CMake Build
+        working-directory: bindings/c/build
+        run: |
+          cmake --build . --config=Debug
+
+      # Run the analysis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:cpp"
