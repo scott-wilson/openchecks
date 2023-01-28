@@ -1,0 +1,41 @@
+name: Rust Test Suite
+
+on:
+  push:
+    paths:
+      - src
+      - tests
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+  pull_request:
+    paths:
+      - src
+      - tests
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+
+jobs:
+  test:
+    name: Rust test
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: EmbarkStudios/cargo-deny-action@v1
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: cargo clippy
+      - run: cargo llvm-cov --all-features --lcov --output-path lcov.info
+      - uses: codecov/codecov-action@v3
+        with:
+          files: lcov.info

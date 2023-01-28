@@ -14,14 +14,26 @@ name: "CodeQL"
 on:
   push:
     branches: ["main"]
+    paths:
+      - bindings/python/pychecks
+      - bindings/python/tests
+      - bindings/python/conftest.py
+      - bindings/python/poetry.lock
+      - bindings/python/pyproject.toml
   pull_request:
     # The branches below must be a subset of the branches above
     branches: ["main"]
+    paths:
+      - bindings/python/pychecks
+      - bindings/python/tests
+      - bindings/python/conftest.py
+      - bindings/python/poetry.lock
+      - bindings/python/pyproject.toml
   schedule:
     - cron: "0 0 * * 1"
 
 jobs:
-  analyze_python:
+  analyze:
     name: Analyze Python
     defaults:
       run:
@@ -72,47 +84,3 @@ jobs:
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:python"
-
-  analyze_c:
-    name: Analyze C
-    defaults:
-      run:
-        working-directory: bindings/c
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: cpp
-
-      # Build C Project
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - name: Make Build Directory
-        run: mkdir -p build
-      - name: CMake Configure
-        working-directory: bindings/c/build
-        run: |
-          # Make cmocka a static dependency when testing.
-          cmake ../ -DBUILD_SHARED_LIBS=OFF
-      - name: CMake Build
-        working-directory: bindings/c/build
-        run: |
-          cmake --build . --config=Debug
-
-      # Run the analysis
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-        with:
-          category: "/language:cpp"
