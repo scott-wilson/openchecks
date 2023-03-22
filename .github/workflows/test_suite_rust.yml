@@ -4,16 +4,16 @@ on:
   push:
     paths:
       - .github/workflows/test_suite_rust.yml
-      - src
-      - tests
+      - src/**
+      - tests/**
       - Cargo.lock
       - Cargo.toml
       - deny.toml
   pull_request:
     paths:
       - .github/workflows/test_suite_rust.yml
-      - src
-      - tests
+      - src/**
+      - tests/**
       - Cargo.lock
       - Cargo.toml
       - deny.toml

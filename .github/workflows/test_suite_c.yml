@@ -4,34 +4,34 @@ on:
   push:
     paths:
       - .github/workflows/test_suite_c.yml
-      - bindings/c/cmocka
-      - bindings/c/corrosion
-      - bindings/c/include
-      - bindings/c/src
-      - bindings/c/tests
+      - bindings/c/cmocka/**
+      - bindings/c/corrosion/**
+      - bindings/c/include/**
+      - bindings/c/src/**
+      - bindings/c/tests/**
       - bindings/c/build.rs
       - bindings/c/Cargo.toml
       - bindings/c/Cargo.lock
       - bindings/c/cbindgen.toml
       - bindings/c/CMakeLists.txt
-      - src
+      - src/**
       - Cargo.lock
       - Cargo.toml
       - deny.toml
   pull_request:
     paths:
       - .github/workflows/test_suite_c.yml
-      - bindings/c/cmocka
-      - bindings/c/corrosion
-      - bindings/c/include
-      - bindings/c/src
-      - bindings/c/tests
+      - bindings/c/cmocka/**
+      - bindings/c/corrosion/**
+      - bindings/c/include/**
+      - bindings/c/src/**
+      - bindings/c/tests/**
       - bindings/c/build.rs
       - bindings/c/Cargo.toml
       - bindings/c/Cargo.lock
       - bindings/c/cbindgen.toml
       - bindings/c/CMakeLists.txt
-      - src
+      - src/**
       - Cargo.lock
       - Cargo.toml
       - deny.toml
