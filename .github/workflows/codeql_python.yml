@@ -16,8 +16,8 @@ on:
     branches: ["main"]
     paths:
       - .github/workflows/codeql_python.yml
-      - bindings/python/pychecks
-      - bindings/python/tests
+      - bindings/python/pychecks/**
+      - bindings/python/tests/**
       - bindings/python/conftest.py
       - bindings/python/poetry.lock
       - bindings/python/pyproject.toml
@@ -26,8 +26,8 @@ on:
     branches: ["main"]
     paths:
       - .github/workflows/codeql_python.yml
-      - bindings/python/pychecks
-      - bindings/python/tests
+      - bindings/python/pychecks/**
+      - bindings/python/tests/**
       - bindings/python/conftest.py
       - bindings/python/poetry.lock
       - bindings/python/pyproject.toml

@@ -16,17 +16,17 @@ on:
     branches: ["main"]
     paths:
       - .github/workflows/codeql_c.yml
-      - bindings/c/cmocka
-      - bindings/c/corrosion
-      - bindings/c/include
-      - bindings/c/src
-      - bindings/c/tests
+      - bindings/c/cmocka/**
+      - bindings/c/corrosion/**
+      - bindings/c/include/**
+      - bindings/c/src/**
+      - bindings/c/tests/**
       - bindings/c/build.rs
       - bindings/c/Cargo.toml
       - bindings/c/Cargo.lock
       - bindings/c/cbindgen.toml
       - bindings/c/CMakeLists.txt
-      - src
+      - src/**
       - Cargo.lock
       - Cargo.toml
       - deny.toml
@@ -35,17 +35,17 @@ on:
     branches: ["main"]
     paths:
       - .github/workflows/codeql_c.yml
-      - bindings/c/cmocka
-      - bindings/c/corrosion
-      - bindings/c/include
-      - bindings/c/src
-      - bindings/c/tests
+      - bindings/c/cmocka/**
+      - bindings/c/corrosion/**
+      - bindings/c/include/**
+      - bindings/c/src/**
+      - bindings/c/tests/**
       - bindings/c/build.rs
       - bindings/c/Cargo.toml
       - bindings/c/Cargo.lock
       - bindings/c/cbindgen.toml
       - bindings/c/CMakeLists.txt
-      - src
+      - src/*
       - Cargo.lock
       - Cargo.toml
       - deny.toml
