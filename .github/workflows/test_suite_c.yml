@@ -18,6 +18,7 @@ on:
       - Cargo.lock
       - Cargo.toml
       - deny.toml
+      - .gitmodules
   pull_request:
     paths:
       - .github/workflows/test_suite_c.yml
@@ -35,6 +36,7 @@ on:
       - Cargo.lock
       - Cargo.toml
       - deny.toml
+      - .gitmodules
 
 jobs:
   test:
