@@ -16,7 +16,7 @@ python = "^3.7"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
 pytest-xdist = "^3.3.1"
-pytest-cov = "^4.0.0"
+pytest-cov = "^4.1.0"
 hypothesis = "^6.75.3"
 sphinx = "^5.3.0"
 sphinx-rtd-theme = "^1.2.1"
