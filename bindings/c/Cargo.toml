@@ -22,7 +22,7 @@ bitflags = "2.0.0"
 libc = "0.2.138"
 
 [build-dependencies]
-cbindgen = "0.24.3"
+cbindgen = "0.25.0"
 
 [dev-dependencies]
 lazy_static = "1.4.0"
