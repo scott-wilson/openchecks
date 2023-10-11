@@ -33,7 +33,7 @@ Requirements
 Install
 -------
 
-# For development
+### For development
 
 ```bash
 cd /path/to/checks/bindings/python
