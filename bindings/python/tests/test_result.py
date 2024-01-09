@@ -61,7 +61,13 @@ def test_check_result_success(
     else:
         assert result.can_skip() == can_skip
 
-    assert result.error() == error
+    error_result = result.error()
+
+    if error is None:
+        assert error_result is None
+    else:
+        assert isinstance(error_result, pychecks.CheckError)
+        assert str(error_result) == str(error)
 
 
 @hypothesis.given(

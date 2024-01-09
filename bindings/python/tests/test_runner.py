@@ -22,7 +22,7 @@ def test_run_passed_success():
 
     check = MockCheck()
     result = pychecks.run(check)
-    assert result.check_duration().total_seconds() >= 0.001
+    assert result.check_duration() >= 0.001
 
     assert result.status() == pychecks.Status.Passed
 
@@ -43,7 +43,7 @@ def test_run_failed_success():
     result = pychecks.run(check)
 
     assert result.status() == pychecks.Status.Failed
-    assert result.check_duration().total_seconds() >= 0.001
+    assert result.check_duration() >= 0.001
 
 
 def test_run_failed_check_returns_not_result():
@@ -82,8 +82,8 @@ def test_run_failed_check_raises_error():
     assert result.status() == pychecks.Status.SystemError
     err_result = result.error()
     assert err_result is not None
-    assert err_result[0] == exception
-    assert isinstance(err_result[1], types.TracebackType)
+    assert isinstance(err_result, pychecks.CheckError)
+    assert str(err_result) == str("RuntimeError: test")
 
 
 def test_run_failed_check_does_not_inherit_base_check():
@@ -122,12 +122,12 @@ def test_auto_fix_passed_success():
     result = pychecks.run(check)
 
     assert result.status() == pychecks.Status.Failed
-    assert result.check_duration().total_seconds() >= 0.001
+    assert result.check_duration() >= 0.001
 
     result = pychecks.auto_fix(check)
     assert result.status() == pychecks.Status.Passed
-    assert result.check_duration().total_seconds() >= 0.001
-    assert result.fix_duration().total_seconds() >= 0.002
+    assert result.check_duration() >= 0.001
+    assert result.fix_duration() >= 0.001
 
 
 def test_auto_fix_failed_check_does_not_inherit_base_check():
@@ -183,8 +183,8 @@ def test_auto_fix_failed_auto_fix_raises_error():
 
     err_result = result.error()
     assert err_result is not None
-    assert err_result[0] == exception
-    assert isinstance(err_result[1], types.TracebackType)
+    assert isinstance(err_result, pychecks.CheckError)
+    assert str(err_result) == "RuntimeError: Test"
 
 
 @pytest.mark.asyncio
@@ -202,7 +202,7 @@ async def test_async_run_passed_success():
 
     check = MockCheck()
     result = await pychecks.async_run(check)
-    assert result.check_duration().total_seconds() >= 0.001
+    assert result.check_duration() >= 0.001
 
     assert result.status() == pychecks.Status.Passed
 
@@ -224,7 +224,7 @@ async def test_async_run_failed_success():
     result = await pychecks.async_run(check)
 
     assert result.status() == pychecks.Status.Failed
-    assert result.check_duration().total_seconds() >= 0.001
+    assert result.check_duration() >= 0.001
 
 
 @pytest.mark.asyncio
@@ -265,8 +265,8 @@ async def test_async_run_failed_check_raises_error():
     assert result.status() == pychecks.Status.SystemError
     err_result = result.error()
     assert err_result is not None
-    assert err_result[0] == exception
-    assert isinstance(err_result[1], types.TracebackType)
+    assert isinstance(err_result, pychecks.CheckError)
+    assert str(err_result) == "RuntimeError: test"
 
 
 @pytest.mark.asyncio
@@ -307,12 +307,12 @@ async def test_async_auto_fix_passed_success():
     result = await pychecks.async_run(check)
 
     assert result.status() == pychecks.Status.Failed
-    assert result.check_duration().total_seconds() >= 0.001
+    assert result.check_duration() >= 0.001
 
     result = await pychecks.async_auto_fix(check)
     assert result.status() == pychecks.Status.Passed
-    assert result.check_duration().total_seconds() >= 0.001
-    assert result.fix_duration().total_seconds() >= 0.002
+    assert result.check_duration() >= 0.001
+    assert result.fix_duration() >= 0.001
 
 
 @pytest.mark.asyncio
@@ -371,5 +371,5 @@ async def test_async_auto_fix_failed_auto_fix_raises_error():
 
     err_result = result.error()
     assert err_result is not None
-    assert err_result[0] == exception
-    assert isinstance(err_result[1], types.TracebackType)
+    assert isinstance(err_result, pychecks.CheckError)
+    assert str(err_result) == "RuntimeError: Test"

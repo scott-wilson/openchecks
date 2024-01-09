@@ -1,24 +1,31 @@
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
 
-[tool.poetry]
+[project]
 name = "pychecks"
-version = "0.1.0"
 description = "A simple checks framework"
-authors = ["Scott Wilson <scott@propersquid.com>"]
+authors = [{ name = "Scott Wilson", email = "scott@propersquid.com" }]
 license = "Apache-2.0"
 readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
 
-[tool.poetry.dependencies]
-python = "^3.7"
+[project.optional-dependencies]
+build = ["maturin ~= 1.4"]
+test = [
+    "pytest ~= 7.4",
+    "pytest-xdist ~= 3.5",
+    "pytest-cov ~= 4.1",
+    "hypothesis ~= 6.79",
+    "pytest-asyncio ~= 0.21",
+]
+docs = ["sphinx ~= 5.3", "sphinx-rtd-theme ~= 2.0", "myst-parser ~= 1.0"]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4.4"
-pytest-xdist = "^3.5.0"
-pytest-cov = "^4.1.0"
-hypothesis = "^6.79.4"
-sphinx = "^5.3.0"
-sphinx-rtd-theme = "^2.0.0"
-myst-parser = "^1.0.0"
-pytest-asyncio = "^0.21.1"
+[tool.maturin]
+features = ["pyo3/extension-module"]

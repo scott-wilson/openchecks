@@ -40,3 +40,10 @@ updates:
       - "lang-python"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "cargo"
+    directory: "/bindings/python"
+    labels:
+      - "dependencies"
+      - "lang-python"
+    schedule:
+      interval: "weekly"
