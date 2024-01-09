@@ -48,6 +48,10 @@ jobs:
         with:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
+      - name: Setup virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
       - name: Build Rust
         uses: PyO3/maturin-action@v1
         with:

@@ -73,8 +73,12 @@ jobs:
         with:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
+      - name: Setup virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
       - name: Python - Install dependencies
-        run: pip install .[build]
+        run: python -m pip install .[build]
 
       # Run the analysis
       - name: Perform CodeQL Analysis
