@@ -37,7 +37,8 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          - "latest"
+          - "3.12"
+          - "3" # Latest version
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v4
@@ -58,10 +59,3 @@ jobs:
       - name: Run tests
         run: |
           python -m pytest --hypothesis-profile default -n=auto tests/
-      # - name: Run tests
-      #   run: |
-      #     python -m pytest --hypothesis-profile default --cov pychecks/ --cov-report=xml -n=auto tests/
-      # - uses: codecov/codecov-action@v3
-      #   with:
-      #     files: coverage.xml
-      #     flags: lang-python
