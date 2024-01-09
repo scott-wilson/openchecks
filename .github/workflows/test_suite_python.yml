@@ -51,7 +51,7 @@ jobs:
       - name: Build Rust
         uses: PyO3/maturin-action@v1
         with:
-          args: develop
+          command: develop
           sccache: 'true'
           manylinux: auto
       - name: Install dependencies
