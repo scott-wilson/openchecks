@@ -41,7 +41,8 @@ jobs:
           - "3" # Latest version
     runs-on: ${{matrix.os}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Setup Python ${{matrix.python-version}}
         id: setup-python
         uses: actions/setup-python@v5
