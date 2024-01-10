@@ -2,21 +2,21 @@ name: Python Test Suite
 
 on:
   push:
-    paths:
-      - .github/workflows/test_suite_python.yml
-      - bindings/python/conftest.py
-      - bindings/python/pychecks/**
-      - bindings/python/pyproject.toml
-      - bindings/python/src/**
-      - bindings/python/tests/**
-  pull_request:
-    paths:
-      - .github/workflows/test_suite_python.yml
-      - bindings/python/conftest.py
-      - bindings/python/pychecks/**
-      - bindings/python/pyproject.toml
-      - bindings/python/src/**
-      - bindings/python/tests/**
+    # paths:
+    #   - .github/workflows/test_suite_python.yml
+    #   - bindings/python/conftest.py
+    #   - bindings/python/pychecks/**
+    #   - bindings/python/pyproject.toml
+    #   - bindings/python/src/**
+    #   - bindings/python/tests/**
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/test_suite_python.yml
+  #     - bindings/python/conftest.py
+  #     - bindings/python/pychecks/**
+  #     - bindings/python/pyproject.toml
+  #     - bindings/python/src/**
+  #     - bindings/python/tests/**
 
 jobs:
   test:
@@ -52,6 +52,11 @@ jobs:
         with:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
+      - name: Cache virtualenv
+        uses: actions/cache@v3
+        with:
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
+          path: .venv
       - name: Setup virtual environment
         run: |
           python -m venv .venv
@@ -62,6 +67,7 @@ jobs:
           command: develop
           sccache: 'true'
           manylinux: auto
+          working-directory: bindings/python
       - name: Install dependencies
         run: python -m pip install .[test]
       - name: Run tests
