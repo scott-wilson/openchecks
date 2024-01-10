@@ -1,16 +1,17 @@
+# ruff: noqa: D103,D100,S101
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
-
 import pychecks
+import pytest
 
 if TYPE_CHECKING:  # pragma: no cover
     pass
 
 
-def test_check_passed_success():
+def test_check_passed_success() -> None:
     class MockCheck(pychecks.BaseCheck):
         def check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.passed("test")
@@ -31,7 +32,7 @@ def test_check_passed_success():
     assert result.message() == "test"
 
 
-def test_check_failed_success():
+def test_check_failed_success() -> None:
     class MockCheck(pychecks.BaseCheck):
         def check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.failed("test")
@@ -52,7 +53,7 @@ def test_check_failed_success():
     assert result.message() == "test"
 
 
-def test_check_auto_fix_success():
+def test_check_auto_fix_success() -> None:
     class MockCheck(pychecks.BaseCheck):
         def __init__(self) -> None:
             self._value = 1
@@ -85,8 +86,8 @@ def test_check_auto_fix_success():
     assert result.items() == [pychecks.Item(0)]
 
 
-@pytest.mark.asyncio
-async def test_check_auto_fix_failed_not_implemented():
+@pytest.mark.asyncio()
+async def test_check_auto_fix_failed_not_implemented() -> None:
     class MockCheck(pychecks.BaseCheck):
         def check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.passed("passed")
@@ -103,8 +104,8 @@ async def test_check_auto_fix_failed_not_implemented():
         check.auto_fix()
 
 
-@pytest.mark.asyncio
-async def test_async_check_passed_success():
+@pytest.mark.asyncio()
+async def test_async_check_passed_success() -> None:
     class MockCheck(pychecks.AsyncBaseCheck):
         async def async_check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.passed("test")
@@ -125,8 +126,8 @@ async def test_async_check_passed_success():
     assert result.message() == "test"
 
 
-@pytest.mark.asyncio
-async def test_async_check_failed_success():
+@pytest.mark.asyncio()
+async def test_async_check_failed_success() -> None:
     class MockCheck(pychecks.AsyncBaseCheck):
         async def async_check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.failed("test")
@@ -147,8 +148,8 @@ async def test_async_check_failed_success():
     assert result.message() == "test"
 
 
-@pytest.mark.asyncio
-async def test_async_check_auto_fix_success():
+@pytest.mark.asyncio()
+async def test_async_check_auto_fix_success() -> None:
     class MockCheck(pychecks.AsyncBaseCheck):
         def __init__(self) -> None:
             self._value = 1
@@ -181,8 +182,8 @@ async def test_async_check_auto_fix_success():
     assert result.items() == [pychecks.Item(0)]
 
 
-@pytest.mark.asyncio
-async def test_async_check_auto_fix_failed_not_implemented():
+@pytest.mark.asyncio()
+async def test_async_check_auto_fix_failed_not_implemented() -> None:
     class MockCheck(pychecks.AsyncBaseCheck):
         async def async_check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.passed("passed")
@@ -199,8 +200,8 @@ async def test_async_check_auto_fix_failed_not_implemented():
         await check.async_auto_fix()
 
 
-@pytest.mark.asyncio
-async def test_both_check_passed_success():
+@pytest.mark.asyncio()
+async def test_both_check_passed_success() -> None:
     class MockCheck(pychecks.AsyncBaseCheck, pychecks.BaseCheck):
         async def async_check(self) -> pychecks.CheckResult[int]:
             return self.check()
@@ -224,8 +225,8 @@ async def test_both_check_passed_success():
     assert result.message() == "test"
 
 
-@pytest.mark.asyncio
-async def test_both_check_failed_success():
+@pytest.mark.asyncio()
+async def test_both_check_failed_success() -> None:
     class MockCheck(pychecks.AsyncBaseCheck, pychecks.BaseCheck):
         def check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.failed("test")
@@ -249,8 +250,8 @@ async def test_both_check_failed_success():
     assert result.message() == "test"
 
 
-@pytest.mark.asyncio
-async def test_both_check_auto_fix_success():
+@pytest.mark.asyncio()
+async def test_both_check_auto_fix_success() -> None:
     class MockCheck(pychecks.AsyncBaseCheck, pychecks.BaseCheck):
         def __init__(self) -> None:
             self._value = 1
@@ -289,8 +290,8 @@ async def test_both_check_auto_fix_success():
     assert result.items() == [pychecks.Item(0)]
 
 
-@pytest.mark.asyncio
-async def test_both_check_auto_fix_failed_not_implemented():
+@pytest.mark.asyncio()
+async def test_both_check_auto_fix_failed_not_implemented() -> None:
     class MockCheck(pychecks.AsyncBaseCheck, pychecks.BaseCheck):
         def check(self) -> pychecks.CheckResult[int]:
             return pychecks.CheckResult.passed("passed")

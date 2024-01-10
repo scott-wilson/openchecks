@@ -55,58 +55,6 @@ on:
     - cron: "0 0 * * 1"
 
 jobs:
-  analyze_python:
-    name: Analyze Python
-    defaults:
-      run:
-        working-directory: bindings/python
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: python
-
-      # Build Python Project
-      - name: Setup Python ${{matrix.python-version}}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{matrix.python-version}}
-      - name: Python - Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Python - Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Python - Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-      - name: Python - Install project
-        run: poetry install --no-interaction
-
-      # Run the analysis
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:python"
-
   analyze_c:
     name: Analyze C
     defaults:

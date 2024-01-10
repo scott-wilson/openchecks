@@ -1,12 +1,13 @@
+# ruff: noqa: D103,D100,S101
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 import hypothesis
+import pychecks
 import pytest
 from hypothesis import strategies
-
-import pychecks
 
 if TYPE_CHECKING:
     from typing import Optional
@@ -21,7 +22,7 @@ def test_item(
     value: int,
     other_value: int,
     type_hint: Optional[str],
-):
+) -> None:
     item = pychecks.Item(value, type_hint)
 
     assert item.value() == value
@@ -33,16 +34,16 @@ def test_item(
     assert (item != value) is True
 
     with pytest.raises(TypeError):
-        item < value
+        item < value  # type: ignore
 
     with pytest.raises(TypeError):
-        item <= value
+        item <= value  # type: ignore
 
     with pytest.raises(TypeError):
-        item > value
+        item > value  # type: ignore
 
     with pytest.raises(TypeError):
-        item >= value
+        item >= value  # type: ignore
 
     other_item = pychecks.Item(other_value, type_hint)
 
@@ -63,7 +64,7 @@ def test_item_reimplemented(
     value: int,
     other_value: int,
     type_hint: Optional[str],
-):
+) -> None:
     class Item(pychecks.Item):
         def __repr__(self) -> str:
             return f"debug_{self.value()}"

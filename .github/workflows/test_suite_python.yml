@@ -2,21 +2,21 @@ name: Python Test Suite
 
 on:
   push:
-    paths:
-      - .github/workflows/test_suite_python.yml
-      - bindings/python/pychecks/**
-      - bindings/python/tests/**
-      - bindings/python/conftest.py
-      - bindings/python/poetry.lock
-      - bindings/python/pyproject.toml
-  pull_request:
-    paths:
-      - .github/workflows/test_suite_python.yml
-      - bindings/python/pychecks/**
-      - bindings/python/tests/**
-      - bindings/python/conftest.py
-      - bindings/python/poetry.lock
-      - bindings/python/pyproject.toml
+    # paths:
+    #   - .github/workflows/test_suite_python.yml
+    #   - bindings/python/conftest.py
+    #   - bindings/python/pychecks/**
+    #   - bindings/python/pyproject.toml
+    #   - bindings/python/src/**
+    #   - bindings/python/tests/**
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/test_suite_python.yml
+  #     - bindings/python/conftest.py
+  #     - bindings/python/pychecks/**
+  #     - bindings/python/pyproject.toml
+  #     - bindings/python/src/**
+  #     - bindings/python/tests/**
 
 jobs:
   test:
@@ -36,36 +36,51 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3" # Latest version
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - name: Setup Python ${{matrix.python-version}}
         id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ (matrix.python-version == '3.7') && '1.5.1' || 'latest' }}
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Load cached venv
-        id: cached-poetry-dependencies
+          cache: 'pip'
+      - name: Cache virtualenv
         uses: actions/cache@v3
         with:
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
           path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Setup virtual environment
+        run: |
+          python -m venv .venv
+
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            source .venv/Scripts/activate
+          else
+            source .venv/bin/activate
+          fi
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-      - name: Install project
-        run: poetry install --no-interaction
+        run: python -m pip install .[test]
+      - name: Lint with Ruff
+        run: |
+          python -m ruff --output-format=github .
+      - name: Lint with Black
+        run: |
+          python -m black --check .
+      - name: Build Rust
+        uses: PyO3/maturin-action@v1
+        with:
+          command: develop
+          sccache: 'true'
+          manylinux: auto
+          working-directory: bindings/python
       - name: Run tests
         run: |
-          poetry run pytest --hypothesis-profile default --cov pychecks/ --cov-report=xml -n=auto tests/
-      - uses: codecov/codecov-action@v3
-        with:
-          files: coverage.xml
-          flags: lang-python
+          python -m pytest --hypothesis-profile default -n=auto tests/

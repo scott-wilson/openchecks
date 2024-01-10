@@ -1,12 +1,13 @@
+# ruff: noqa: D103,D100,S101
+
 from __future__ import annotations
 
-import pytest
-
 import pychecks
+import pytest
 
 
 @pytest.mark.parametrize(
-    "status, expected",
+    ("status", "expected"),
     [
         (pychecks.Status.Pending, True),
         (pychecks.Status.Skipped, False),
@@ -16,12 +17,12 @@ import pychecks
         (pychecks.Status.SystemError, False),
     ],
 )
-def test_status_is_pending_success(status: pychecks.Status, expected: bool):
+def test_status_is_pending_success(status: pychecks.Status, expected: bool) -> None:
     assert status.is_pending() == expected
 
 
 @pytest.mark.parametrize(
-    "status, expected",
+    ("status", "expected"),
     [
         (pychecks.Status.Pending, False),
         (pychecks.Status.Skipped, False),
@@ -31,12 +32,12 @@ def test_status_is_pending_success(status: pychecks.Status, expected: bool):
         (pychecks.Status.SystemError, False),
     ],
 )
-def test_status_has_passed_success(status: pychecks.Status, expected: bool):
+def test_status_has_passed_success(status: pychecks.Status, expected: bool) -> None:
     assert status.has_passed() == expected
 
 
 @pytest.mark.parametrize(
-    "status, expected",
+    ("status", "expected"),
     [
         (pychecks.Status.Pending, False),
         (pychecks.Status.Skipped, False),
@@ -46,5 +47,5 @@ def test_status_has_passed_success(status: pychecks.Status, expected: bool):
         (pychecks.Status.SystemError, True),
     ],
 )
-def test_status_has_failed_success(status: pychecks.Status, expected: bool):
+def test_status_has_failed_success(status: pychecks.Status, expected: bool) -> None:
     assert status.has_failed() == expected
