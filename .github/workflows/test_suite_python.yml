@@ -66,6 +66,14 @@ jobs:
           else
             source .venv/bin/activate
           fi
+      - name: Install dependencies
+        run: python -m pip install .[test]
+      - name: Lint with Ruff
+        run: |
+          python -m ruff --output-format=github .
+      - name: Lint with Black
+        run: |
+          python -m black --check .
       - name: Build Rust
         uses: PyO3/maturin-action@v1
         with:
@@ -73,8 +81,6 @@ jobs:
           sccache: 'true'
           manylinux: auto
           working-directory: bindings/python
-      - name: Install dependencies
-        run: python -m pip install .[test]
       - name: Run tests
         run: |
           python -m pytest --hypothesis-profile default -n=auto tests/
