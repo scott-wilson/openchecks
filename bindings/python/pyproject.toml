@@ -28,7 +28,7 @@ test = [
     "pytest-xdist ~= 3.5",
     "ruff ~= 0.1",
 ]
-docs = ["myst-parser ~= 2.0", "sphinx ~= 5.3", "sphinx-rtd-theme ~= 2.0"]
+docs = ["myst-parser ~= 2.0", "sphinx ~= 7.2", "sphinx-rtd-theme ~= 2.0"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
