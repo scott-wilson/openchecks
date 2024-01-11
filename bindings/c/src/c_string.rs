@@ -42,7 +42,7 @@ impl CChecksString {
     pub(crate) fn new<T: AsRef<str>>(text: T) -> Self {
         unsafe extern "C" fn destroy_fn(string: *mut CChecksString) {
             if !(*string).string.is_null() {
-                unsafe { CString::from_raw((*string).string) };
+                unsafe { drop(CString::from_raw((*string).string)) };
             }
         }
 
