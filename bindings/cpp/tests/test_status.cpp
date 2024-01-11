@@ -29,7 +29,7 @@ TEST(Status, HasStatusPassedSuccess)
 {
     auto cases = std::vector{
         std::make_tuple(cppchecks::Status::Pending, false),
-        std::make_tuple(cppchecks::Status::Skipped, true),
+        std::make_tuple(cppchecks::Status::Skipped, false),
         std::make_tuple(cppchecks::Status::Passed, true),
         std::make_tuple(cppchecks::Status::Warning, true),
         std::make_tuple(cppchecks::Status::Failed, false),

@@ -122,7 +122,7 @@ namespace CPPCHECKS_NAMESPACE
         {
             Item<T> *cppitem = (Item<T> *)item;
 
-            std::string msg = cppitem->debug();
+            std::string msg = cppitem->display();
 
             char *cstr = new char[msg.length() + 1];
             std::strcpy(cstr, msg.c_str());
