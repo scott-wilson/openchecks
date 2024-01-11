@@ -260,7 +260,7 @@ pub unsafe extern "C" fn cchecks_item_destroy(item: *mut CChecksItem) {
 /// The item pointer must not be null.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_item_debug(item: *const CChecksItem) -> crate::CChecksString {
-    let result = format!("{:?}", (*item));
+    let result = format!("Item({:?})", (*item));
 
     crate::CChecksString::new(result)
 }
