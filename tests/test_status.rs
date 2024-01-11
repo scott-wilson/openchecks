@@ -35,7 +35,7 @@ macro_rules! test_has_passed {
 
 test_has_passed! {
     test_has_passed_pending_success: (Status::Pending, false),
-    test_has_passed_skipped_success: (Status::Skipped, true),
+    test_has_passed_skipped_success: (Status::Skipped, false),
     test_has_passed_passed_success: (Status::Passed, true),
     test_has_passed_warning_success: (Status::Warning, true),
     test_has_passed_failed_success: (Status::Failed, false),

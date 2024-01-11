@@ -4,7 +4,23 @@
 ///
 /// The check pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_run(check: &crate::CChecksBaseCheck) -> crate::CChecksCheckResult {
+pub unsafe extern "C" fn cchecks_run(
+    check: *const crate::CChecksBaseCheck,
+) -> crate::CChecksCheckResult {
+    let check = match unsafe { check.as_ref() } {
+        Some(c) => c,
+        None => {
+            return checks::CheckResult::new(
+                checks::Status::SystemError,
+                "cchecks_run received a null pointer.",
+                None,
+                false,
+                false,
+                Some(checks::Error::new("cchecks_run received a null pointer.")),
+            )
+            .into()
+        }
+    };
     let result = checks::run(check);
     crate::CChecksCheckResult::from(result)
 }
@@ -27,9 +43,25 @@ pub extern "C" fn cchecks_run(check: &crate::CChecksBaseCheck) -> crate::CChecks
 ///
 /// The check pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_auto_fix(
-    check: &mut crate::CChecksBaseCheck,
+pub unsafe extern "C" fn cchecks_auto_fix(
+    check: *mut crate::CChecksBaseCheck,
 ) -> crate::CChecksCheckResult {
+    let check = match unsafe { check.as_mut() } {
+        Some(c) => c,
+        None => {
+            return checks::CheckResult::new(
+                checks::Status::SystemError,
+                "cchecks_auto_fix received a null pointer.",
+                None,
+                false,
+                false,
+                Some(checks::Error::new(
+                    "cchecks_auto_fix received a null pointer.",
+                )),
+            )
+            .into()
+        }
+    };
     let result = checks::auto_fix(check);
     crate::CChecksCheckResult::from(result)
 }

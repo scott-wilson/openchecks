@@ -1,24 +1,73 @@
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
 
-[tool.poetry]
+[project]
 name = "pychecks"
-version = "0.1.0"
 description = "A simple checks framework"
-authors = ["Scott Wilson <scott@propersquid.com>"]
+authors = [{ name = "Scott Wilson", email = "scott@propersquid.com" }]
 license = "Apache-2.0"
 readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
 
-[tool.poetry.dependencies]
-python = "^3.7"
+[project.optional-dependencies]
+build = ["maturin ~= 1.4"]
+test = [
+    "black ~= 23.12; python_version >= \"3.8\"",
+    "black ~= 22.12; python_version == \"3.7\"",
+    "hypothesis ~= 6.79",
+    "pytest ~= 7.4",
+    "pytest-asyncio ~= 0.21",
+    "pytest-cov ~= 4.1",
+    "pytest-xdist ~= 3.5",
+    "ruff ~= 0.1",
+]
+docs = ["myst-parser ~= 2.0", "sphinx ~= 7.2", "sphinx-rtd-theme ~= 2.0"]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.2.0"
-pytest-xdist = "^3.0.2"
-pytest-cov = "^4.0.0"
-hypothesis = "^6.57.1"
-sphinx = "^5.3.0"
-sphinx-rtd-theme = "^1.1.1"
-myst-parser = "^0.18.1"
-pytest-asyncio = "^0.20.3"
+[tool.maturin]
+features = ["pyo3/extension-module"]
+
+[tool.ruff]
+select = ["ANN", "BLE", "D", "E", "F", "I", "N", "PT", "S", "YTT"]
+line-length = 88
+ignore = ["ANN101", "ANN102"]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+# Start off with these
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+
+# Getting these passing should be easy
+strict_equality = true
+strict_concatenate = true
+
+# Strongly recommend enabling this one as soon as you can
+check_untyped_defs = true
+
+# These shouldn't be too much additional work, but may be tricky to
+# get passing if you use a lot of untyped libraries
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+
+# These next few are various gradations of forcing use of type annotations
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+
+# This one isn't too hard to get passing, but return on investment is lower
+no_implicit_reexport = true
+
+# This one can be tricky to get passing if you use a lot of untyped libraries
+warn_return_any = true

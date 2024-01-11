@@ -1,0 +1,86 @@
+name: Python Test Suite
+
+on:
+  push:
+    # paths:
+    #   - .github/workflows/test_suite_python.yml
+    #   - bindings/python/conftest.py
+    #   - bindings/python/pychecks/**
+    #   - bindings/python/pyproject.toml
+    #   - bindings/python/src/**
+    #   - bindings/python/tests/**
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/test_suite_python.yml
+  #     - bindings/python/conftest.py
+  #     - bindings/python/pychecks/**
+  #     - bindings/python/pyproject.toml
+  #     - bindings/python/src/**
+  #     - bindings/python/tests/**
+
+jobs:
+  test:
+    name: Python test
+    defaults:
+      run:
+        working-directory: bindings/python
+        shell: bash
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3" # Latest version
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Setup Python ${{matrix.python-version}}
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+          cache: 'pip'
+      - name: Cache virtualenv
+        uses: actions/cache@v3
+        with:
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
+          path: .venv
+      - name: Setup virtual environment
+        run: |
+          python -m venv .venv
+
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            source .venv/Scripts/activate
+          else
+            source .venv/bin/activate
+          fi
+      - name: Install dependencies
+        run: python -m pip install .[test]
+      - name: Lint with Ruff
+        run: |
+          python -m ruff --output-format=github .
+      - name: Lint with Black
+        run: |
+          python -m black --check .
+      - name: Build Rust
+        uses: PyO3/maturin-action@v1
+        with:
+          command: develop
+          sccache: 'true'
+          manylinux: auto
+          working-directory: bindings/python
+      - name: Run tests
+        run: |
+          python -m pytest --hypothesis-profile default -n=auto tests/

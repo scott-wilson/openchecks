@@ -29,20 +29,20 @@ pub struct CChecksString {
     /// The destroy function should be called once at most.
     ///
     /// The destroy function should handle if the string pointer is null.
-    pub destroy_fn: extern "C" fn(&mut Self) -> (),
+    pub destroy_fn: unsafe extern "C" fn(*mut Self) -> (),
 }
 
 impl Drop for CChecksString {
     fn drop(&mut self) {
-        (self.destroy_fn)(self)
+        unsafe { (self.destroy_fn)(self) }
     }
 }
 
 impl CChecksString {
     pub(crate) fn new<T: AsRef<str>>(text: T) -> Self {
-        extern "C" fn destroy_fn(string: &mut CChecksString) {
-            if !string.string.is_null() {
-                unsafe { CString::from_raw(string.string) };
+        unsafe extern "C" fn destroy_fn(string: *mut CChecksString) {
+            if !(*string).string.is_null() {
+                unsafe { CString::from_raw((*string).string) };
             }
         }
 
@@ -81,7 +81,7 @@ pub struct CChecksStringView {
     /// # Safety
     ///
     /// The string must not outlive the container that owns it.
-    string: *const c_char,
+    pub string: *const c_char,
 }
 
 impl CChecksStringView {

@@ -19,7 +19,7 @@ pub struct CChecksItems {
     /// The destroy function is responsible for freeing the pointer once the
     /// items have been destroyed. Trying to destroy the items in this function
     /// will cause double frees.
-    pub destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+    pub destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 }
 
 impl Drop for CChecksItems {
@@ -63,7 +63,7 @@ impl Clone for CChecksItems {
                 let ptr = unsafe { libc::malloc(size) };
                 let ptr = ptr.cast::<u8>();
 
-                for (index, item) in cchecks_items_iterator_new(self).enumerate() {
+                for (index, item) in unsafe { cchecks_items_iterator_new(self) }.enumerate() {
                     let item_ptr = unsafe { ptr.add(index).cast::<crate::CChecksItem>() };
                     unsafe {
                         cchecks_item_clone(
@@ -100,11 +100,11 @@ impl Clone for CChecksItems {
 /// The destroy function must only free the items pointer. Trying to destroy the
 /// items will cause a double free error.
 #[no_mangle]
-pub extern "C" fn cchecks_items_new(
+pub unsafe extern "C" fn cchecks_items_new(
     items: *mut crate::CChecksItem,
     item_size: usize,
     length: usize,
-    destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+    destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksItems {
     CChecksItems {
         ptr: items,
@@ -120,7 +120,9 @@ pub extern "C" fn cchecks_items_new(
 ///
 /// The items pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_items_iterator_new(items: &CChecksItems) -> CChecksItemsIterator {
+pub unsafe extern "C" fn cchecks_items_iterator_new(
+    items: *const CChecksItems,
+) -> CChecksItemsIterator {
     CChecksItemsIterator { items, index: 0 }
 }
 
@@ -172,7 +174,7 @@ impl CChecksItemsIterator {
 ///
 /// The iterator pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_item_iterator_next(
+pub unsafe extern "C" fn cchecks_item_iterator_next(
     iterator: *mut CChecksItemsIterator,
 ) -> *const crate::CChecksItem {
     unsafe {
@@ -190,7 +192,7 @@ pub extern "C" fn cchecks_item_iterator_next(
 ///
 /// The iterator pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_item_iterator_item(
+pub unsafe extern "C" fn cchecks_item_iterator_item(
     iterator: *mut CChecksItemsIterator,
 ) -> *const crate::CChecksItem {
     unsafe {
@@ -207,7 +209,9 @@ pub extern "C" fn cchecks_item_iterator_item(
 ///
 /// The iterator pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_item_iterator_is_done(iterator: *const CChecksItemsIterator) -> bool {
+pub unsafe extern "C" fn cchecks_item_iterator_is_done(
+    iterator: *const CChecksItemsIterator,
+) -> bool {
     unsafe {
         let iterator = &(*iterator);
         let items = &(*iterator.items);

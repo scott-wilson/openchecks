@@ -35,14 +35,14 @@ use std::{
 ///   interface to let the user know how long it took to run the auto-fix.
 #[repr(C)]
 pub struct CChecksCheckResult {
-    pub(crate) status: crate::CChecksStatus,
-    pub(crate) message: *mut c_char,
-    pub(crate) items: *mut crate::CChecksItems,
-    pub(crate) can_fix: bool,
-    pub(crate) can_skip: bool,
-    pub(crate) error: *mut c_char,
-    pub(crate) check_duration: f64,
-    pub(crate) fix_duration: f64,
+    pub status: crate::CChecksStatus,
+    pub message: *mut c_char,
+    pub items: *mut crate::CChecksItems,
+    pub can_fix: bool,
+    pub can_skip: bool,
+    pub error: *mut c_char,
+    pub check_duration: f64,
+    pub fix_duration: f64,
 }
 
 impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItems>>
@@ -151,7 +151,9 @@ impl Drop for CChecksCheckResult {
             }
         }
         if !self.items.is_null() {
-            unsafe { self.items.drop_in_place() }
+            unsafe {
+                drop(Box::from_raw(self.items));
+            }
         }
         if !self.error.is_null() {
             unsafe {
@@ -173,7 +175,7 @@ impl CChecksCheckResult {
         can_fix: bool,
         can_skip: bool,
         error: *const c_char,
-        items_destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+        items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
     ) -> Self {
         let message = {
             if message.is_null() {
@@ -185,12 +187,9 @@ impl CChecksCheckResult {
         let items = if items.is_null() {
             null_mut()
         } else {
-            let items = Box::new(crate::cchecks_items_new(
-                items,
-                item_size,
-                item_count,
-                items_destroy_fn,
-            ));
+            let items = Box::new(unsafe {
+                crate::cchecks_items_new(items, item_size, item_count, items_destroy_fn)
+            });
             Box::into_raw(items)
         };
         let error = {
@@ -233,7 +232,7 @@ impl CChecksCheckResult {
 /// `items_destroy_fn` must not destroy the items before it destroys the item
 /// array, otherwise that will cause a double free.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_new(
+pub unsafe extern "C" fn cchecks_check_result_new(
     status: crate::CChecksStatus,
     message: *const c_char,
     items: *mut crate::CChecksItem,
@@ -242,7 +241,7 @@ pub extern "C" fn cchecks_check_result_new(
     can_fix: bool,
     can_skip: bool,
     error: *const c_char,
-    items_destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         status,
@@ -270,14 +269,14 @@ pub extern "C" fn cchecks_check_result_new(
 /// `items_destroy_fn` must not destroy the items before it destroys the item
 /// array, otherwise that will cause a double free.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_passed(
+pub unsafe extern "C" fn cchecks_check_result_passed(
     message: *const c_char,
     items: *mut crate::CChecksItem,
     item_size: usize,
     item_count: usize,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusPassed,
@@ -305,14 +304,14 @@ pub extern "C" fn cchecks_check_result_passed(
 /// `items_destroy_fn` must not destroy the items before it destroys the item
 /// array, otherwise that will cause a double free.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_skipped(
+pub unsafe extern "C" fn cchecks_check_result_skipped(
     message: *const c_char,
     items: *mut crate::CChecksItem,
     item_size: usize,
     item_count: usize,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusSkipped,
@@ -344,14 +343,14 @@ pub extern "C" fn cchecks_check_result_skipped(
 /// `items_destroy_fn` must not destroy the items before it destroys the item
 /// array, otherwise that will cause a double free.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_warning(
+pub unsafe extern "C" fn cchecks_check_result_warning(
     message: *const c_char,
     items: *mut crate::CChecksItem,
     item_size: usize,
     item_count: usize,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusWarning,
@@ -383,14 +382,14 @@ pub extern "C" fn cchecks_check_result_warning(
 /// `items_destroy_fn` must not destroy the items before it destroys the item
 /// array, otherwise that will cause a double free.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_failed(
+pub unsafe extern "C" fn cchecks_check_result_failed(
     message: *const c_char,
     items: *mut crate::CChecksItem,
     item_size: usize,
     item_count: usize,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: extern "C" fn(*mut crate::CChecksItem) -> (),
+    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusFailed,
@@ -421,8 +420,10 @@ pub unsafe extern "C" fn cchecks_check_result_destroy(result: *mut CChecksCheckR
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_status(result: &CChecksCheckResult) -> crate::CChecksStatus {
-    result.status
+pub unsafe extern "C" fn cchecks_check_result_status(
+    result: *const CChecksCheckResult,
+) -> crate::CChecksStatus {
+    (*result).status
 }
 
 /// A human readable message for the result.
@@ -434,10 +435,10 @@ pub extern "C" fn cchecks_check_result_status(result: &CChecksCheckResult) -> cr
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_message(
-    result: &CChecksCheckResult,
+pub unsafe extern "C" fn cchecks_check_result_message(
+    result: *const CChecksCheckResult,
 ) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr(result.message)
+    crate::CChecksStringView::from_ptr((*result).message)
 }
 
 /// The items that caused the result.
@@ -446,7 +447,7 @@ pub extern "C" fn cchecks_check_result_message(
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_items(
+pub unsafe extern "C" fn cchecks_check_result_items(
     result: &CChecksCheckResult,
 ) -> *const crate::CChecksItems {
     result.items
@@ -461,10 +462,10 @@ pub extern "C" fn cchecks_check_result_items(
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_can_fix(result: &CChecksCheckResult) -> bool {
-    match result.status {
+pub unsafe extern "C" fn cchecks_check_result_can_fix(result: *const CChecksCheckResult) -> bool {
+    match (*result).status {
         crate::CChecksStatus::CChecksStatusSystemError => false,
-        _ => result.can_fix,
+        _ => (*result).can_fix,
     }
 }
 
@@ -482,10 +483,10 @@ pub extern "C" fn cchecks_check_result_can_fix(result: &CChecksCheckResult) -> b
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_can_skip(result: &CChecksCheckResult) -> bool {
-    match result.status {
+pub unsafe extern "C" fn cchecks_check_result_can_skip(result: *const CChecksCheckResult) -> bool {
+    match (*result).status {
         crate::CChecksStatus::CChecksStatusSystemError => false,
-        _ => result.can_skip,
+        _ => (*result).can_skip,
     }
 }
 
@@ -498,10 +499,10 @@ pub extern "C" fn cchecks_check_result_can_skip(result: &CChecksCheckResult) -> 
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_error(
-    result: &CChecksCheckResult,
+pub unsafe extern "C" fn cchecks_check_result_error(
+    result: *const CChecksCheckResult,
 ) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr(result.error)
+    crate::CChecksStringView::from_ptr((*result).error)
 }
 
 /// The duration of a check.
@@ -514,8 +515,10 @@ pub extern "C" fn cchecks_check_result_error(
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_check_duration(result: &CChecksCheckResult) -> f64 {
-    result.check_duration
+pub unsafe extern "C" fn cchecks_check_result_check_duration(
+    result: *const CChecksCheckResult,
+) -> f64 {
+    (*result).check_duration
 }
 
 /// The duration of an auto-fix.
@@ -528,6 +531,8 @@ pub extern "C" fn cchecks_check_result_check_duration(result: &CChecksCheckResul
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub extern "C" fn cchecks_check_result_fix_duration(result: &CChecksCheckResult) -> f64 {
-    result.fix_duration
+pub unsafe extern "C" fn cchecks_check_result_fix_duration(
+    result: *const CChecksCheckResult,
+) -> f64 {
+    (*result).fix_duration
 }
