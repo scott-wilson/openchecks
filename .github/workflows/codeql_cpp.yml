@@ -15,8 +15,8 @@ on:
   push:
     branches: ["main"]
     paths:
-      - .github/workflows/*_c.yml
-      - bindings/c/**
+      - .github/workflows/*_cpp.yml
+      - bindings/cpp/**
       - src/**
       - Cargo.lock
       - Cargo.toml
@@ -26,8 +26,8 @@ on:
     # The branches below must be a subset of the branches above
     branches: ["main"]
     paths:
-      - .github/workflows/*_c.yml
-      - bindings/c/**
+      - .github/workflows/*_cpp.yml
+      - bindings/cpp/**
       - src/**
       - Cargo.lock
       - Cargo.toml
@@ -37,11 +37,11 @@ on:
     - cron: "0 0 * * 1"
 
 jobs:
-  analyze_c:
-    name: Analyze C
+  analyze_cpp:
+    name: Analyze C++
     defaults:
       run:
-        working-directory: bindings/c
+        working-directory: bindings/cpp
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -66,12 +66,12 @@ jobs:
       - name: Make Build Directory
         run: mkdir -p build
       - name: CMake Configure
-        working-directory: bindings/c/build
+        working-directory: bindings/cpp/build
         run: |
           # Make cmocka a static dependency when testing.
-          cmake ../ -DBUILD_SHARED_LIBS=OFF -DBUILD_CCHECKS_TESTS=ON
+          cmake ../ -DBUILD_SHARED_LIBS=OFF -DBUILD_CPPCHECKS_TESTS=ON
       - name: CMake Build
-        working-directory: bindings/c/build
+        working-directory: bindings/cpp/build
         run: |
           cmake --build . --config=Debug
 
