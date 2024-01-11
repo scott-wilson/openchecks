@@ -43,4 +43,4 @@ clean-docs:
 
 .PHONY: build-docs
 build-docs: install clean-docs
-	doxygen docs/Doxyfile; poetry run sphinx-build -b html docs/source docs/build
+	doxygen docs/Doxyfile; python -m sphinx-build -b html docs/source docs/build
