@@ -1,4 +1,4 @@
-name: C Test Suite
+name: C++ Test Suite
 
 on:
   push:

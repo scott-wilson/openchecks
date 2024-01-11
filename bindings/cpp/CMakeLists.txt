@@ -25,11 +25,13 @@ set(CHECKS_HEADERS
     ${PROJECT_SOURCE_DIR}/include/cppchecks/runner.h
     ${PROJECT_SOURCE_DIR}/include/cppchecks/status.h
 )
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
+set(CHECKS_SRC
+    ${PROJECT_SOURCE_DIR}/src/core.cpp
+)
 
 add_library(${CMAKE_PROJECT_NAME}
     ${CHECKS_HEADERS}
+    ${CHECKS_SRC}
 )
 
 set(CCHECKS_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../c)
@@ -43,9 +45,12 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${CMAKE_PROJECT_NAME} cchecks)
 
+install(FILES ${CHECKS_HEADERS} DESTINATION include/cppchecks)
+install(TARGETS ${CMAKE_PROJECT_NAME} EXPORT cppchecks DESTINATION lib)
+
 if (BUILD_CPPCHECKS_TESTS)
     enable_testing()
-    add_subdirectory(googletest)
+    add_subdirectory(googletest EXCLUDE_FROM_ALL)
     # For Windows: Prevent overriding the parent project's compiler/linker settings
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     add_subdirectory(tests)
