@@ -2,21 +2,23 @@ name: Python Test Suite
 
 on:
   push:
-    # paths:
-    #   - .github/workflows/test_suite_python.yml
-    #   - bindings/python/conftest.py
-    #   - bindings/python/pychecks/**
-    #   - bindings/python/pyproject.toml
-    #   - bindings/python/src/**
-    #   - bindings/python/tests/**
-  # pull_request:
-  #   paths:
-  #     - .github/workflows/test_suite_python.yml
-  #     - bindings/python/conftest.py
-  #     - bindings/python/pychecks/**
-  #     - bindings/python/pyproject.toml
-  #     - bindings/python/src/**
-  #     - bindings/python/tests/**
+    paths:
+      - .github/workflows/*_python.yml
+      - bindings/python/**
+      - src/**
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+      - .gitmodules
+  pull_request:
+    paths:
+      - .github/workflows/*_python.yml
+      - bindings/python/**
+      - src/**
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+      - .gitmodules
 
 jobs:
   test:

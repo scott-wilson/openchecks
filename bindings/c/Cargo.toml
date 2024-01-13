@@ -18,8 +18,8 @@ panic = "abort"
 
 [dependencies]
 checks = { path = "../../" }
-bitflags = "2.0.0"
-libc = "0.2.138"
+bitflags = "2.4.1"
+libc = "0.2.152"
 
 [build-dependencies]
 cbindgen = "0.26.0"

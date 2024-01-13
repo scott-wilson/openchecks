@@ -158,7 +158,7 @@ impl std::fmt::Debug for CChecksItem {
         unsafe {
             let c_str = CStr::from_ptr(c_display.string);
             let result = match c_str.to_str() {
-                Ok(s) => write!(f, "Item({})", s),
+                Ok(s) => write!(f, "{}", s),
                 Err(_) => Err(std::fmt::Error),
             };
 
@@ -260,7 +260,7 @@ pub unsafe extern "C" fn cchecks_item_destroy(item: *mut CChecksItem) {
 /// The item pointer must not be null.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_item_debug(item: *const CChecksItem) -> crate::CChecksString {
-    let result = format!("{:?}", (*item));
+    let result = format!("Item({:?})", (*item));
 
     crate::CChecksString::new(result)
 }

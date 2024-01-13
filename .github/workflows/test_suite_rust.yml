@@ -3,7 +3,7 @@ name: Rust Test Suite
 on:
   push:
     paths:
-      - .github/workflows/test_suite_rust.yml
+      - .github/workflows/*_rust.yml
       - src/**
       - tests/**
       - Cargo.lock
@@ -11,7 +11,7 @@ on:
       - deny.toml
   pull_request:
     paths:
-      - .github/workflows/test_suite_rust.yml
+      - .github/workflows/*_rust.yml
       - src/**
       - tests/**
       - Cargo.lock
