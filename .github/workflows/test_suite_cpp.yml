@@ -64,6 +64,13 @@ jobs:
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_result
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_runner
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_status
+      - name: Run LCov
+        working-directory: bindings/cpp/build
+        run: |
+          sudo apt update
+          sudo apt install -y lcov
+          lcov -c -d . -o coverage.info
       - uses: codecov/codecov-action@v3
         with:
           flags: lang-cpp
+          files: build/coverage.info
