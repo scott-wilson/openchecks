@@ -26,12 +26,9 @@ namespace CPPCHECKS_NAMESPACE
         {
             CChecksStatus cstatus = status.c_status();
             const char *cmessage = message.c_str();
-            CChecksItem *citems = nullptr;
             size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = 0;
+            size_t item_count = items.size();
             const char *cerror = error.c_str();
-
-            item_count = items.size();
 
             _result = cchecks_check_result_new(cstatus, cmessage, (CChecksItem *)_items.data(), item_size, item_count, can_fix, can_skip, cerror, items_destroy_fn);
         }
@@ -39,11 +36,8 @@ namespace CPPCHECKS_NAMESPACE
         static CheckResult passed(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
             const char *cmessage = message.c_str();
-            CChecksItem *citems = nullptr;
             size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = 0;
-
-            item_count = items.size();
+            size_t item_count = items.size();
 
             CheckResult<T> result;
             result._items = items;
@@ -55,9 +49,8 @@ namespace CPPCHECKS_NAMESPACE
         static CheckResult skipped(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
             const char *cmessage = message.c_str();
-            CChecksItem *citems = nullptr;
             size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = 0;
+            size_t item_count = items.size();
 
             if (items)
             {
@@ -74,9 +67,8 @@ namespace CPPCHECKS_NAMESPACE
         static CheckResult warning(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
             const char *cmessage = message.c_str();
-            CChecksItem *citems = nullptr;
             size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = 0;
+            size_t item_count = items.size();
 
             if (items)
             {
@@ -93,9 +85,8 @@ namespace CPPCHECKS_NAMESPACE
         static CheckResult failed(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
             const char *cmessage = message.c_str();
-            CChecksItem *citems = nullptr;
             size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = 0;
+            size_t item_count = items.size();
 
             if (items)
             {
@@ -130,7 +121,8 @@ namespace CPPCHECKS_NAMESPACE
             const CChecksItems *citems = cchecks_check_result_items(&_result);
 
             const CChecksItem *ptr = citems->ptr;
-            return CPPCHECKS_NAMESPACE::Items<T>((const CPPCHECKS_NAMESPACE::Item<T> *)ptr, citems->length);
+            auto items = CPPCHECKS_NAMESPACE::Items<T>((const CPPCHECKS_NAMESPACE::Item<T> *)ptr, citems->length);
+            return items;
         }
 
         bool can_fix() const

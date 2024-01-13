@@ -63,6 +63,13 @@ namespace CPPCHECKS_NAMESPACE
 
         Items(const CPPCHECKS_NAMESPACE::Item<T> *items, size_t count) : _items(items), _count(count) {}
 
+        const CPPCHECKS_NAMESPACE::Item<T> operator[](size_t index) const
+        {
+            return _items[index];
+        }
+
+        size_t size() const noexcept { return _count; }
+
         iterator begin()
         {
             return Items<T>::iterator(_items);
