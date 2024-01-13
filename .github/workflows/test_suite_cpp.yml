@@ -61,6 +61,7 @@ jobs:
         working-directory: bindings/cpp/build
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
+          sudo apt update
           sudo apt install -y valgrind
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_check
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_item
