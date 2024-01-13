@@ -35,69 +35,22 @@ namespace CPPCHECKS_NAMESPACE
 
         static CheckResult passed(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
-            const char *cmessage = message.c_str();
-            size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = items.size();
-
-            CheckResult<T> result;
-            result._items = items;
-            result._result = cchecks_check_result_passed(cmessage, (CChecksItem *)result._items.data(), item_size, item_count, can_fix, can_skip, items_destroy_fn);
-
-            return result;
+            return CheckResult{CPPCHECKS_NAMESPACE::Status::Passed, message, items, can_fix, can_skip, ""};
         }
 
         static CheckResult skipped(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
-            const char *cmessage = message.c_str();
-            size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = items.size();
-
-            if (items)
-            {
-                item_count = items.value().size();
-            }
-
-            CheckResult<T> result;
-            result._items = items;
-            result._result = cchecks_check_result_skipped(cmessage, (CChecksItem *)result._items.data(), item_size, item_count, can_fix, can_skip, items_destroy_fn);
-
-            return result;
+            return CheckResult{CPPCHECKS_NAMESPACE::Status::Skipped, message, items, can_fix, can_skip, ""};
         }
 
         static CheckResult warning(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
-            const char *cmessage = message.c_str();
-            size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = items.size();
-
-            if (items)
-            {
-                item_count = items.value().size();
-            }
-
-            CheckResult<T> result;
-            result._items = items;
-            result._result = cchecks_check_result_warning(cmessage, (CChecksItem *)result._items.data(), item_size, item_count, can_fix, can_skip, items_destroy_fn);
-
-            return result;
+            return CheckResult{CPPCHECKS_NAMESPACE::Status::Warning, message, items, can_fix, can_skip, ""};
         }
 
         static CheckResult failed(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
         {
-            const char *cmessage = message.c_str();
-            size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = items.size();
-
-            if (items)
-            {
-                item_count = items.value().size();
-            }
-
-            CheckResult<T> result;
-            result._items = items;
-            result._result = cchecks_check_result_failed(cmessage, (CChecksItem *)result._items.data(), item_size, item_count, can_fix, can_skip, items_destroy_fn);
-
-            return result;
+            return CheckResult{CPPCHECKS_NAMESPACE::Status::Failed, message, items, can_fix, can_skip, ""};
         }
 
         virtual ~CheckResult()

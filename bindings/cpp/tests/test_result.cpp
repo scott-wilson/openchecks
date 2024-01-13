@@ -81,11 +81,11 @@ INSTANTIATE_TEST_SUITE_P(
 );
 // clang-format on
 
-class StaticResultParameterizedTestFixture : public ::testing::TestWithParam<std::tuple<std::string, std::vector<IntItem>, bool, bool>>
+class PassedResultParameterizedTestFixture : public ::testing::TestWithParam<std::tuple<std::string, std::vector<IntItem>, bool, bool>>
 {
 };
 
-TEST_P(StaticResultParameterizedTestFixture, ResultPassedSuccess)
+TEST_P(PassedResultParameterizedTestFixture, ResultPassedSuccess)
 {
     CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Passed;
     std::string message = std::get<0>(GetParam());
@@ -102,7 +102,100 @@ TEST_P(StaticResultParameterizedTestFixture, ResultPassedSuccess)
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
     CheckResult,
-    StaticResultParameterizedTestFixture,
+    PassedResultParameterizedTestFixture,
+    ::testing::Combine(
+        ::testing::Values(std::string("message")),
+        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1, ""), IntItem(2, "")}),
+        ::testing::Bool(),
+        ::testing::Bool()
+    )
+);
+// clang-format on
+
+class SkippedResultParameterizedTestFixture : public ::testing::TestWithParam<std::tuple<std::string, std::vector<IntItem>, bool, bool>>
+{
+};
+
+TEST_P(SkippedResultParameterizedTestFixture, ResultSkippedSuccess)
+{
+    CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Skipped;
+    std::string message = std::get<0>(GetParam());
+    std::vector<IntItem> items = std::get<1>(GetParam());
+    bool can_fix = std::get<2>(GetParam());
+    bool can_skip = std::get<3>(GetParam());
+    std::string error = "";
+
+    IntResult result = IntResult::skipped(message, items, can_fix, can_skip);
+
+    validate_result(result, status, message, items, can_fix, can_skip, error);
+}
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    CheckResult,
+    SkippedResultParameterizedTestFixture,
+    ::testing::Combine(
+        ::testing::Values(std::string("message")),
+        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1, ""), IntItem(2, "")}),
+        ::testing::Bool(),
+        ::testing::Bool()
+    )
+);
+// clang-format on
+
+class WarningResultParameterizedTestFixture : public ::testing::TestWithParam<std::tuple<std::string, std::vector<IntItem>, bool, bool>>
+{
+};
+
+TEST_P(WarningResultParameterizedTestFixture, ResultWarningSuccess)
+{
+    CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Warning;
+    std::string message = std::get<0>(GetParam());
+    std::vector<IntItem> items = std::get<1>(GetParam());
+    bool can_fix = std::get<2>(GetParam());
+    bool can_skip = std::get<3>(GetParam());
+    std::string error = "";
+
+    IntResult result = IntResult::warning(message, items, can_fix, can_skip);
+
+    validate_result(result, status, message, items, can_fix, can_skip, error);
+}
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    CheckResult,
+    WarningResultParameterizedTestFixture,
+    ::testing::Combine(
+        ::testing::Values(std::string("message")),
+        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1, ""), IntItem(2, "")}),
+        ::testing::Bool(),
+        ::testing::Bool()
+    )
+);
+// clang-format on
+
+class FailedResultParameterizedTestFixture : public ::testing::TestWithParam<std::tuple<std::string, std::vector<IntItem>, bool, bool>>
+{
+};
+
+TEST_P(FailedResultParameterizedTestFixture, ResultFailedSuccess)
+{
+    CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Failed;
+    std::string message = std::get<0>(GetParam());
+    std::vector<IntItem> items = std::get<1>(GetParam());
+    bool can_fix = std::get<2>(GetParam());
+    bool can_skip = std::get<3>(GetParam());
+    std::string error = "";
+
+    IntResult result = IntResult::failed(message, items, can_fix, can_skip);
+
+    validate_result(result, status, message, items, can_fix, can_skip, error);
+}
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    CheckResult,
+    FailedResultParameterizedTestFixture,
     ::testing::Combine(
         ::testing::Values(std::string("message")),
         ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1, ""), IntItem(2, "")}),
