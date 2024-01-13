@@ -70,5 +70,4 @@ jobs:
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_status
       - uses: codecov/codecov-action@v3
         with:
-          files: lcov.info
           flags: lang-c

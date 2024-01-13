@@ -39,10 +39,6 @@ jobs:
           submodules: recursive
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
-      - run: cargo clippy
-      - run: cargo llvm-cov --all-features --lcov --output-path lcov.info
       - name: Make Build Directory
         run: mkdir -p build
       - name: CMake Configure
@@ -70,5 +66,4 @@ jobs:
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_status
       - uses: codecov/codecov-action@v3
         with:
-          files: lcov.info
           flags: lang-cpp
