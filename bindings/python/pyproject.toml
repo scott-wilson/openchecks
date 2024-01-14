@@ -45,6 +45,11 @@ extend-exclude = ["pychecks/tracing_subscriber"]
 [tool.ruff.pydocstyle]
 convention = "google"
 
+[tool.black]
+extend-exclude = """
+pychecks/tracing_subscriber
+"""
+
 [tool.mypy]
 exclude = ["pychecks/tracing_subscriber"]
 # Start off with these
