@@ -44,8 +44,15 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
-      - run: cargo clippy
-      - run: cargo llvm-cov --all-features --lcov --output-path lcov.info
+      - name: Run Cargo Clippy
+        run: cargo clippy
+      - name: Run Cargo Fmt
+        run: cargo fmt --check
+      - name: Run Cargo Deny
+        uses: EmbarkStudios/cargo-deny-action@v1
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - name: Generate coverage report from Rust tests
+        run: cargo llvm-cov --all-features --lcov --output-path lcov.info
       - name: Make Build Directory
         run: mkdir -p build
       - name: CMake Configure
