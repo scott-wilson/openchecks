@@ -1,0 +1,7 @@
+# The following are all type aliases.
+pychecks.tracing_subscriber.ExportConfig
+pychecks.tracing_subscriber.TracingConfig
+pychecks.tracing_subscriber.layers.Config
+pychecks.tracing_subscriber.layers.otel_otlp.ResourceValue
+pychecks.tracing_subscriber.layers.otel_otlp.ResourceValueArray
+pychecks.tracing_subscriber.layers.otel_otlp.Sampler

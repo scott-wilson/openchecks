@@ -24,6 +24,7 @@ impl Item for TestItem {
     }
 }
 
+#[derive(Debug)]
 struct TestCheckNoAutoFix {
     value: u8,
 }
@@ -65,6 +66,7 @@ impl Check for TestCheckNoAutoFix {
     }
 }
 
+#[derive(Debug)]
 struct TestCheckAutoFix {
     value: u8,
 }
@@ -111,6 +113,7 @@ impl Check for TestCheckAutoFix {
     }
 }
 
+#[derive(Debug)]
 struct TestCheckAutoFixNoFix {
     value: u8,
 }
@@ -156,6 +159,7 @@ impl Check for TestCheckAutoFixNoFix {
     }
 }
 
+#[derive(Debug)]
 struct TestCheckAutoFixError {
     value: u8,
 }
@@ -201,6 +205,7 @@ impl Check for TestCheckAutoFixError {
     }
 }
 
+#[derive(Debug)]
 struct TestCheckAutoFixNotImplemented {
     value: u8,
 }
@@ -242,6 +247,7 @@ impl Check for TestCheckAutoFixNotImplemented {
     }
 }
 
+#[derive(Debug)]
 struct TestCheckAutoFixNoneHint {
     value: u8,
 }
@@ -287,6 +293,7 @@ impl Check for TestCheckAutoFixNoneHint {
     }
 }
 
+#[derive(Debug)]
 struct AsyncTestCheckNoAutoFix {
     value: u8,
 }
@@ -329,6 +336,7 @@ impl AsyncCheck for AsyncTestCheckNoAutoFix {
     }
 }
 
+#[derive(Debug)]
 struct AsyncTestCheckAutoFix {
     value: u8,
 }
@@ -376,6 +384,7 @@ impl AsyncCheck for AsyncTestCheckAutoFix {
     }
 }
 
+#[derive(Debug)]
 struct AsyncTestCheckAutoFixNoFix {
     value: u8,
 }
@@ -422,6 +431,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixNoFix {
     }
 }
 
+#[derive(Debug)]
 struct AsyncTestCheckAutoFixError {
     value: u8,
 }
@@ -468,6 +478,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixError {
     }
 }
 
+#[derive(Debug)]
 struct AsyncTestCheckAutoFixNotImplemented {
     value: u8,
 }
@@ -510,6 +521,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixNotImplemented {
     }
 }
 
+#[derive(Debug)]
 struct AsyncTestCheckAutoFixNoneHint {
     value: u8,
 }

@@ -17,7 +17,10 @@ classifiers = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-build = ["maturin ~= 1.4"]
+build = [
+    "maturin ~= 1.4; platform_system != \"Linux\"",
+    "maturin[patchelf] ~= 1.4; platform_system == \"Linux\"",
+]
 test = [
     "black ~= 23.12; python_version >= \"3.8\"",
     "black ~= 22.12; python_version == \"3.7\"",
@@ -37,11 +40,13 @@ features = ["pyo3/extension-module"]
 select = ["ANN", "BLE", "D", "E", "F", "I", "N", "PT", "S", "YTT"]
 line-length = 88
 ignore = ["ANN101", "ANN102"]
+extend-exclude = ["pychecks/tracing_subscriber"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
 
 [tool.mypy]
+exclude = ["pychecks/tracing_subscriber"]
 # Start off with these
 warn_unused_configs = true
 warn_redundant_casts = true

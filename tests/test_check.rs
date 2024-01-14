@@ -23,9 +23,8 @@ impl Item for TestItem {
 
 #[test]
 fn test_check_metadata_hint_success() {
-    struct TestCheck {
-        value: u8,
-    }
+    #[derive(Debug)]
+    struct TestCheck;
 
     impl CheckMetadata for TestCheck {
         fn title(&self) -> Cow<str> {
@@ -37,16 +36,15 @@ fn test_check_metadata_hint_success() {
         }
     }
 
-    let check = TestCheck { value: 1 };
+    let check = TestCheck;
 
     assert_eq!(check.hint(), CheckHint::all());
 }
 
 #[test]
 fn test_check_auto_fix_failed_not_implemented() {
-    struct TestCheck {
-        value: u8,
-    }
+    #[derive(Debug)]
+    struct TestCheck;
 
     impl CheckMetadata for TestCheck {
         fn title(&self) -> Cow<str> {
@@ -71,16 +69,15 @@ fn test_check_auto_fix_failed_not_implemented() {
         }
     }
 
-    let mut check = TestCheck { value: 1 };
+    let mut check = TestCheck;
 
     assert!(check.auto_fix().is_err());
 }
 
 #[tokio::test]
 async fn test_async_check_async_auto_fix_failed_not_implemented() {
-    struct TestCheck {
-        value: u8,
-    }
+    #[derive(Debug)]
+    struct TestCheck;
 
     impl CheckMetadata for TestCheck {
         fn title(&self) -> Cow<str> {
@@ -106,7 +103,7 @@ async fn test_async_check_async_auto_fix_failed_not_implemented() {
         }
     }
 
-    let mut check = TestCheck { value: 1 };
+    let mut check = TestCheck;
 
     assert!(check.async_auto_fix().await.is_err());
 }

@@ -19,7 +19,7 @@ bitflags::bitflags! {
 }
 
 /// The base check.
-pub trait CheckMetadata {
+pub trait CheckMetadata: std::fmt::Debug {
     /// The human readable title for the check.
     ///
     /// User interfaces should use the title for displaying the check.

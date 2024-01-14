@@ -9,10 +9,16 @@ name = "pychecks"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20.2" }
+pyo3 = "0.20.2"
 checks = { path = "../../" }
 pyo3-asyncio = { version = "0.20.0", features = [
     "attributes",
     "tokio-runtime",
 ] }
 async-trait = "0.1.77"
+tracing = "0.1.40"
+pyo3-opentelemetry = "0.3.1"
+pyo3-tracing-subscriber = { version = "0.1.1", features = ["layer-otel-otlp-file", "layer-otel-otlp"] }
+
+[build-dependencies]
+pyo3-tracing-subscriber = { version = "0.1.1", features = ["stubs", "layer-otel-otlp-file", "layer-otel-otlp"] }

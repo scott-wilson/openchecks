@@ -2,6 +2,7 @@ use pyo3::prelude::*;
 
 use crate::{check_wrapper::AsyncCheckWrapper, check_wrapper::CheckWrapper, result::CheckResult};
 
+#[pyo3_opentelemetry::pypropagate]
 #[pyfunction]
 pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
     if !check.as_ref(py).is_instance_of::<crate::BaseCheck>() {
@@ -22,6 +23,7 @@ pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
     Ok(result.into())
 }
 
+#[pyo3_opentelemetry::pypropagate]
 #[pyfunction]
 pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
     if !check.as_ref(py).is_instance_of::<crate::BaseCheck>() {
@@ -41,6 +43,7 @@ pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult>
     Ok(result.into())
 }
 
+#[pyo3_opentelemetry::pypropagate]
 #[pyfunction]
 pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
     pyo3_asyncio::tokio::future_into_py(py, async move {
@@ -75,6 +78,7 @@ pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
     })
 }
 
+#[pyo3_opentelemetry::pypropagate]
 #[pyfunction]
 pub(crate) fn async_auto_fix(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
     pyo3_asyncio::tokio::future_into_py(py, async move {
