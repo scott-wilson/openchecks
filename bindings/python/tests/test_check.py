@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pychecks
 import pytest
+
+import pychecks
 
 if TYPE_CHECKING:  # pragma: no cover
     pass

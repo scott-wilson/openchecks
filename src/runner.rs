@@ -1,12 +1,15 @@
 /// Run a check.
+#[tracing::instrument]
 pub async fn async_run<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
     check: &impl crate::AsyncCheck<Item = Item, Items = Items>,
 ) -> crate::CheckResult<Item, Items> {
+    tracing::debug!("Starting check");
     let now = std::time::Instant::now();
 
     let mut result = check.async_check().await;
 
     result.set_check_duration(now.elapsed());
+    tracing::debug!("Finishing check");
 
     result
 }
@@ -25,12 +28,15 @@ pub async fn async_run<Item: crate::Item, Items: std::iter::IntoIterator<Item = 
 /// not have the [CheckHint::AUTO_FIX](crate::CheckHint::AUTO_FIX) flag set, or
 /// an auto-fix returned an error. In the case of the latter, it will include
 /// the error with the check result.
+#[tracing::instrument]
 pub async fn async_auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
     check: &mut (impl crate::AsyncCheck<Item = Item, Items = Items> + Send),
 ) -> crate::CheckResult<Item, Items> {
+    tracing::debug!("Starting auto fix");
     let now = std::time::Instant::now();
 
     if !check.hint().contains(crate::CheckHint::AUTO_FIX) {
+        tracing::error!("Check does not support auto fix.");
         let mut result = crate::CheckResult::new(
             crate::Status::SystemError,
             "Check does not implement auto fix.",
@@ -45,6 +51,7 @@ pub async fn async_auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<It
     }
 
     if let Err(err) = check.async_auto_fix().await {
+        tracing::error!("Error in auto fix: {}", err);
         let mut result = crate::CheckResult::new(
             crate::Status::SystemError,
             "Error in auto fix.",
@@ -61,19 +68,23 @@ pub async fn async_auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<It
     let fix_duration = now.elapsed();
     let mut result = async_run(check).await;
     result.set_fix_duration(fix_duration);
+    tracing::debug!("Finishing auto fix");
 
     result
 }
 
 /// Run a check.
+#[tracing::instrument]
 pub fn run<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
     check: &impl crate::Check<Item = Item, Items = Items>,
 ) -> crate::CheckResult<Item, Items> {
+    tracing::debug!("Starting check");
     let now = std::time::Instant::now();
 
     let mut result = check.check();
 
     result.set_check_duration(now.elapsed());
+    tracing::debug!("Finishing check");
 
     result
 }
@@ -92,12 +103,15 @@ pub fn run<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
 /// not have the [CheckHint::AUTO_FIX](crate::CheckHint::AUTO_FIX) flag set, or
 /// an auto-fix returned an error. In the case of the latter, it will include
 /// the error with the check result.
+#[tracing::instrument]
 pub fn auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
     check: &mut impl crate::Check<Item = Item, Items = Items>,
 ) -> crate::CheckResult<Item, Items> {
+    tracing::debug!("Starting auto fix");
     let now = std::time::Instant::now();
 
     if !check.hint().contains(crate::CheckHint::AUTO_FIX) {
+        tracing::error!("Check does not support auto fix.");
         let mut result = crate::CheckResult::new(
             crate::Status::SystemError,
             "Check does not implement auto fix.",
@@ -112,6 +126,7 @@ pub fn auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
     }
 
     if let Err(err) = check.auto_fix() {
+        tracing::error!("Error in auto fix: {}", err);
         let mut result = crate::CheckResult::new(
             crate::Status::SystemError,
             "Error in auto fix.",
@@ -128,6 +143,7 @@ pub fn auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
     let fix_duration = now.elapsed();
     let mut result = run(check);
     result.set_fix_duration(fix_duration);
+    tracing::debug!("Finishing auto fix");
 
     result
 }

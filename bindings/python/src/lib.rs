@@ -6,7 +6,6 @@ mod error;
 mod item;
 mod item_wrapper;
 mod result;
-mod result_wrapper;
 mod runner;
 mod status;
 
@@ -19,6 +18,8 @@ use status::Status;
 
 #[pymodule]
 fn pychecks(py: Python, m: &PyModule) -> PyResult<()> {
+    pyo3_tracing_subscriber::add_submodule("pychecks", "tracing_subscriber", py, m)?;
+
     m.add_function(wrap_pyfunction!(async_auto_fix, m)?)?;
     m.add_function(wrap_pyfunction!(async_run, m)?)?;
     m.add_function(wrap_pyfunction!(auto_fix, m)?)?;

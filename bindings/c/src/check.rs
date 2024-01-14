@@ -43,6 +43,14 @@ pub struct CChecksBaseCheck {
     pub auto_fix_fn: Option<unsafe extern "C" fn(*mut Self) -> CChecksAutoFixResult>,
 }
 
+impl std::fmt::Debug for CChecksBaseCheck {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let c_title = unsafe { (self.title_fn)(self) };
+        let title = unsafe { CStr::from_ptr(c_title) }.to_str().unwrap_or("");
+        write!(f, "CChecksBaseCheck: {}", title)
+    }
+}
+
 impl checks::CheckMetadata for CChecksBaseCheck {
     fn title(&self) -> Cow<str> {
         let ptr = unsafe { (self.title_fn)(self) };

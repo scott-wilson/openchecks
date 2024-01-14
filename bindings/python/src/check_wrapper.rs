@@ -7,6 +7,24 @@ pub(crate) struct CheckWrapper {
     check: PyObject,
 }
 
+impl std::fmt::Debug for CheckWrapper {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Python::with_gil(|py| {
+            write!(
+                f,
+                "{}",
+                self.check
+                    .as_ref(py)
+                    .repr()
+                    .map_err(|_| std::fmt::Error)?
+                    .to_string_lossy()
+            )?;
+
+            Ok(())
+        })
+    }
+}
+
 impl CheckMetadata for CheckWrapper {
     fn title(&self) -> std::borrow::Cow<str> {
         Python::with_gil(|py| {
@@ -106,6 +124,24 @@ impl CheckWrapper {
 
 pub(crate) struct AsyncCheckWrapper {
     check: PyObject,
+}
+
+impl std::fmt::Debug for AsyncCheckWrapper {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Python::with_gil(|py| {
+            write!(
+                f,
+                "{}",
+                self.check
+                    .as_ref(py)
+                    .repr()
+                    .map_err(|_| std::fmt::Error)?
+                    .to_string_lossy()
+            )?;
+
+            Ok(())
+        })
+    }
 }
 
 impl CheckMetadata for AsyncCheckWrapper {
