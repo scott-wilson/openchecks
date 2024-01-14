@@ -8,13 +8,8 @@ pub(crate) struct ItemWrapper {
 impl std::fmt::Display for ItemWrapper {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match Python::with_gil(|py| match self.item.as_ref(py).str() {
-            Ok(result) => match result.to_str() {
-                Ok(result) => match write!(f, "{}", result) {
-                    Ok(_) => Ok(()),
-                    Err(_) => Err(PyErr::new::<PyValueError, _>("")),
-                },
-                Err(err) => Err(err),
-            },
+            Ok(result) => write!(f, "{}", result.to_string_lossy())
+                .map_err(|err| PyErr::new::<PyValueError, _>(err.to_string())),
             Err(err) => Err(err),
         }) {
             Ok(_) => Ok(()),

@@ -1,4 +1,4 @@
-use pyo3::{intern, prelude::*};
+use pyo3::{intern, prelude::*, types::PyString};
 
 #[pyclass(subclass)]
 #[derive(Debug, Clone)]
@@ -15,12 +15,15 @@ impl Item {
         Self { value, type_hint }
     }
 
-    fn __str__<'py>(&'py self, py: Python<'py>) -> PyResult<&'py str> {
-        self.value.as_ref(py).str()?.to_str()
+    fn __str__<'py>(&'py self, py: Python<'py>) -> PyResult<&'py PyString> {
+        self.value.as_ref(py).str()
     }
 
     fn __repr__(&self, py: Python<'_>) -> PyResult<String> {
-        Ok(format!("Item({})", self.value.as_ref(py).repr()?.to_str()?))
+        Ok(format!(
+            "Item({})",
+            self.value.as_ref(py).repr()?.to_string_lossy()
+        ))
     }
 
     fn __eq__(&self, py: Python<'_>, other: &PyAny) -> PyResult<PyObject> {
@@ -30,7 +33,7 @@ impl Item {
             Ok(self
                 .value
                 .as_ref(py)
-                .eq(&other.call_method0(intern!(py, "value"))?)?
+                .eq(other.call_method0(intern!(py, "value"))?)?
                 .into_py(py))
         }
     }
@@ -50,7 +53,7 @@ impl Item {
             Ok(self
                 .value
                 .as_ref(py)
-                .lt(&other.call_method0(intern!(py, "value"))?)?
+                .lt(other.call_method0(intern!(py, "value"))?)?
                 .into_py(py))
         }
     }
