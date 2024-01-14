@@ -6,7 +6,6 @@ mod error;
 mod item;
 mod item_wrapper;
 mod result;
-mod result_wrapper;
 mod runner;
 mod status;
 
