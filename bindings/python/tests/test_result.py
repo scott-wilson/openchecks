@@ -5,9 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import hypothesis
-from hypothesis import strategies
-
 import pychecks
+from hypothesis import strategies
 
 if TYPE_CHECKING:
     from typing import List, Optional

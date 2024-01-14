@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
-
 import pychecks
+import pytest
 
 
 def test_run_passed_success() -> None:
