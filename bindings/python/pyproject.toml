@@ -17,9 +17,12 @@ classifiers = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-build = ["maturin ~= 1.4"]
+build = [
+    "maturin ~= 1.4; platform_system != \"Linux\"",
+    "maturin[patchelf] ~= 1.4; platform_system == \"Linux\"",
+]
 test = [
-    "black ~= 23.12; python_version >= \"3.8\"",
+    "black ~= 23.12; python_version > \"3.7\"",
     "black ~= 22.12; python_version == \"3.7\"",
     "hypothesis ~= 6.79",
     "pytest ~= 7.4",

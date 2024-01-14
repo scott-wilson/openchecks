@@ -75,10 +75,7 @@ impl CheckResult {
                 .map(|item| ItemWrapper::new(item.into_py(py)))
                 .collect()
         });
-        let error = match error {
-            Some(err) => Some(checks::Error::new(&err.to_string())),
-            None => None,
-        };
+        let error = error.map(|err| checks::Error::new(&err.to_string()));
 
         let inner =
             checks::CheckResult::new(status.into(), message, items, can_fix, can_skip, error);
@@ -255,7 +252,7 @@ impl CheckResult {
         self.inner
             .items()
             .as_ref()
-            .map(|items| items.into_iter().map(|item| item.item().clone()).collect())
+            .map(|items| items.iter().map(|item| item.item().clone()).collect())
     }
 
     /// can_fix(self) -> bool
@@ -297,11 +294,11 @@ impl CheckResult {
     ///
     /// Returns:
     ///     Optional[BaseException]: The error for the status.
-    pub(crate) fn error<'a>(&'a self) -> Option<PyErr> {
-        match self.inner.error() {
-            Some(err) => Some(CheckError::new_err(err.to_string())),
-            None => None,
-        }
+    pub(crate) fn error(&self) -> Option<PyErr> {
+        self.inner
+            .error()
+            .as_ref()
+            .map(|err| CheckError::new_err(err.to_string()))
     }
 
     /// check_duration(self) -> float
