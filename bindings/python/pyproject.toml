@@ -23,7 +23,7 @@ build = [
 ]
 test = [
     "black ~= 23.12; python_version > \"3.7\"",
-    "black ~= 22.12; python_version == \"3.7\"",
+    "black ~= 24.1; python_version == \"3.7\"",
     "hypothesis ~= 6.79",
     "pytest ~= 7.4",
     "pytest-asyncio ~= 0.21",
