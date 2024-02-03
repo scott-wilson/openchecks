@@ -62,7 +62,7 @@ jobs:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
       - name: Cache virtualenv
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
           path: .venv
