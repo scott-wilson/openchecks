@@ -80,9 +80,9 @@ jobs:
       - name: Lint with Ruff
         run: |
           python -m ruff --output-format=github .
-      - name: Lint with Black
+      - name: Lint with Ruff
         run: |
-          python -m black --check .
+          python -m ruff format --check .
       - name: Build Rust
         uses: PyO3/maturin-action@v1
         with:
