@@ -10,7 +10,7 @@ name = "pychecks"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20.2" }
+pyo3 = { version = "0.20.3" }
 checks = { path = "../../" }
 pyo3-asyncio = { version = "0.20.0", features = [
     "attributes",
