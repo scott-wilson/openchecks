@@ -16,4 +16,4 @@ pyo3-asyncio = { version = "0.20.0", features = [
     "attributes",
     "tokio-runtime",
 ] }
-async-trait = "0.1.78"
+async-trait = "0.1.79"
