@@ -48,7 +48,7 @@ impl Check for CheckWrapper {
     type Items = Vec<ItemWrapper>;
 
     fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
-        match Python::with_gil(|py| {
+        let result = Python::with_gil(|py| {
             let result = self.check.call_method0(py, intern!(py, "check"))?;
 
             let status = result
@@ -76,7 +76,8 @@ impl Check for CheckWrapper {
             Ok::<checks::CheckResult<ItemWrapper, Vec<ItemWrapper>>, PyErr>(
                 checks::CheckResult::new(status, message, items, can_fix, can_skip, None),
             )
-        }) {
+        });
+        match result {
             Ok(result) => result,
             Err(err) => checks::CheckResult::new(
                 checks::Status::SystemError,
@@ -170,7 +171,7 @@ impl AsyncCheck for AsyncCheckWrapper {
             }
         };
 
-        match Python::with_gil(|py| {
+        let result = Python::with_gil(|py| {
             let result = result?;
 
             let status = result
@@ -198,7 +199,8 @@ impl AsyncCheck for AsyncCheckWrapper {
             Ok::<checks::CheckResult<ItemWrapper, Vec<ItemWrapper>>, PyErr>(
                 checks::CheckResult::new(status, message, items, can_fix, can_skip, None),
             )
-        }) {
+        });
+        match result {
             Ok(result) => result,
             Err(err) => checks::CheckResult::new(
                 checks::Status::SystemError,
