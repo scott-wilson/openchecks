@@ -21,6 +21,9 @@ on:
       - deny.toml
       - .gitmodules
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: C test
