@@ -2,6 +2,7 @@ name: C++ Test Suite
 
 on:
   push:
+    branches: ["main"]
     paths:
       - .github/workflows/*_cpp.yml
       - bindings/cpp/**
