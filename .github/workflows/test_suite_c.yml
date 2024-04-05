@@ -2,6 +2,7 @@ name: C Test Suite
 
 on:
   push:
+    branches: ["main"]
     paths:
       - .github/workflows/*_c.yml
       - bindings/c/**
