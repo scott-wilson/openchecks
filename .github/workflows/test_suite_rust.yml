@@ -19,6 +19,9 @@ on:
       - Cargo.toml
       - deny.toml
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Rust test

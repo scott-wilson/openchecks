@@ -3,13 +3,17 @@ name: Dependabot reviewer
 on: pull_request_target
 
 permissions:
-  pull-requests: write
-  contents: write
+  contents: read
 
 jobs:
   review-dependabot-pr:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+
+    permissions:
+      pull-requests: write
+      contents: write
+
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
