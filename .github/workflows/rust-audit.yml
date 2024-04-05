@@ -9,10 +9,15 @@ jobs:
     name: Audit Rust
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393 # v1.6.2
   audit_c:
     name: Audit C
     runs-on: ubuntu-latest
@@ -20,12 +25,17 @@ jobs:
       run:
         working-directory: bindings/c
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: recursive
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393 # v1.6.2
   audit_cpp:
     name: Audit C++
     runs-on: ubuntu-latest
@@ -33,12 +43,17 @@ jobs:
       run:
         working-directory: bindings/cpp
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: recursive
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393 # v1.6.2
   audit_python:
     name: Audit Python
     runs-on: ubuntu-latest
@@ -46,9 +61,14 @@ jobs:
       run:
         working-directory: bindings/python
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: recursive
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393 # v1.6.2

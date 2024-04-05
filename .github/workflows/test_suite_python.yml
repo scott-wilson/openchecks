@@ -44,26 +44,31 @@ jobs:
           - "3" # Latest version
     runs-on: ${{matrix.os}}
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: recursive
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
       - name: Run Cargo Clippy
         run: cargo clippy
       - name: Run Cargo Fmt
         run: cargo fmt --check
       - name: Run Cargo Deny
-        uses: EmbarkStudios/cargo-deny-action@v1
+        uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393 # v1.6.2
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Setup Python ${{matrix.python-version}}
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
       - name: Cache virtualenv
-        uses: actions/cache@v4
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
           path: .venv
@@ -85,7 +90,7 @@ jobs:
         run: |
           python -m ruff format --check .
       - name: Build Rust
-        uses: PyO3/maturin-action@v1
+        uses: PyO3/maturin-action@6c040287d49afcbdb94da54484e3e17051e60e53 # v1.42.0
         with:
           command: develop
           sccache: 'true'
