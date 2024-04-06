@@ -1,5 +1,6 @@
 /// The status enum represents a result status.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub enum Status {
     /// The check is waiting to run. A check should not return this status, but
     /// instead this can be used by a user interface to let a user know that the

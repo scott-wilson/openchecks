@@ -29,6 +29,7 @@
 /// - Fix duration: A diagnostic tool that could be exposed in a user
 ///   interface to let the user know how long it took to run the auto-fix.
 #[derive(Debug)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct CheckResult<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>> {
     status: crate::Status,
     message: String,

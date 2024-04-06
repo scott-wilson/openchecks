@@ -1,4 +1,5 @@
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Error {
     message: String,
 }
