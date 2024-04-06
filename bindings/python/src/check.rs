@@ -149,7 +149,11 @@ pub(crate) struct CheckMetadata {}
 #[pymethods]
 impl CheckMetadata {
     #[new]
-    pub(crate) fn new() -> Self {
+    #[pyo3(signature = (*args, **kwargs))]
+    pub(crate) fn new(
+        #[allow(unused_variables)] args: &PyAny,
+        #[allow(unused_variables)] kwargs: Option<&PyAny>,
+    ) -> Self {
         Self {}
     }
 
@@ -202,8 +206,9 @@ pub(crate) struct BaseCheck {}
 #[pymethods]
 impl BaseCheck {
     #[new]
-    pub(crate) fn new() -> (Self, CheckMetadata) {
-        (Self {}, CheckMetadata::new())
+    #[pyo3(signature = (*args, **kwargs))]
+    pub(crate) fn new(args: &PyAny, kwargs: Option<&PyAny>) -> (Self, CheckMetadata) {
+        (Self {}, CheckMetadata::new(args, kwargs))
     }
 
     /// check(self) -> CheckResult[T]
@@ -235,8 +240,9 @@ pub(crate) struct AsyncBaseCheck {}
 #[pymethods]
 impl AsyncBaseCheck {
     #[new]
-    pub(crate) fn new() -> (Self, CheckMetadata) {
-        (Self {}, CheckMetadata::new())
+    #[pyo3(signature = (*args, **kwargs))]
+    pub(crate) fn new(args: &PyAny, kwargs: Option<&PyAny>) -> (Self, CheckMetadata) {
+        (Self {}, CheckMetadata::new(args, kwargs))
     }
 
     /// async_check(self) -> CheckResult[T]
