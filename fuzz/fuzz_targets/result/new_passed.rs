@@ -38,5 +38,7 @@ fuzz_target!(|input: Input| {
     assert_eq!(result.status(), &checks::Status::Passed);
     assert_eq!(result.message(), &input.message);
     assert_eq!(result.items(), &input.items);
+    assert_eq!(result.can_fix(), input.can_fix);
+    assert_eq!(result.can_skip(), input.can_skip);
     assert_eq!(result.error(), &None);
 });
