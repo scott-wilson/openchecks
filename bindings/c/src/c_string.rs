@@ -43,6 +43,7 @@ impl CChecksString {
         unsafe extern "C" fn destroy_fn(string: *mut CChecksString) {
             if !(*string).string.is_null() {
                 unsafe { drop(CString::from_raw((*string).string)) };
+                (*string).string = null_mut();
             }
         }
 

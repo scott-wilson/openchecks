@@ -4,6 +4,8 @@ use std::{
     ptr::null_mut,
 };
 
+use crate::cchecks_items_destroy;
+
 /// A check result contains all of the information needed to know the status of
 /// a check.
 ///
@@ -45,24 +47,25 @@ pub struct CChecksCheckResult {
     pub fix_duration: f64,
 }
 
-impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItems>>
+impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::items::CChecksItemsWrapper>>
     for CChecksCheckResult
 {
     fn from(
-        value: checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItems>,
+        value: checks::CheckResult<
+            crate::item::ChecksItemWrapper,
+            crate::items::CChecksItemsWrapper,
+        >,
     ) -> Self {
         let status = (*value.status()).into();
         let message = match CString::new(value.message()) {
             Ok(msg) => msg.into_raw(),
-            Err(_) => unsafe { CString::from_vec_unchecked(b"".to_vec()).into_raw() },
+            Err(_) => CStr::from_bytes_with_nul(b"\0")
+                .unwrap()
+                .to_owned()
+                .into_raw(),
         };
         let items = match value.items() {
-            Some(items) => {
-                let items = items.to_owned();
-                let boxed_items = Box::new(items);
-
-                Box::into_raw(boxed_items)
-            }
+            Some(items) => unsafe { crate::cchecks_items_clone(items.ptr) },
             None => null_mut(),
         };
         let can_fix = value.can_fix();
@@ -70,9 +73,12 @@ impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItem
         let error = match value.error() {
             Some(err) => match CString::new(err.to_string()) {
                 Ok(msg) => msg.into_raw(),
-                Err(_) => unsafe { CString::from_vec_unchecked(b"".to_vec()).into_raw() },
+                Err(_) => CStr::from_bytes_with_nul(b"\0")
+                    .unwrap()
+                    .to_owned()
+                    .into_raw(),
             },
-            None => unsafe { CString::from_vec_unchecked(b"".to_vec()).into_raw() },
+            None => null_mut(),
         };
         let check_duration = value.check_duration().as_secs_f64();
         let fix_duration = value.fix_duration().as_secs_f64();
@@ -91,9 +97,10 @@ impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItem
 }
 
 impl From<CChecksCheckResult>
-    for checks::CheckResult<crate::item::ChecksItemWrapper, crate::CChecksItems>
+    for checks::CheckResult<crate::item::ChecksItemWrapper, crate::items::CChecksItemsWrapper>
 {
     fn from(value: CChecksCheckResult) -> Self {
+        let mut value = value;
         let status = value.status.into();
         let message = unsafe {
             if value.message.is_null() {
@@ -105,26 +112,10 @@ impl From<CChecksCheckResult>
         let items = if value.items.is_null() {
             None
         } else {
-            unsafe {
-                let items = value.items;
-                let ptr = (*items).ptr;
-                let item_size = (*items).item_size;
-                let length = (*items).length;
-                let destroy_fn = (*items).destroy_fn;
+            let items = value.items;
+            value.items = null_mut();
 
-                extern "C" fn destroy_noop(_ptr: *mut crate::CChecksItem) {}
-                (*items).ptr = null_mut();
-                (*items).item_size = 0;
-                (*items).length = 0;
-                (*items).destroy_fn = destroy_noop;
-
-                Some(crate::CChecksItems {
-                    ptr,
-                    item_size,
-                    length,
-                    destroy_fn,
-                })
-            }
+            Some(crate::items::CChecksItemsWrapper { ptr: items })
         };
         let can_fix = value.can_fix;
         let can_skip = value.can_skip;
@@ -148,53 +139,47 @@ impl Drop for CChecksCheckResult {
             unsafe {
                 let message = CString::from_raw(self.message);
                 drop(message);
+                self.message = null_mut();
             }
         }
         if !self.items.is_null() {
             unsafe {
-                drop(Box::from_raw(self.items));
+                cchecks_items_destroy(self.items);
+                self.items = null_mut();
             }
         }
         if !self.error.is_null() {
             unsafe {
                 let error = CString::from_raw(self.error);
                 drop(error);
+                self.error = null_mut();
             }
         }
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 impl CChecksCheckResult {
     pub(crate) fn new(
         status: crate::CChecksStatus,
         message: *const c_char,
-        items: *mut crate::CChecksItem,
-        item_size: usize,
-        item_count: usize,
+        items: *mut crate::CChecksItems,
         can_fix: bool,
         can_skip: bool,
         error: *const c_char,
-        items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
     ) -> Self {
         let message = {
             if message.is_null() {
-                unsafe { CString::from_vec_unchecked(b"".to_vec()).into_raw() }
+                CStr::from_bytes_with_nul(b"\0")
+                    .unwrap()
+                    .to_owned()
+                    .into_raw()
             } else {
                 unsafe { CStr::from_ptr(message).to_owned().into_raw() }
             }
         };
-        let items = if items.is_null() {
-            null_mut()
-        } else {
-            let items = Box::new(unsafe {
-                crate::cchecks_items_new(items, item_size, item_count, items_destroy_fn)
-            });
-            Box::into_raw(items)
-        };
         let error = {
             if error.is_null() {
-                unsafe { CString::from_vec_unchecked(b"".to_vec()).into_raw() }
+                null_mut()
             } else {
                 unsafe { CStr::from_ptr(error).to_owned().into_raw() }
             }
@@ -228,32 +213,16 @@ impl CChecksCheckResult {
 ///
 /// Error can be a null pointer. It is also copied, so the caller may be able to
 /// free the memory once the method is called.
-///
-/// `items_destroy_fn` must not destroy the items before it destroys the item
-/// array, otherwise that will cause a double free.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_new(
     status: crate::CChecksStatus,
     message: *const c_char,
-    items: *mut crate::CChecksItem,
-    item_size: usize,
-    item_count: usize,
+    items: *mut crate::CChecksItems,
     can_fix: bool,
     can_skip: bool,
     error: *const c_char,
-    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
-    CChecksCheckResult::new(
-        status,
-        message,
-        items,
-        item_size,
-        item_count,
-        can_fix,
-        can_skip,
-        error,
-        items_destroy_fn,
-    )
+    CChecksCheckResult::new(status, message, items, can_fix, can_skip, error)
 }
 
 /// Create a new result that passed a check.
@@ -265,29 +234,20 @@ pub unsafe extern "C" fn cchecks_check_result_new(
 ///
 /// The items can be null if there are no items. Also, the items pointer must be
 /// `item_size * item_count` in bytes.
-///
-/// `items_destroy_fn` must not destroy the items before it destroys the item
-/// array, otherwise that will cause a double free.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_passed(
     message: *const c_char,
-    items: *mut crate::CChecksItem,
-    item_size: usize,
-    item_count: usize,
+    items: *mut crate::CChecksItems,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusPassed,
         message,
         items,
-        item_size,
-        item_count,
         can_fix,
         can_skip,
         null_mut(),
-        items_destroy_fn,
     )
 }
 
@@ -300,29 +260,20 @@ pub unsafe extern "C" fn cchecks_check_result_passed(
 ///
 /// The items can be null if there are no items. Also, the items pointer must be
 /// `item_size * item_count` in bytes.
-///
-/// `items_destroy_fn` must not destroy the items before it destroys the item
-/// array, otherwise that will cause a double free.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_skipped(
     message: *const c_char,
-    items: *mut crate::CChecksItem,
-    item_size: usize,
-    item_count: usize,
+    items: *mut crate::CChecksItems,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusSkipped,
         message,
         items,
-        item_size,
-        item_count,
         can_fix,
         can_skip,
         null_mut(),
-        items_destroy_fn,
     )
 }
 
@@ -339,29 +290,20 @@ pub unsafe extern "C" fn cchecks_check_result_skipped(
 ///
 /// The items can be null if there are no items. Also, the items pointer must be
 /// `item_size * item_count` in bytes.
-///
-/// `items_destroy_fn` must not destroy the items before it destroys the item
-/// array, otherwise that will cause a double free.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_warning(
     message: *const c_char,
-    items: *mut crate::CChecksItem,
-    item_size: usize,
-    item_count: usize,
+    items: *mut crate::CChecksItems,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusWarning,
         message,
         items,
-        item_size,
-        item_count,
         can_fix,
         can_skip,
         null_mut(),
-        items_destroy_fn,
     )
 }
 
@@ -378,29 +320,20 @@ pub unsafe extern "C" fn cchecks_check_result_warning(
 ///
 /// The items can be null if there are no items. Also, the items pointer must be
 /// `item_size * item_count` in bytes.
-///
-/// `items_destroy_fn` must not destroy the items before it destroys the item
-/// array, otherwise that will cause a double free.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_failed(
     message: *const c_char,
-    items: *mut crate::CChecksItem,
-    item_size: usize,
-    item_count: usize,
+    items: *mut crate::CChecksItems,
     can_fix: bool,
     can_skip: bool,
-    items_destroy_fn: unsafe extern "C" fn(*mut crate::CChecksItem) -> (),
 ) -> CChecksCheckResult {
     CChecksCheckResult::new(
         crate::CChecksStatus::CChecksStatusFailed,
         message,
         items,
-        item_size,
-        item_count,
         can_fix,
         can_skip,
         null_mut(),
-        items_destroy_fn,
     )
 }
 
@@ -445,7 +378,7 @@ pub unsafe extern "C" fn cchecks_check_result_message(
 ///
 /// # Safety
 ///
-/// The result pointer must not be null.
+/// A null result pointer represents that there are no items.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_items(
     result: &CChecksCheckResult,
@@ -497,12 +430,13 @@ pub unsafe extern "C" fn cchecks_check_result_can_skip(result: *const CChecksChe
 ///
 /// # Safety
 ///
-/// The result pointer must not be null.
+/// The result pointer is null if there are no errors. Otherwise it will point
+/// to a valid message.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_error(
     result: *const CChecksCheckResult,
-) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr((*result).error)
+) -> *const std::ffi::c_char {
+    (*result).error
 }
 
 /// The duration of a check.

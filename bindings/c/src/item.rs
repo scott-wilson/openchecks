@@ -1,6 +1,5 @@
 use std::{
     ffi::{c_char, CStr},
-    mem::MaybeUninit,
     os::raw::c_void,
 };
 
@@ -75,7 +74,7 @@ pub struct CChecksItem {
     /// then it should do so behind reference counters. Or, have the destroy
     /// function not actually modify/destroy the data, and leave that up to a
     /// process outside of the validation library.
-    pub clone_fn: unsafe extern "C" fn(*const Self, *mut Self),
+    pub clone_fn: unsafe extern "C" fn(*const Self) -> *mut Self,
     /// Destroy the owned data.
     ///
     /// # Safety
@@ -107,18 +106,6 @@ pub struct CChecksItem {
     pub lt_fn: unsafe extern "C" fn(*const Self, *const Self) -> bool,
     /// The compare function is used to order items in user interfaces.
     pub eq_fn: unsafe extern "C" fn(*const Self, *const Self) -> bool,
-}
-
-impl std::clone::Clone for CChecksItem {
-    fn clone(&self) -> Self {
-        let mut item = MaybeUninit::<Self>::uninit();
-
-        unsafe {
-            (self.clone_fn)(self, &mut *item.as_mut_ptr());
-
-            item.assume_init()
-        }
-    }
 }
 
 impl Drop for CChecksItem {
@@ -238,8 +225,8 @@ pub unsafe extern "C" fn cchecks_item_value(item: *const CChecksItem) -> *const 
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_clone(item: *const CChecksItem, new_item: *mut CChecksItem) {
-    ((*item).clone_fn)(item, new_item)
+pub unsafe extern "C" fn cchecks_item_clone(item: *const CChecksItem) -> *mut CChecksItem {
+    ((*item).clone_fn)(item)
 }
 
 /// Destroy an item and its contents.

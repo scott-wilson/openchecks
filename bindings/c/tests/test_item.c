@@ -56,33 +56,32 @@ static void test_item_value_success(void **state) {
 
 static void test_item_clone_success(void **state) {
   IntItem int_item;
-  IntItem new_int_item;
 
   int_item = create_int_item(1, "test");
-  cchecks_item_clone((CChecksItem *)&int_item, (CChecksItem *)&new_int_item);
+  IntItem *new_int_item =
+      (IntItem *)cchecks_item_clone((CChecksItem *)&int_item);
 
-  assert_int_equal(int_item.value, new_int_item.value);
-  assert_string_equal(int_item.type_hint, new_int_item.type_hint);
-  assert_ptr_not_equal(&int_item.value, new_int_item.value);
-  assert_ptr_not_equal(&int_item.type_hint, new_int_item.type_hint);
+  assert_int_equal(int_item.value, new_int_item->value);
+  assert_string_equal(int_item.type_hint, new_int_item->type_hint);
+  assert_ptr_not_equal(&int_item.value, new_int_item->value);
+  assert_ptr_not_equal(&int_item.type_hint, new_int_item->type_hint);
 
   destroy_int_item(&int_item);
-  destroy_int_item(&new_int_item);
+  destroy_int_item(new_int_item);
 
   StringItem string_item;
-  StringItem new_string_item;
 
   string_item = create_string_item("test", "test");
-  cchecks_item_clone((CChecksItem *)&string_item,
-                     (CChecksItem *)&new_string_item);
+  StringItem *new_string_item =
+      (StringItem *)cchecks_item_clone((CChecksItem *)&string_item);
 
-  assert_string_equal(string_item.value, new_string_item.value);
-  assert_string_equal(string_item.type_hint, new_string_item.type_hint);
-  assert_ptr_not_equal(&string_item.value, new_string_item.value);
-  assert_ptr_not_equal(&string_item.type_hint, new_string_item.type_hint);
+  assert_string_equal(string_item.value, new_string_item->value);
+  assert_string_equal(string_item.type_hint, new_string_item->type_hint);
+  assert_ptr_not_equal(&string_item.value, new_string_item->value);
+  assert_ptr_not_equal(&string_item.type_hint, new_string_item->type_hint);
 
   destroy_string_item(&string_item);
-  destroy_string_item(&new_string_item);
+  destroy_string_item(new_string_item);
 }
 
 static void test_item_debug_success(void **state) {

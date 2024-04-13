@@ -20,10 +20,11 @@ static void test_cchecks_check_result_new(void **state) {
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
-  IntItem *items = malloc(item_size * item_count);
+  IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    items[i] = create_int_item(i, NULL);
+    IntItem item = create_int_item(i, NULL);
+    int_items_set(items, i, item);
   }
 
   bool can_fix = false;
@@ -31,8 +32,7 @@ static void test_cchecks_check_result_new(void **state) {
   char *error = NULL;
 
   CChecksCheckResult result = cchecks_check_result_new(
-      status, message, (CChecksItem *)items, item_size, item_count, can_fix,
-      can_skip, error, int_items_destroy_fn);
+      status, message, (CChecksItems *)items, can_fix, can_skip, error);
 
   // Status
   assert_int_equal(cchecks_check_result_status(&result), status);
@@ -42,8 +42,8 @@ static void test_cchecks_check_result_new(void **state) {
   // Items
   CChecksItems const *result_items = cchecks_check_result_items(&result);
   assert_non_null(result_items);
-  assert_int_equal(result_items->length, item_count);
-  assert_int_equal(result_items->item_size, item_size);
+  assert_int_equal(cchecks_items_length(result_items), item_count);
+  assert_int_equal(cchecks_items_item_size(result_items), item_size);
 
   CChecksItemsIterator items_iter = cchecks_items_iterator_new(result_items);
   size_t index = 0;
@@ -63,8 +63,8 @@ static void test_cchecks_check_result_new(void **state) {
   assert_int_equal(cchecks_check_result_can_skip(&result), can_skip);
 
   // Error
-  CChecksStringView result_error = cchecks_check_result_error(&result);
-  assert_string_equal(result_error.string, "");
+  const char *result_error = cchecks_check_result_error(&result);
+  assert_null(result_error);
 
   // Cleanup
   cchecks_check_result_destroy(&result);
@@ -74,18 +74,18 @@ static void test_cchecks_check_result_passed(void **state) {
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
-  IntItem *items = malloc(item_size * item_count);
+  IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    items[i] = create_int_item(i, NULL);
+    IntItem item = create_int_item(i, NULL);
+    int_items_set(items, i, item);
   }
 
   bool can_fix = false;
   bool can_skip = false;
 
   CChecksCheckResult result = cchecks_check_result_passed(
-      message, (CChecksItem *)items, item_size, item_count, can_fix, can_skip,
-      int_items_destroy_fn);
+      message, (CChecksItems *)items, can_fix, can_skip);
 
   // Status
   assert_int_equal(cchecks_check_result_status(&result), CChecksStatusPassed);
@@ -95,8 +95,8 @@ static void test_cchecks_check_result_passed(void **state) {
   // Items
   CChecksItems const *result_items = cchecks_check_result_items(&result);
   assert_non_null(result_items);
-  assert_int_equal(result_items->length, item_count);
-  assert_int_equal(result_items->item_size, item_size);
+  assert_int_equal(cchecks_items_length(result_items), item_count);
+  assert_int_equal(cchecks_items_item_size(result_items), item_size);
 
   CChecksItemsIterator items_iter = cchecks_items_iterator_new(result_items);
   size_t index = 0;
@@ -123,18 +123,18 @@ static void test_cchecks_check_result_skipped(void **state) {
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
-  IntItem *items = malloc(item_size * item_count);
+  IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    items[i] = create_int_item(i, NULL);
+    IntItem item = create_int_item(i, NULL);
+    int_items_set(items, i, item);
   }
 
   bool can_fix = false;
   bool can_skip = false;
 
   CChecksCheckResult result = cchecks_check_result_skipped(
-      message, (CChecksItem *)items, item_size, item_count, can_fix, can_skip,
-      int_items_destroy_fn);
+      message, (CChecksItems *)items, can_fix, can_skip);
 
   // Status
   assert_int_equal(cchecks_check_result_status(&result), CChecksStatusSkipped);
@@ -144,8 +144,8 @@ static void test_cchecks_check_result_skipped(void **state) {
   // Items
   CChecksItems const *result_items = cchecks_check_result_items(&result);
   assert_non_null(result_items);
-  assert_int_equal(result_items->length, item_count);
-  assert_int_equal(result_items->item_size, item_size);
+  assert_int_equal(cchecks_items_length(result_items), item_count);
+  assert_int_equal(cchecks_items_item_size(result_items), item_size);
 
   CChecksItemsIterator items_iter = cchecks_items_iterator_new(result_items);
   size_t index = 0;
@@ -172,18 +172,18 @@ static void test_cchecks_check_result_warning(void **state) {
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
-  IntItem *items = malloc(item_size * item_count);
+  IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    items[i] = create_int_item(i, NULL);
+    IntItem item = create_int_item(i, NULL);
+    int_items_set(items, i, item);
   }
 
   bool can_fix = false;
   bool can_skip = false;
 
   CChecksCheckResult result = cchecks_check_result_warning(
-      message, (CChecksItem *)items, item_size, item_count, can_fix, can_skip,
-      int_items_destroy_fn);
+      message, (CChecksItems *)items, can_fix, can_skip);
 
   // Status
   assert_int_equal(cchecks_check_result_status(&result), CChecksStatusWarning);
@@ -193,8 +193,8 @@ static void test_cchecks_check_result_warning(void **state) {
   // Items
   CChecksItems const *result_items = cchecks_check_result_items(&result);
   assert_non_null(result_items);
-  assert_int_equal(result_items->length, item_count);
-  assert_int_equal(result_items->item_size, item_size);
+  assert_int_equal(cchecks_items_length(result_items), item_count);
+  assert_int_equal(cchecks_items_item_size(result_items), item_size);
 
   CChecksItemsIterator items_iter = cchecks_items_iterator_new(result_items);
   size_t index = 0;
@@ -221,18 +221,18 @@ static void test_cchecks_check_result_failed(void **state) {
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
-  IntItem *items = malloc(item_size * item_count);
+  IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    items[i] = create_int_item(i, NULL);
+    IntItem item = create_int_item(i, NULL);
+    int_items_set(items, i, item);
   }
 
   bool can_fix = false;
   bool can_skip = false;
 
   CChecksCheckResult result = cchecks_check_result_failed(
-      message, (CChecksItem *)items, item_size, item_count, can_fix, can_skip,
-      int_items_destroy_fn);
+      message, (CChecksItems *)items, can_fix, can_skip);
 
   // Status
   assert_int_equal(cchecks_check_result_status(&result), CChecksStatusFailed);
@@ -242,8 +242,8 @@ static void test_cchecks_check_result_failed(void **state) {
   // Items
   CChecksItems const *result_items = cchecks_check_result_items(&result);
   assert_non_null(result_items);
-  assert_int_equal(result_items->length, item_count);
-  assert_int_equal(result_items->item_size, item_size);
+  assert_int_equal(cchecks_items_length(result_items), item_count);
+  assert_int_equal(cchecks_items_item_size(result_items), item_size);
 
   CChecksItemsIterator items_iter = cchecks_items_iterator_new(result_items);
   size_t index = 0;
@@ -271,7 +271,7 @@ static void test_cchecks_check_result_destroy(void **state) {
   char *message;
   size_t item_count;
   size_t item_size;
-  IntItem *items;
+  IntItems *items;
   bool can_fix;
   bool can_skip;
   char *error;
@@ -287,9 +287,8 @@ static void test_cchecks_check_result_destroy(void **state) {
   can_skip = false;
   error = NULL;
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   cchecks_check_result_destroy(&result);
 
   // No pointers null.
@@ -297,18 +296,17 @@ static void test_cchecks_check_result_destroy(void **state) {
   message = "test";
   item_count = 5;
   item_size = sizeof(IntItem);
-  items = malloc(item_size * item_count);
+  items = create_int_items(item_count);
   can_fix = false;
   can_skip = false;
   error = "test";
 
   for (size_t i = 0; i < item_count; i++) {
-    items[i] = create_int_item(i, NULL);
+    int_items_set(items, i, create_int_item(i, NULL));
   }
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   cchecks_check_result_destroy(&result);
 }
 
@@ -317,7 +315,7 @@ static void test_cchecks_check_result_status(void **state) {
   char *message;
   size_t item_count;
   size_t item_size;
-  IntItem *items;
+  IntItems *items;
   bool can_fix;
   bool can_skip;
   char *error;
@@ -337,9 +335,8 @@ static void test_cchecks_check_result_status(void **state) {
     can_fix = false;
     can_skip = false;
     error = NULL;
-    result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                      item_size, item_count, can_fix, can_skip,
-                                      error, int_items_destroy_fn);
+    result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                      can_fix, can_skip, error);
     assert_int_equal(cchecks_check_result_status(&result), status);
     cchecks_check_result_destroy(&result);
   }
@@ -350,7 +347,7 @@ static void test_cchecks_check_result_message(void **state) {
   char *message;
   size_t item_count;
   size_t item_size;
-  IntItem *items;
+  IntItems *items;
   bool can_fix;
   bool can_skip;
   char *error;
@@ -367,9 +364,8 @@ static void test_cchecks_check_result_message(void **state) {
   can_skip = false;
   error = NULL;
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   msg = cchecks_check_result_message(&result);
   assert_string_equal(msg.string, "");
   cchecks_check_result_destroy(&result);
@@ -384,9 +380,8 @@ static void test_cchecks_check_result_message(void **state) {
   can_skip = false;
   error = NULL;
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   msg = cchecks_check_result_message(&result);
   assert_string_equal(msg.string, "test");
   cchecks_check_result_destroy(&result);
@@ -397,7 +392,7 @@ static void test_cchecks_check_result_items(void **state) {
   char *message;
   size_t item_count;
   size_t item_size;
-  IntItem *items;
+  IntItems *items;
   bool can_fix;
   bool can_skip;
   char *error;
@@ -416,9 +411,8 @@ static void test_cchecks_check_result_items(void **state) {
   can_skip = false;
   error = NULL;
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   result_items = cchecks_check_result_items(&result);
   assert_null(result_items);
 
@@ -434,19 +428,17 @@ static void test_cchecks_check_result_items(void **state) {
   message = NULL;
   item_count = 0;
   item_size = sizeof(IntItem);
-  items = malloc(item_size * item_count);
+  items = create_int_items(item_count);
   can_fix = false;
   can_skip = false;
   error = NULL;
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   result_items = cchecks_check_result_items(&result);
   assert_non_null(result_items);
-  assert_int_equal(result_items->item_size, item_size);
-  assert_int_equal(result_items->length, item_count);
-  assert_non_null(result_items->ptr);
+  assert_int_equal(cchecks_items_item_size(result_items), item_size);
+  assert_int_equal(cchecks_items_length(result_items), item_count);
 
   items_iter = cchecks_items_iterator_new(result_items);
   assert_int_equal(items_iter.index, 0);
@@ -464,21 +456,19 @@ static void test_cchecks_check_result_items(void **state) {
   message = NULL;
   item_count = 1;
   item_size = sizeof(IntItem);
-  items = malloc(item_size * item_count);
+  items = create_int_items(1);
   can_fix = false;
   can_skip = false;
   error = NULL;
 
-  items[0] = create_int_item(1, NULL);
+  int_items_set(items, 0, create_int_item(1, NULL));
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   result_items = cchecks_check_result_items(&result);
   assert_non_null(result_items);
-  assert_int_equal(result_items->item_size, item_size);
-  assert_int_equal(result_items->length, item_count);
-  assert_non_null(result_items->ptr);
+  assert_int_equal(cchecks_items_item_size(result_items), item_size);
+  assert_int_equal(cchecks_items_length(result_items), item_count);
 
   items_iter = cchecks_items_iterator_new(result_items);
   assert_int_equal(items_iter.index, 0);
@@ -529,9 +519,8 @@ static void test_cchecks_check_result_can_fix(void **state) {
     can_skip = false;
     error = NULL;
 
-    result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                      item_size, item_count, can_fix, can_skip,
-                                      error, int_items_destroy_fn);
+    result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                      can_fix, can_skip, error);
 
     assert_int_equal(cchecks_check_result_can_fix(&result), expected[i]);
     cchecks_check_result_destroy(&result);
@@ -548,9 +537,8 @@ static void test_cchecks_check_result_can_fix(void **state) {
     can_skip = false;
     error = NULL;
 
-    result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                      item_size, item_count, can_fix, can_skip,
-                                      error, int_items_destroy_fn);
+    result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                      can_fix, can_skip, error);
 
     assert_int_equal(cchecks_check_result_can_fix(&result), false);
     cchecks_check_result_destroy(&result);
@@ -586,9 +574,8 @@ static void test_cchecks_check_result_can_skip(void **state) {
     can_skip = true;
     error = NULL;
 
-    result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                      item_size, item_count, can_fix, can_skip,
-                                      error, int_items_destroy_fn);
+    result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                      can_fix, can_skip, error);
 
     assert_int_equal(cchecks_check_result_can_skip(&result), expected[i]);
     cchecks_check_result_destroy(&result);
@@ -605,9 +592,8 @@ static void test_cchecks_check_result_can_skip(void **state) {
     can_skip = false;
     error = NULL;
 
-    result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                      item_size, item_count, can_fix, can_skip,
-                                      error, int_items_destroy_fn);
+    result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                      can_fix, can_skip, error);
 
     assert_int_equal(cchecks_check_result_can_skip(&result), false);
     cchecks_check_result_destroy(&result);
@@ -624,7 +610,7 @@ static void test_cchecks_check_result_error(void **state) {
   bool can_skip;
   char *error;
   CChecksCheckResult result;
-  CChecksStringView msg;
+  const char *msg;
 
   // Null error.
   status = CChecksStatusPassed;
@@ -636,11 +622,10 @@ static void test_cchecks_check_result_error(void **state) {
   can_skip = false;
   error = NULL;
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   msg = cchecks_check_result_error(&result);
-  assert_string_equal(msg.string, "");
+  assert_string_equal(msg, "");
   cchecks_check_result_destroy(&result);
 
   // Non-null message.
@@ -653,11 +638,10 @@ static void test_cchecks_check_result_error(void **state) {
   can_skip = false;
   error = "error";
 
-  result = cchecks_check_result_new(status, message, (CChecksItem *)items,
-                                    item_size, item_count, can_fix, can_skip,
-                                    error, int_items_destroy_fn);
+  result = cchecks_check_result_new(status, message, (CChecksItems *)items,
+                                    can_fix, can_skip, error);
   msg = cchecks_check_result_error(&result);
-  assert_string_equal(msg.string, "error");
+  assert_string_equal(msg, "error");
   cchecks_check_result_destroy(&result);
 }
 
@@ -673,8 +657,7 @@ static void test_cchecks_check_result_check_duration(void **state) {
   char *error = NULL;
 
   CChecksCheckResult result = cchecks_check_result_new(
-      status, message, (CChecksItem *)items, item_size, item_count, can_fix,
-      can_skip, error, int_items_destroy_fn);
+      status, message, (CChecksItems *)items, can_fix, can_skip, error);
 
   assert_double_equal(cchecks_check_result_check_duration(&result), 0.0,
                       DBL_EPSILON);
@@ -694,8 +677,7 @@ static void test_cchecks_check_result_fix_duration(void **state) {
   char *error = NULL;
 
   CChecksCheckResult result = cchecks_check_result_new(
-      status, message, (CChecksItem *)items, item_size, item_count, can_fix,
-      can_skip, error, int_items_destroy_fn);
+      status, message, (CChecksItems *)items, can_fix, can_skip, error);
 
   assert_double_equal(cchecks_check_result_fix_duration(&result), 0.0,
                       DBL_EPSILON);

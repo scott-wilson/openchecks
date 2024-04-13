@@ -18,7 +18,9 @@ pub use item::{
 };
 pub use items::{
     cchecks_item_iterator_is_done, cchecks_item_iterator_item, cchecks_item_iterator_next,
-    cchecks_items_iterator_new, cchecks_items_new, CChecksItems, CChecksItemsIterator,
+    cchecks_items_clone, cchecks_items_destroy, cchecks_items_eq, cchecks_items_get,
+    cchecks_items_item_size, cchecks_items_iterator_new, cchecks_items_length, CChecksItems,
+    CChecksItemsIterator,
 };
 pub use result::{
     cchecks_check_result_can_fix, cchecks_check_result_can_skip,
