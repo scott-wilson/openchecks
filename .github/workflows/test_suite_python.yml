@@ -93,7 +93,7 @@ jobs:
         run: |
           python -m ruff format --check .
       - name: Build Rust
-        uses: PyO3/maturin-action@6c040287d49afcbdb94da54484e3e17051e60e53 # v1.42.0
+        uses: PyO3/maturin-action@bf468cfccfe9a3fec2554b0eebf2e9276cf066aa # v1.42.1
         with:
           command: develop
           sccache: 'true'
