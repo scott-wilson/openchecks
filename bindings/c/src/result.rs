@@ -208,8 +208,9 @@ impl CChecksCheckResult {
 /// The message pointer must not be null. It is also copied, so the caller may
 /// be able to free the memory once the method is called.
 ///
-/// The items can be null if there are no items. Also, the items pointer must be
-/// `item_size * item_count` in bytes.
+/// The items can be null if there are no items. Also, the result will take
+/// ownership of the pointer and be responsible for cleaning it once the result
+/// is destroyed.
 ///
 /// Error can be a null pointer. It is also copied, so the caller may be able to
 /// free the memory once the method is called.
@@ -232,8 +233,9 @@ pub unsafe extern "C" fn cchecks_check_result_new(
 /// The message pointer must not be null. It is also copied, so the caller may
 /// be able to free the memory once the method is called.
 ///
-/// The items can be null if there are no items. Also, the items pointer must be
-/// `item_size * item_count` in bytes.
+/// The items can be null if there are no items. Also, the result will take
+/// ownership of the pointer and be responsible for cleaning it once the result
+/// is destroyed.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_passed(
     message: *const c_char,
@@ -258,8 +260,9 @@ pub unsafe extern "C" fn cchecks_check_result_passed(
 /// The message pointer must not be null. It is also copied, so the caller may
 /// be able to free the memory once the method is called.
 ///
-/// The items can be null if there are no items. Also, the items pointer must be
-/// `item_size * item_count` in bytes.
+/// The items can be null if there are no items. Also, the result will take
+/// ownership of the pointer and be responsible for cleaning it once the result
+/// is destroyed.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_skipped(
     message: *const c_char,
@@ -288,8 +291,9 @@ pub unsafe extern "C" fn cchecks_check_result_skipped(
 /// The message pointer must not be null. It is also copied, so the caller may
 /// be able to free the memory once the method is called.
 ///
-/// The items can be null if there are no items. Also, the items pointer must be
-/// `item_size * item_count` in bytes.
+/// The items can be null if there are no items. Also, the result will take
+/// ownership of the pointer and be responsible for cleaning it once the result
+/// is destroyed.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_warning(
     message: *const c_char,
@@ -318,8 +322,9 @@ pub unsafe extern "C" fn cchecks_check_result_warning(
 /// The message pointer must not be null. It is also copied, so the caller may
 /// be able to free the memory once the method is called.
 ///
-/// The items can be null if there are no items. Also, the items pointer must be
-/// `item_size * item_count` in bytes.
+/// The items can be null if there are no items. Also, the result will take
+/// ownership of the pointer and be responsible for cleaning it once the result
+/// is destroyed.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_check_result_failed(
     message: *const c_char,
