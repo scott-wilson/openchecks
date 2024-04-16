@@ -1,128 +1,192 @@
 #pragma once
 
-extern "C"
-{
-#include <cchecks.h>
-}
-
 #include <algorithm>
+#include <cstring>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <cstring>
+
+extern "C" {
+#include <cchecks.h>
+}
 
 #include "cppchecks/core.h"
 #include "cppchecks/item.h"
 #include "cppchecks/items.h"
 #include "cppchecks/status.h"
 
-namespace CPPCHECKS_NAMESPACE
-{
-    template <class T>
-    class CheckResult
-    {
-    public:
-        CheckResult(CPPCHECKS_NAMESPACE::Status status, const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip, std::string error) : _items(items)
-        {
-            CChecksStatus cstatus = status.c_status();
-            const char *cmessage = message.c_str();
-            size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-            size_t item_count = items.size();
-            const char *cerror = error.c_str();
+namespace CPPCHECKS_NAMESPACE {
+template <class T> class BaseCheck;
 
-            _result = cchecks_check_result_new(cstatus, cmessage, (CChecksItem *)_items.data(), item_size, item_count, can_fix, can_skip, cerror, items_destroy_fn);
-        }
+template <class T> class CheckResult : private CChecksCheckResult {
+public:
+  friend class BaseCheck<T>;
+  CheckResult(CPPCHECKS_NAMESPACE::Status status, const std::string &message,
+              const std::optional<Items<T>> &items, bool can_fix, bool can_skip,
+              std::optional<std::string> error = std::nullopt) {
+    CChecksStatus cstatus = status.c_status();
+    const char *cmessage = message.c_str();
+    size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
+    size_t item_count = 0;
+    CChecksItems *citems = nullptr;
 
-        static CheckResult passed(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
-        {
-            return CheckResult{CPPCHECKS_NAMESPACE::Status::Passed, message, items, can_fix, can_skip, ""};
-        }
+    if (items) {
+      item_count = items.value().length();
+      citems = cchecks_items_clone((CChecksItems *)&(items.value()));
+    }
 
-        static CheckResult skipped(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
-        {
-            return CheckResult{CPPCHECKS_NAMESPACE::Status::Skipped, message, items, can_fix, can_skip, ""};
-        }
+    const char *cerror;
 
-        static CheckResult warning(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
-        {
-            return CheckResult{CPPCHECKS_NAMESPACE::Status::Warning, message, items, can_fix, can_skip, ""};
-        }
+    if (error.has_value()) {
+      cerror = error.value().c_str();
+    } else {
+      cerror = nullptr;
+    }
 
-        static CheckResult failed(const std::string &message, const std::vector<CPPCHECKS_NAMESPACE::Item<T>> &items, bool can_fix, bool can_skip)
-        {
-            return CheckResult{CPPCHECKS_NAMESPACE::Status::Failed, message, items, can_fix, can_skip, ""};
-        }
+    CChecksCheckResult result = cchecks_check_result_new(
+        cstatus, cmessage, citems, can_fix, can_skip, cerror);
 
-        virtual ~CheckResult()
-        {
-            // TODO: This causes double frees.
-            // cchecks_check_result_destroy(&this->_result);
-        }
+    CChecksCheckResult::status = result.status;
+    CChecksCheckResult::message = result.message;
+    CChecksCheckResult::items = result.items;
+    CChecksCheckResult::can_fix = result.can_fix;
+    CChecksCheckResult::can_skip = result.can_skip;
+    CChecksCheckResult::error = result.error;
+    CChecksCheckResult::check_duration = result.check_duration;
+    CChecksCheckResult::fix_duration = result.fix_duration;
 
-        const CPPCHECKS_NAMESPACE::Status status() const
-        {
-            return CPPCHECKS_NAMESPACE::Status(cchecks_check_result_status((CChecksCheckResult *)&_result));
-        }
+    result.message = nullptr;
+    result.items = nullptr;
+    result.error = nullptr;
+  }
 
-        std::string_view message() const
-        {
-            return std::string_view(cchecks_check_result_message(&_result).string);
-        }
+  CheckResult(CChecksCheckResult &result) {
+    CChecksCheckResult c_result =
+        cchecks_check_result_new(result.status, result.message, result.items,
+                                 result.can_fix, result.can_skip, result.error);
 
-        CPPCHECKS_NAMESPACE::Items<T> items() const
-        {
-            const CChecksItems *citems = cchecks_check_result_items(&_result);
+    CChecksCheckResult::status = c_result.status;
+    CChecksCheckResult::message = c_result.message;
+    CChecksCheckResult::items = c_result.items;
+    CChecksCheckResult::can_fix = c_result.can_fix;
+    CChecksCheckResult::can_skip = c_result.can_skip;
+    CChecksCheckResult::error = c_result.error;
+    CChecksCheckResult::check_duration = result.check_duration;
+    CChecksCheckResult::fix_duration = result.fix_duration;
 
-            const CChecksItem *ptr = citems->ptr;
-            auto items = CPPCHECKS_NAMESPACE::Items<T>((const CPPCHECKS_NAMESPACE::Item<T> *)ptr, citems->length);
-            return items;
-        }
+    c_result.message = nullptr;
+    c_result.items = nullptr;
+    c_result.error = nullptr;
+  }
 
-        bool can_fix() const
-        {
-            return cchecks_check_result_can_fix(&_result);
-        }
+  CheckResult(CheckResult &result) {
+    CChecksCheckResult c_result =
+        cchecks_check_result_new(result.status, result.message, result.items,
+                                 result.can_fix, result.can_skip, result.error);
 
-        bool can_skip() const
-        {
-            return cchecks_check_result_can_skip(&_result);
-        }
+    CChecksCheckResult::status = c_result.status;
+    CChecksCheckResult::message = c_result.message;
+    CChecksCheckResult::items = c_result.items;
+    CChecksCheckResult::can_fix = c_result.can_fix;
+    CChecksCheckResult::can_skip = c_result.can_skip;
+    CChecksCheckResult::error = c_result.error;
+    CChecksCheckResult::check_duration = result.check_duration;
+    CChecksCheckResult::fix_duration = result.fix_duration;
 
-        std::string error() const
-        {
-            CChecksStringView cerr = cchecks_check_result_error(&_result);
+    c_result.message = nullptr;
+    c_result.items = nullptr;
+    c_result.error = nullptr;
+  }
 
-            if (!cerr.string)
-            {
-                return std::string();
-            }
-            else
-            {
-                return std::string(cerr.string);
-            }
-        }
+  static CheckResult passed(const std::string &message, const Items<T> &items,
+                            bool can_fix, bool can_skip) {
+    return CheckResult{CPPCHECKS_NAMESPACE::Status::Passed,
+                       message,
+                       items,
+                       can_fix,
+                       can_skip,
+                       std::nullopt};
+  }
 
-        double check_duration() const
-        {
-            return cchecks_check_result_check_duration(&_result);
-        }
+  static CheckResult skipped(const std::string &message, const Items<T> &items,
+                             bool can_fix, bool can_skip) {
+    return CheckResult{CPPCHECKS_NAMESPACE::Status::Skipped,
+                       message,
+                       items,
+                       can_fix,
+                       can_skip,
+                       std::nullopt};
+  }
 
-        double fix_duration() const
-        {
-            return cchecks_check_result_fix_duration(&_result);
-        }
+  static CheckResult warning(const std::string &message, const Items<T> &items,
+                             bool can_fix, bool can_skip) {
+    return CheckResult{CPPCHECKS_NAMESPACE::Status::Warning,
+                       message,
+                       items,
+                       can_fix,
+                       can_skip,
+                       std::nullopt};
+  }
 
-    private:
-        CheckResult() {}
-        CheckResult(CChecksCheckResult result) : _result(result) {}
-        CChecksCheckResult _result;
-        std::vector<CPPCHECKS_NAMESPACE::Item<T>> _items;
+  static CheckResult failed(const std::string &message, const Items<T> &items,
+                            bool can_fix, bool can_skip) {
+    return CheckResult{CPPCHECKS_NAMESPACE::Status::Failed,
+                       message,
+                       items,
+                       can_fix,
+                       can_skip,
+                       std::nullopt};
+  }
 
-        static void items_destroy_fn(CChecksItem *item)
-        {
-            // Do not destroy the items, since C++ will handle the destruction.
-            // The items are owned by the class itself, and the C result type references it.
-        }
-    };
+  virtual ~CheckResult() {
+    cchecks_check_result_destroy((CChecksCheckResult *)this);
+  }
+
+  const CPPCHECKS_NAMESPACE::Status status() const {
+    return CPPCHECKS_NAMESPACE::Status(
+        cchecks_check_result_status((CChecksCheckResult *)this));
+  }
+
+  std::string_view message() const {
+    return std::string_view(cchecks_check_result_message(this).string);
+  }
+
+  const std::optional<CPPCHECKS_NAMESPACE::Items<T>> items() const {
+    const CPPCHECKS_NAMESPACE::Items<T> *items =
+        (const CPPCHECKS_NAMESPACE::Items<T> *)cchecks_check_result_items(this);
+
+    if (items == nullptr) {
+      return std::nullopt;
+    } else {
+      return std::optional<CPPCHECKS_NAMESPACE::Items<T>>(*items);
+    }
+  }
+
+  bool can_fix() const { return cchecks_check_result_can_fix(this); }
+
+  bool can_skip() const { return cchecks_check_result_can_skip(this); }
+
+  std::optional<std::string_view> error() const {
+    const char *cerr = cchecks_check_result_error(this);
+
+    if (cerr == nullptr) {
+      return std::nullopt;
+    } else {
+      return std::optional<std::string_view>(cerr);
+    }
+  }
+
+  double check_duration() const {
+    return cchecks_check_result_check_duration(this);
+  }
+
+  double fix_duration() const {
+    return cchecks_check_result_fix_duration(this);
+  }
+
+private:
+  CheckResult() {}
+};
 
 } // namespace CPPCHECKS_NAMESPACE

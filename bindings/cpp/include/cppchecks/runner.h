@@ -1,28 +1,28 @@
 #pragma once
 
-extern "C"
-{
+#include <bitset>
+#include <string>
+
+extern "C" {
 #include <cchecks.h>
 }
 
-#include <string>
-#include <bitset>
-
-#include "cppchecks/core.h"
 #include "cppchecks/check.h"
+#include "cppchecks/core.h"
 #include "cppchecks/result.h"
 
-namespace CPPCHECKS_NAMESPACE
-{
-    template <class T>
-    CPPCHECKS_NAMESPACE::CheckResult<T> run(const CPPCHECKS_NAMESPACE::BaseCheck<T> &check)
-    {
-        CPPCHECKS_NAMESPACE::CheckResult(cchecks_run(&check._check));
-    }
+namespace CPPCHECKS_NAMESPACE {
+template <class T>
+CPPCHECKS_NAMESPACE::CheckResult<T>
+run(const CPPCHECKS_NAMESPACE::BaseCheck<T> &check) {
+  CPPCHECKS_NAMESPACE::CheckResult(cchecks_run(&check.c_check()));
+}
 
-    template <class T>
-    CPPCHECKS_NAMESPACE::CheckResult<T> auto_fix(CPPCHECKS_NAMESPACE::BaseCheck<T> &check)
-    {
-        CPPCHECKS_NAMESPACE::CheckResult(cchecks_auto_fix(&check._check));
-    }
+template <class T>
+CPPCHECKS_NAMESPACE::CheckResult<T>
+auto_fix(CPPCHECKS_NAMESPACE::BaseCheck<T> &check) {
+  CChecksBaseCheck *c_check = (CChecksBaseCheck *)&check;
+  CChecksCheckResult c_result = cchecks_auto_fix(c_check);
+  return CPPCHECKS_NAMESPACE::CheckResult<T>{c_result};
+}
 } // namespace CPPCHECKS_NAMESPACE

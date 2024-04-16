@@ -1,7 +1,4 @@
-#include <gtest/gtest.h>
 #include <cppchecks/check.h>
+#include <gtest/gtest.h>
 
-TEST(Check, ItWorks)
-{
-    ASSERT_EQ(1, 1);
-}
+TEST(Check, ItWorks) { ASSERT_EQ(1, 1); }

@@ -8,7 +8,10 @@ set(TESTS
 )
 set(TEST_HEADERS
     item_impl.h
+    items_impl.h
 )
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_WITH_CHECK_COVERAGE)
     SET(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")

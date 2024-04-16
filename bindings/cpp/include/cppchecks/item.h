@@ -1,163 +1,154 @@
 #pragma once
 
-extern "C"
-{
+#include <cstring>
+#include <sstream>
+#include <string>
+#include <string_view>
+
+extern "C" {
 #include <cchecks.h>
 }
 
-#include <string>
-#include <string_view>
-#include <cstring>
-#include <sstream>
-
 #include "cppchecks/core.h"
 
-namespace CPPCHECKS_NAMESPACE
-{
-    namespace _private
-    {
-        void destroy_str_fn(struct CChecksString *str)
-        {
-            delete[] str->string;
-        }
-    } // namespace _private
+namespace CPPCHECKS_NAMESPACE {
+namespace _private {
+void destroy_str_fn(struct CChecksString *str) { delete[] str->string; }
+} // namespace _private
 
-    template <class T>
-    class Item : private CChecksItem
-    {
-    public:
-        Item(const T &value, const std::string &type_hint) : _value(value), _type_hint(type_hint)
-        {
-            this->init();
-        }
+template <class T> class Item : private CChecksItem {
+public:
+  Item(const T &value, const std::string &type_hint)
+      : _value(value), _type_hint(type_hint) {
+    this->init();
+  }
 
-        virtual ~Item() {}
+  Item(const Item<T> &other) { this->clone(other); }
 
-        virtual void clone(const Item<T> &other)
-        {
-            this->clone(&other);
-        }
+  virtual ~Item() {}
 
-        virtual void clone(const Item<T> *other)
-        {
-            this->init();
-            this->_value = other->value();
-            this->_type_hint = other->type_hint();
-        }
+  virtual void clone(const Item<T> &other) { this->clone(&other); }
 
-        const T &value() const { return this->_value; }
-        const std::string &type_hint() const { return this->_type_hint; }
+  virtual void clone(const Item<T> *other) {
+    this->init();
+    this->_value = other->value();
+    this->_type_hint = other->type_hint();
+  }
 
-        // Display
-        virtual std::string display() const
-        {
-            return std::to_string(this->value());
-        }
-        // Debug
-        virtual std::string debug() const
-        {
-            std::ostringstream stream;
+  const T &value() const { return this->_value; }
+  const std::string &type_hint() const { return this->_type_hint; }
 
-            stream << "Item(" << this->display() << ")";
+  // Display
+  virtual std::string display() const { return std::to_string(this->value()); }
+  // Debug
+  virtual std::string debug() const {
+    std::ostringstream stream;
 
-            return stream.str();
-        }
+    stream << "Item(" << this->display() << ")";
 
-        // Ordering
-        virtual inline bool operator<(const Item<T> &other) const { return this->value() < other.value(); }
-        virtual inline bool operator>(const Item<T> &other) const { return other < *this; }
-        virtual inline bool operator<=(const Item<T> &other) const { return !(*this > other); }
-        virtual inline bool operator>=(const Item<T> &other) const { return !(*this < other); }
+    return stream.str();
+  }
 
-        // Comparison
-        virtual inline bool operator==(const Item<T> &other) const { return this->value() == other.value(); }
-        virtual inline bool operator!=(const Item<T> &other) const { return !(*this == other); }
+  // Ordering
+  virtual inline bool operator<(const Item<T> &other) const {
+    return this->value() < other.value();
+  }
+  virtual inline bool operator>(const Item<T> &other) const {
+    return other < *this;
+  }
+  virtual inline bool operator<=(const Item<T> &other) const {
+    return !(*this > other);
+  }
+  virtual inline bool operator>=(const Item<T> &other) const {
+    return !(*this < other);
+  }
 
-    private:
-        T _value;
-        std::string _type_hint;
+  // Comparison
+  virtual inline bool operator==(const Item<T> &other) const {
+    return this->value() == other.value();
+  }
+  virtual inline bool operator!=(const Item<T> &other) const {
+    return !(*this == other);
+  }
 
-        void init()
-        {
-            this->type_hint_fn = _type_hint_impl;
-            this->value_fn = _value_impl;
-            this->clone_fn = _clone_impl;
-            this->destroy_fn = _destroy_impl;
-            this->debug_fn = _debug_impl;
-            this->display_fn = _display_impl;
-            this->lt_fn = _lt_impl;
-            this->eq_fn = _eq_impl;
-        }
+private:
+  T _value;
+  std::string _type_hint;
 
-        static const char *_type_hint_impl(const CChecksItem *item)
-        {
-            const char *type_hint = ((Item<T> *)item)->type_hint().c_str();
+  explicit Item() { this->init(); }
 
-            if (type_hint == nullptr || std::string_view(type_hint).empty())
-            {
-                return nullptr;
-            }
+  void init() {
+    this->type_hint_fn = _type_hint_impl;
+    this->value_fn = _value_impl;
+    this->clone_fn = _clone_impl;
+    this->destroy_fn = _destroy_impl;
+    this->debug_fn = _debug_impl;
+    this->display_fn = _display_impl;
+    this->lt_fn = _lt_impl;
+    this->eq_fn = _eq_impl;
+  }
 
-            return type_hint;
-        }
+  static const char *_type_hint_impl(const CChecksItem *item) {
+    const char *type_hint = ((Item<T> *)item)->type_hint().c_str();
 
-        static const void *_value_impl(const CChecksItem *item)
-        {
-            const T *value = &((Item<T> *)item)->value();
+    if (type_hint == nullptr || std::string_view(type_hint).empty()) {
+      return nullptr;
+    }
 
-            return (void *)value;
-        }
+    return type_hint;
+  }
 
-        static void _clone_impl(const CChecksItem *item, CChecksItem *other)
-        {
-            ((Item<T> *)item)->clone((Item<T> *)other);
-        }
+  static const void *_value_impl(const CChecksItem *item) {
+    const T *value = &((Item<T> *)item)->value();
 
-        static void _destroy_impl(CChecksItem *item)
-        {
-            ((Item<T> *)item)->~Item();
-        };
+    return (void *)value;
+  }
 
-        static CChecksString _debug_impl(const CChecksItem *item)
-        {
-            Item<T> *cppitem = (Item<T> *)item;
+  static CChecksItem *_clone_impl(const CChecksItem *other) {
+    Item<T> *item = new Item<T>{};
+    item->clone((Item<T> *)other);
 
-            std::string msg = cppitem->display();
+    return (CChecksItem *)item;
+  }
 
-            char *cstr = new char[msg.length() + 1];
-            std::strcpy(cstr, msg.c_str());
+  static void _destroy_impl(CChecksItem *item) { ((Item<T> *)item)->~Item(); };
 
-            CChecksString cchecks_msg;
-            cchecks_msg.string = cstr;
-            cchecks_msg.destroy_fn = CPPCHECKS_NAMESPACE::_private::destroy_str_fn;
+  static CChecksString _debug_impl(const CChecksItem *item) {
+    Item<T> *cppitem = (Item<T> *)item;
 
-            return cchecks_msg;
-        }
+    std::string msg = cppitem->display();
 
-        static CChecksString _display_impl(const CChecksItem *item)
-        {
-            Item<T> *cppitem = (Item<T> *)item;
+    char *cstr = new char[msg.length() + 1];
+    std::strcpy(cstr, msg.c_str());
 
-            std::string msg = cppitem->display();
+    CChecksString cchecks_msg;
+    cchecks_msg.string = cstr;
+    cchecks_msg.destroy_fn = CPPCHECKS_NAMESPACE::_private::destroy_str_fn;
 
-            char *cstr = new char[msg.length() + 1];
-            std::strcpy(cstr, msg.c_str());
+    return cchecks_msg;
+  }
 
-            CChecksString cchecks_msg;
-            cchecks_msg.string = cstr;
-            cchecks_msg.destroy_fn = CPPCHECKS_NAMESPACE::_private::destroy_str_fn;
+  static CChecksString _display_impl(const CChecksItem *item) {
+    Item<T> *cppitem = (Item<T> *)item;
 
-            return cchecks_msg;
-        }
+    std::string msg = cppitem->display();
 
-        static bool _lt_impl(const CChecksItem *item, const CChecksItem *other)
-        {
-            return (*(Item<T> *)item) < (*(Item<T> *)other);
-        }
+    char *cstr = new char[msg.length() + 1];
+    std::strcpy(cstr, msg.c_str());
 
-        static bool _eq_impl(const CChecksItem *item, const CChecksItem *other)
-        {
-            return (*(Item<T> *)item) == (*(Item<T> *)other);
-        }
-    };
+    CChecksString cchecks_msg;
+    cchecks_msg.string = cstr;
+    cchecks_msg.destroy_fn = CPPCHECKS_NAMESPACE::_private::destroy_str_fn;
+
+    return cchecks_msg;
+  }
+
+  static bool _lt_impl(const CChecksItem *item, const CChecksItem *other) {
+    return (*(Item<T> *)item) < (*(Item<T> *)other);
+  }
+
+  static bool _eq_impl(const CChecksItem *item, const CChecksItem *other) {
+    return (*(Item<T> *)item) == (*(Item<T> *)other);
+  }
+};
 } // namespace CPPCHECKS_NAMESPACE
