@@ -55,6 +55,8 @@ CChecksItem *int_item_clone_fn(const CChecksItem *item) {
   IntItem *old_item = (IntItem *)item;
   IntItem *new_int_item = malloc(sizeof(IntItem));
   int_item_clone_in_place(old_item, new_int_item);
+
+  return (CChecksItem *)new_int_item;
 }
 
 void int_item_destroy_fn(CChecksItem *item) {
