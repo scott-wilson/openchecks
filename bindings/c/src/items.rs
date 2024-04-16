@@ -29,6 +29,13 @@ pub struct CChecksItems {
     ///
     /// The container pointer must not be null.
     pub item_size_fn: unsafe extern "C" fn(*const Self) -> usize,
+    /// The compare function is used to compare containers.
+    ///
+    /// # Safety
+    ///
+    /// This must support comparing a null with another null or non-null value.
+    /// Null == null is true, but null != non-null is false.
+    pub eq_fn: unsafe extern "C" fn(*const Self, *const Self) -> bool,
     /// Destroy the container.
     ///
     /// # Safety
@@ -108,28 +115,7 @@ pub unsafe extern "C" fn cchecks_items_eq(
     items: *const CChecksItems,
     other_items: *const CChecksItems,
 ) -> bool {
-    if items.is_null() {
-        panic!("items pointer is null");
-    } else if other_items.is_null() {
-        panic!("other_items pointer is null");
-    }
-
-    if cchecks_items_length(items) != cchecks_items_length(other_items) {
-        return false;
-    } else if cchecks_items_item_size(items) != cchecks_items_item_size(other_items) {
-        return false;
-    } else {
-        for index in 0..cchecks_items_length(items) {
-            let item = cchecks_items_get(items, index);
-            let other_item = cchecks_items_get(other_items, index);
-
-            if !crate::item::cchecks_item_eq(item, other_item) {
-                return false;
-            }
-        }
-    }
-
-    true
+    ((*items).eq_fn)(items, other_items)
 }
 
 #[no_mangle]

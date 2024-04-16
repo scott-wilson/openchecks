@@ -225,6 +225,15 @@ typedef struct CChecksItems {
    */
   size_t (*item_size_fn)(const struct CChecksItems*);
   /**
+   * The compare function is used to compare containers.
+   *
+   * # Safety
+   *
+   * This must support comparing a null with another null or non-null value.
+   * Null == null is true, but null != non-null is false.
+   */
+  bool (*eq_fn)(const struct CChecksItems*, const struct CChecksItems*);
+  /**
    * Destroy the container.
    *
    * # Safety
@@ -511,8 +520,9 @@ const char *cchecks_check_result_error(const struct CChecksCheckResult *result);
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_failed(const char *message,
                                                       struct CChecksItems *items,
@@ -564,8 +574,9 @@ struct CChecksStringView cchecks_check_result_message(const struct CChecksCheckR
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  *
  * Error can be a null pointer. It is also copied, so the caller may be able to
  * free the memory once the method is called.
@@ -585,8 +596,9 @@ struct CChecksCheckResult cchecks_check_result_new(enum CChecksStatus status,
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_passed(const char *message,
                                                       struct CChecksItems *items,
@@ -601,8 +613,9 @@ struct CChecksCheckResult cchecks_check_result_passed(const char *message,
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_skipped(const char *message,
                                                        struct CChecksItems *items,
@@ -630,8 +643,9 @@ enum CChecksStatus cchecks_check_result_status(const struct CChecksCheckResult *
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_warning(const char *message,
                                                        struct CChecksItems *items,
