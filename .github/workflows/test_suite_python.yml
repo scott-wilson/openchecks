@@ -52,7 +52,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           submodules: recursive
       - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
@@ -93,7 +93,7 @@ jobs:
         run: |
           python -m ruff format --check .
       - name: Build Rust
-        uses: PyO3/maturin-action@6c040287d49afcbdb94da54484e3e17051e60e53 # v1.42.0
+        uses: PyO3/maturin-action@bf468cfccfe9a3fec2554b0eebf2e9276cf066aa # v1.42.1
         with:
           command: develop
           sccache: 'true'
