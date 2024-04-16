@@ -12,6 +12,9 @@ status_has_passed
 status_is_pending
 )
 
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang)
+
 project(cchecks_fuzz)
 
 link_directories("${PROJECT_SOURCE_DIR}/../build")

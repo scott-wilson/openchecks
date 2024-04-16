@@ -160,6 +160,30 @@ size_t int_items_item_size_fn(const CChecksItems *items) {
   return sizeof(IntItem);
 }
 
+bool int_items_eq_fn(const struct CChecksItems *items,
+                     const struct CChecksItems *other_items) {
+  if (items == NULL && other_items == NULL) {
+    return true;
+  } else if (items == NULL && other_items != NULL) {
+    return false;
+  } else if (items != NULL && other_items == NULL) {
+    return false;
+  } else if (cchecks_items_length(items) != cchecks_items_length(other_items)) {
+    return false;
+  }
+
+  for (size_t i = 0; i < cchecks_items_length(items); i++) {
+    const struct CChecksItem *item = cchecks_items_get(items, i);
+    const struct CChecksItem *other_item = cchecks_items_get(other_items, i);
+
+    if (!cchecks_item_eq(item, other_item)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void int_items_destroy_fn(CChecksItems *items) { delete ((IntItems *)items); }
 
 IntItems *create_int_items(size_t length) {
@@ -168,6 +192,7 @@ IntItems *create_int_items(size_t length) {
   int_items->header.clone_fn = int_items_clone_fn;
   int_items->header.length_fn = int_items_length_fn;
   int_items->header.item_size_fn = int_items_item_size_fn;
+  int_items->header.eq_fn = int_items_eq_fn;
   int_items->header.destroy_fn = int_items_destroy_fn;
 
   int_items->values = std::vector<IntItem>();
