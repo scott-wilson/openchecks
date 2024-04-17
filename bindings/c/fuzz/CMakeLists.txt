@@ -27,7 +27,7 @@ foreach(FUZZ_TARGET ${FUZZ_TARGETS})
     )
 
     if (MSVC)
-        target_compile_options(${FUZZ_TARGET} PRIVATE -WX -Wall)
+        target_compile_options(${FUZZ_TARGET} PRIVATE -WX -W4)
     else()
         target_compile_options(${FUZZ_TARGET} PRIVATE -Werror -Wall)
     endif()

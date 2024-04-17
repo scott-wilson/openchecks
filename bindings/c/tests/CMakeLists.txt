@@ -46,7 +46,7 @@ foreach(TEST ${TESTS})
     )
 
     if (MSVC)
-        target_compile_options(${TEST} PRIVATE -WX -Wall)
+        target_compile_options(${TEST} PRIVATE -WX -W4)
     else()
         target_compile_options(${TEST} PRIVATE -Werror -Wall)
     endif()
