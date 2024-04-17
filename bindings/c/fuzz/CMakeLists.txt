@@ -25,7 +25,13 @@ foreach(FUZZ_TARGET ${FUZZ_TARGETS})
     target_include_directories(${FUZZ_TARGET} PRIVATE
         "${PROJECT_SOURCE_DIR}/../include"
     )
-    target_compile_options(${FUZZ_TARGET} PRIVATE -Werror -Wall)
+
+    if (MSVC)
+        target_compile_options(${FUZZ_TARGET} PRIVATE -WX -Wall)
+    else()
+        target_compile_options(${FUZZ_TARGET} PRIVATE -Werror -Wall)
+    endif()
+
     target_link_libraries(${FUZZ_TARGET}
         PUBLIC
         cchecks

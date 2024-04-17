@@ -34,6 +34,12 @@ foreach(TEST ${TESTS})
         gtest_main
         cppchecks
     )
-    target_compile_options(${TEST} PRIVATE -Werror -Wall)
+
+    if (MSVC)
+        target_compile_options(${TEST} PRIVATE -WX -Wall)
+    else()
+        target_compile_options(${TEST} PRIVATE -Werror -Wall)
+    endif()
+
     add_test(NAME ${TEST} COMMAND ${TEST})
 endforeach()
