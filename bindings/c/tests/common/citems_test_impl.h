@@ -36,6 +36,7 @@ size_t int_items_length_fn(const CChecksItems *items) {
 }
 
 size_t int_items_item_size_fn(const CChecksItems *items) {
+  (void)items; // Ignoring because the item size is fixed.
   return sizeof(IntItem);
 }
 

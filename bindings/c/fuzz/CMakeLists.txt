@@ -27,6 +27,7 @@ foreach(FUZZ_TARGET ${FUZZ_TARGETS})
     )
 
     if (MSVC)
+        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
         target_compile_options(${FUZZ_TARGET} PRIVATE -WX -W4)
     else()
         target_compile_options(${FUZZ_TARGET} PRIVATE -Werror -Wall)

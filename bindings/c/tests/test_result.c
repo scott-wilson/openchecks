@@ -24,7 +24,7 @@ static void test_cchecks_check_result_new(void **state) {
   IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    IntItem item = create_int_item(i, NULL);
+    IntItem item = create_int_item((int)i, NULL);
     int_items_set(items, i, item);
   }
 
@@ -79,7 +79,7 @@ static void test_cchecks_check_result_passed(void **state) {
   IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    IntItem item = create_int_item(i, NULL);
+    IntItem item = create_int_item((int)i, NULL);
     int_items_set(items, i, item);
   }
 
@@ -129,7 +129,7 @@ static void test_cchecks_check_result_skipped(void **state) {
   IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    IntItem item = create_int_item(i, NULL);
+    IntItem item = create_int_item((int)i, NULL);
     int_items_set(items, i, item);
   }
 
@@ -179,7 +179,7 @@ static void test_cchecks_check_result_warning(void **state) {
   IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    IntItem item = create_int_item(i, NULL);
+    IntItem item = create_int_item((int)i, NULL);
     int_items_set(items, i, item);
   }
 
@@ -229,7 +229,7 @@ static void test_cchecks_check_result_failed(void **state) {
   IntItems *items = create_int_items(item_count);
 
   for (size_t i = 0; i < item_count; i++) {
-    IntItem item = create_int_item(i, NULL);
+    IntItem item = create_int_item((int)i, NULL);
     int_items_set(items, i, item);
   }
 
@@ -305,7 +305,7 @@ static void test_cchecks_check_result_destroy(void **state) {
   error = "test";
 
   for (size_t i = 0; i < item_count; i++) {
-    int_items_set(items, i, create_int_item(i, NULL));
+    int_items_set(items, i, create_int_item((int)i, NULL));
   }
 
   result = cchecks_check_result_new(status, message, (CChecksItems *)items,
