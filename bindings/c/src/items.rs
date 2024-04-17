@@ -108,14 +108,23 @@ pub unsafe extern "C" fn cchecks_items_item_size(items: *const CChecksItems) -> 
 ///
 /// # Safety
 ///
-/// The items pointer and the other items pointer must not be null, otherwise
-/// this will panic.
+/// The items pointer and the other items pointer can be null. If both are null,
+/// then this will return true. If one is null and the other is not, then this
+/// will return false.
 #[no_mangle]
 pub unsafe extern "C" fn cchecks_items_eq(
     items: *const CChecksItems,
     other_items: *const CChecksItems,
 ) -> bool {
-    ((*items).eq_fn)(items, other_items)
+    if items.is_null() && other_items.is_null() {
+        true
+    } else if items.is_null() && !other_items.is_null() {
+        false
+    } else if !items.is_null() && other_items.is_null() {
+        false
+    } else {
+        ((*items).eq_fn)(items, other_items)
+    }
 }
 
 #[no_mangle]

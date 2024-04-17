@@ -20,6 +20,8 @@ public:
 
   Items(const std::vector<Item<T>> &items);
 
+  virtual ~Items() = default;
+
   const std::optional<CPPCHECKS_NAMESPACE::Item<T>>
   operator[](size_t index) const;
 

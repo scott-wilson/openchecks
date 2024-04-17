@@ -27,12 +27,9 @@ public:
               std::optional<std::string> error = std::nullopt) {
     CChecksStatus cstatus = status.c_status();
     const char *cmessage = message.c_str();
-    size_t item_size = sizeof(CPPCHECKS_NAMESPACE::Item<T>);
-    size_t item_count = 0;
     CChecksItems *citems = nullptr;
 
     if (items) {
-      item_count = items.value().length();
       citems = cchecks_items_clone((CChecksItems *)&(items.value()));
     }
 

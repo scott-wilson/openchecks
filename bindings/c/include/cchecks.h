@@ -789,8 +789,9 @@ void cchecks_items_destroy(struct CChecksItems *items);
  *
  * # Safety
  *
- * The items pointer and the other items pointer must not be null, otherwise
- * this will panic.
+ * The items pointer and the other items pointer can be null. If both are null,
+ * then this will return true. If one is null and the other is not, then this
+ * will return false.
  */
 bool cchecks_items_eq(const struct CChecksItems *items, const struct CChecksItems *other_items);
 

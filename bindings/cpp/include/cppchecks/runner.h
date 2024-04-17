@@ -15,7 +15,8 @@ namespace CPPCHECKS_NAMESPACE {
 template <class T>
 CPPCHECKS_NAMESPACE::CheckResult<T>
 run(const CPPCHECKS_NAMESPACE::BaseCheck<T> &check) {
-  CPPCHECKS_NAMESPACE::CheckResult(cchecks_run(&check.c_check()));
+  CChecksCheckResult result = cchecks_run((const CChecksBaseCheck *)&check);
+  return CPPCHECKS_NAMESPACE::CheckResult<T>{result};
 }
 
 template <class T>
