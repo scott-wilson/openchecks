@@ -23,22 +23,27 @@ typedef struct TestCheck {
 } TestCheck;
 
 const char *test_check_title_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "title";
 }
 
 const char *test_check_description_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "description";
 }
 
 CChecksCheckHint test_check_hint_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return CCHECKS_CHECK_HINT_NONE | CCHECKS_CHECK_HINT_AUTO_FIX;
 }
 
 CChecksCheckResult test_check_run_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return cchecks_check_result_passed("test", NULL, false, false);
 }
 
 CChecksAutoFixResult test_check_auto_fix_fn(CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return cchecks_check_auto_fix_ok();
 }
 
@@ -61,18 +66,22 @@ typedef struct AlwaysPassCheck {
 } AlwaysPassCheck;
 
 const char *always_pass_check_title_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "Always Pass Check";
 }
 
 const char *always_pass_check_description_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "description";
 }
 
 CChecksCheckHint always_pass_check_hint_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return CCHECKS_CHECK_HINT_NONE | CCHECKS_CHECK_HINT_AUTO_FIX;
 }
 
 CChecksCheckResult always_pass_check_run_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return cchecks_check_result_passed("test", NULL, false, false);
 }
 
@@ -95,18 +104,22 @@ typedef struct AlwaysFailCheck {
 } AlwaysFailCheck;
 
 const char *always_fail_check_title_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "Always Fail Check";
 }
 
 const char *always_fail_check_description_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "description";
 }
 
 CChecksCheckHint always_fail_check_hint_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return CCHECKS_CHECK_HINT_NONE | CCHECKS_CHECK_HINT_AUTO_FIX;
 }
 
 CChecksCheckResult always_fail_check_run_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return cchecks_check_result_failed("test", NULL, false, false);
 }
 
@@ -129,14 +142,17 @@ typedef struct PassOnFixCheck {
 } PassOnFixCheck;
 
 const char *pass_on_fix_title_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "Pass On Fix Check";
 }
 
 const char *pass_on_fix_description_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "description";
 }
 
 CChecksCheckHint pass_on_fix_hint_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return CCHECKS_CHECK_HINT_NONE | CCHECKS_CHECK_HINT_AUTO_FIX;
 }
 
@@ -174,14 +190,17 @@ typedef struct FailOnFixCheck {
 } FailOnFixCheck;
 
 const char *fail_on_fix_title_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "Fail On Fix Check";
 }
 
 const char *fail_on_fix_description_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "description";
 }
 
 CChecksCheckHint fail_on_fix_hint_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return CCHECKS_CHECK_HINT_NONE | CCHECKS_CHECK_HINT_AUTO_FIX;
 }
 
@@ -218,20 +237,24 @@ typedef struct NoAutoFixFlagCheck {
 } NoAutoFixFlagCheck;
 
 const char *no_auto_fix_flag_check_title_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "No Auto Fix Flag Check";
 }
 
 const char *
 no_auto_fix_flag_check_description_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return "description";
 }
 
 CChecksCheckHint no_auto_fix_flag_check_hint_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return CCHECKS_CHECK_HINT_NONE;
 }
 
 CChecksCheckResult
 no_auto_fix_flag_check_run_fn(const CChecksBaseCheck *check) {
+  (void)check; // Ignoring because the return value is static.
   return cchecks_check_result_failed("test", NULL, false, false);
 }
 

@@ -16,6 +16,7 @@
   Checks
 */
 static void test_always_pass_check(void **state) {
+  (void)state;
   AlwaysPassCheck check = create_always_pass_check();
   CChecksCheckResult result = cchecks_run((CChecksBaseCheck *)&check);
   assert_int_equal(cchecks_status_has_passed(&result.status), true);
@@ -23,6 +24,7 @@ static void test_always_pass_check(void **state) {
 }
 
 static void test_always_fail_check(void **state) {
+  (void)state;
   AlwaysFailCheck check = create_always_fail_check();
   CChecksCheckResult result = cchecks_run((CChecksBaseCheck *)&check);
   assert_int_equal(cchecks_status_has_passed(&result.status), false);
@@ -30,6 +32,7 @@ static void test_always_fail_check(void **state) {
 }
 
 static void test_pass_on_fix_check(void **state) {
+  (void)state;
   PassOnFixCheck check = create_pass_on_fix();
   CChecksCheckResult result;
   result = cchecks_run((CChecksBaseCheck *)&check);
@@ -42,6 +45,7 @@ static void test_pass_on_fix_check(void **state) {
 }
 
 static void test_fail_on_fix_check(void **state) {
+  (void)state;
   FailOnFixCheck check = create_fail_on_fix();
   CChecksCheckResult result;
   result = cchecks_run((CChecksBaseCheck *)&check);
@@ -54,6 +58,7 @@ static void test_fail_on_fix_check(void **state) {
 }
 
 static void test_no_auto_fix_flag_check(void **state) {
+  (void)state;
   NoAutoFixFlagCheck check = create_no_auto_fix_flag_check();
   CChecksCheckResult result = cchecks_auto_fix((CChecksBaseCheck *)&check);
   assert_int_equal(result.status, CChecksStatusSystemError);

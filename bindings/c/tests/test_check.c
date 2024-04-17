@@ -17,6 +17,7 @@
   Checks
 */
 static void test_cchecks_check(void **state) {
+  (void)state;
   TestCheck check = create_test_check();
 
   assert_string_equal(cchecks_check_title((CChecksBaseCheck *)&check).string,

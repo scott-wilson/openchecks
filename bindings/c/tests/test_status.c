@@ -8,6 +8,7 @@
 #include "cchecks.h"
 
 static void test_status_is_pending_success(void **state) {
+  (void)state;
   CChecksStatus status;
 
   status = CChecksStatusPending;
@@ -25,6 +26,7 @@ static void test_status_is_pending_success(void **state) {
 }
 
 static void test_status_has_passed_success(void **state) {
+  (void)state;
   CChecksStatus status;
 
   status = CChecksStatusPending;
@@ -42,6 +44,7 @@ static void test_status_has_passed_success(void **state) {
 }
 
 static void test_status_has_failed_success(void **state) {
+  (void)state;
   CChecksStatus status;
 
   status = CChecksStatusPending;

@@ -14,6 +14,7 @@
   Checks
 */
 static void test_item_type_hint_success(void **state) {
+  (void)state;
   const char *result;
   IntItem item;
 
@@ -22,7 +23,7 @@ static void test_item_type_hint_success(void **state) {
   result = cchecks_item_type_hint((CChecksItem *)&item);
 
   assert_string_equal(result, "test");
-  destroy_int_item(&item);
+  cchecks_item_destroy((CChecksItem *)&item);
 
   // Test with a null hint.
   item = create_int_item(1, NULL);
@@ -30,10 +31,11 @@ static void test_item_type_hint_success(void **state) {
   result = cchecks_item_type_hint((CChecksItem *)&item);
 
   assert_null(result);
-  destroy_int_item(&item);
+  cchecks_item_destroy((CChecksItem *)&item);
 }
 
 static void test_item_value_success(void **state) {
+  (void)state;
   IntItem int_item;
   const void *result;
 
@@ -42,7 +44,7 @@ static void test_item_value_success(void **state) {
   int *int_result = (int *)result;
 
   assert_int_equal(*int_result, 1);
-  destroy_int_item(&int_item);
+  cchecks_item_destroy((CChecksItem *)&int_item);
 
   StringItem string_item;
 
@@ -55,6 +57,7 @@ static void test_item_value_success(void **state) {
 }
 
 static void test_item_clone_success(void **state) {
+  (void)state;
   IntItem int_item;
 
   int_item = create_int_item(1, "test");
@@ -66,8 +69,8 @@ static void test_item_clone_success(void **state) {
   assert_ptr_not_equal(&int_item.value, new_int_item->value);
   assert_ptr_not_equal(&int_item.type_hint, new_int_item->type_hint);
 
-  destroy_int_item(&int_item);
-  destroy_int_item(new_int_item);
+  cchecks_item_destroy((CChecksItem *)&int_item);
+  cchecks_item_destroy((CChecksItem *)&new_int_item);
 
   StringItem string_item;
 
@@ -85,6 +88,7 @@ static void test_item_clone_success(void **state) {
 }
 
 static void test_item_debug_success(void **state) {
+  (void)state;
   CChecksString debug_string;
 
   IntItem int_item;
@@ -94,7 +98,7 @@ static void test_item_debug_success(void **state) {
 
   assert_string_equal(debug_string.string, "Item(1)");
   cchecks_string_destroy(&debug_string);
-  destroy_int_item(&int_item);
+  cchecks_item_destroy((CChecksItem *)&int_item);
 
   StringItem string_item;
 
@@ -107,6 +111,7 @@ static void test_item_debug_success(void **state) {
 }
 
 static void test_item_display_success(void **state) {
+  (void)state;
   CChecksString display_string;
 
   IntItem int_item;
@@ -116,7 +121,7 @@ static void test_item_display_success(void **state) {
 
   assert_string_equal(display_string.string, "1");
   cchecks_string_destroy(&display_string);
-  destroy_int_item(&int_item);
+  cchecks_item_destroy((CChecksItem *)&int_item);
 
   StringItem string_item;
 
@@ -129,6 +134,7 @@ static void test_item_display_success(void **state) {
 }
 
 static void test_item_lt_success(void **state) {
+  (void)state;
   IntItem a_int_item, b_int_item;
 
   // Int: A < B
@@ -138,8 +144,8 @@ static void test_item_lt_success(void **state) {
   assert_true(
       cchecks_item_lt((CChecksItem *)&a_int_item, (CChecksItem *)&b_int_item));
 
-  destroy_int_item(&a_int_item);
-  destroy_int_item(&b_int_item);
+  cchecks_item_destroy((CChecksItem *)&a_int_item);
+  cchecks_item_destroy((CChecksItem *)&b_int_item);
 
   // Int: A == B
   a_int_item = create_int_item(1, NULL);
@@ -147,8 +153,8 @@ static void test_item_lt_success(void **state) {
 
   assert_false(
       cchecks_item_lt((CChecksItem *)&a_int_item, (CChecksItem *)&b_int_item));
-  destroy_int_item(&a_int_item);
-  destroy_int_item(&b_int_item);
+  cchecks_item_destroy((CChecksItem *)&a_int_item);
+  cchecks_item_destroy((CChecksItem *)&b_int_item);
 
   // Int: A > B
   a_int_item = create_int_item(1, NULL);
@@ -156,8 +162,8 @@ static void test_item_lt_success(void **state) {
 
   assert_false(
       cchecks_item_lt((CChecksItem *)&a_int_item, (CChecksItem *)&b_int_item));
-  destroy_int_item(&a_int_item);
-  destroy_int_item(&b_int_item);
+  cchecks_item_destroy((CChecksItem *)&a_int_item);
+  cchecks_item_destroy((CChecksItem *)&b_int_item);
 
   StringItem a_string_item, b_string_item;
 
@@ -191,6 +197,7 @@ static void test_item_lt_success(void **state) {
 }
 
 static void test_item_eq_success(void **state) {
+  (void)state;
   IntItem a_int_item, b_int_item;
 
   a_int_item = create_int_item(1, NULL);
@@ -199,16 +206,16 @@ static void test_item_eq_success(void **state) {
   assert_true(
       cchecks_item_eq((CChecksItem *)&a_int_item, (CChecksItem *)&b_int_item));
 
-  destroy_int_item(&a_int_item);
-  destroy_int_item(&b_int_item);
+  cchecks_item_destroy((CChecksItem *)&a_int_item);
+  cchecks_item_destroy((CChecksItem *)&b_int_item);
 
   a_int_item = create_int_item(1, NULL);
   b_int_item = create_int_item(2, NULL);
 
   assert_false(
       cchecks_item_eq((CChecksItem *)&a_int_item, (CChecksItem *)&b_int_item));
-  destroy_int_item(&a_int_item);
-  destroy_int_item(&b_int_item);
+  cchecks_item_destroy((CChecksItem *)&a_int_item);
+  cchecks_item_destroy((CChecksItem *)&b_int_item);
 
   StringItem a_string_item, b_string_item;
 

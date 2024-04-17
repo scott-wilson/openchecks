@@ -119,8 +119,6 @@ IntItem create_int_item(int value, const char *type_hint) {
   return item;
 }
 
-void destroy_int_item(IntItem *item) {}
-
 /* ----------------------------------------------------------------------------
   String Item
 */
@@ -284,7 +282,5 @@ void destroy_string_ptr(CChecksString *string) {
     free((void *)string->string);
   }
 }
-
-void noop_items_destroy_fn(CChecksItem *ptr) {}
 
 #endif // cchecks_tests_citem

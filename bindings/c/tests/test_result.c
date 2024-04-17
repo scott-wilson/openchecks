@@ -16,6 +16,7 @@
   Checks
 */
 static void test_cchecks_check_result_new(void **state) {
+  (void)state;
   CChecksStatus status = CChecksStatusPassed;
   char *message = "test";
   size_t item_count = 5;
@@ -71,6 +72,7 @@ static void test_cchecks_check_result_new(void **state) {
 }
 
 static void test_cchecks_check_result_passed(void **state) {
+  (void)state;
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
@@ -120,6 +122,7 @@ static void test_cchecks_check_result_passed(void **state) {
 }
 
 static void test_cchecks_check_result_skipped(void **state) {
+  (void)state;
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
@@ -169,6 +172,7 @@ static void test_cchecks_check_result_skipped(void **state) {
 }
 
 static void test_cchecks_check_result_warning(void **state) {
+  (void)state;
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
@@ -218,6 +222,7 @@ static void test_cchecks_check_result_warning(void **state) {
 }
 
 static void test_cchecks_check_result_failed(void **state) {
+  (void)state;
   char *message = "test";
   size_t item_count = 5;
   size_t item_size = sizeof(IntItem);
@@ -267,6 +272,7 @@ static void test_cchecks_check_result_failed(void **state) {
 }
 
 static void test_cchecks_check_result_destroy(void **state) {
+  (void)state;
   CChecksStatus status;
   char *message;
   size_t item_count;
@@ -308,6 +314,7 @@ static void test_cchecks_check_result_destroy(void **state) {
 }
 
 static void test_cchecks_check_result_status(void **state) {
+  (void)state;
   CChecksStatus status;
   char *message;
   IntItems *items;
@@ -336,6 +343,7 @@ static void test_cchecks_check_result_status(void **state) {
 }
 
 static void test_cchecks_check_result_message(void **state) {
+  (void)state;
   CChecksStatus status;
   char *message;
   IntItems *items;
@@ -375,6 +383,7 @@ static void test_cchecks_check_result_message(void **state) {
 }
 
 static void test_cchecks_check_result_items(void **state) {
+  (void)state;
   CChecksStatus status;
   char *message;
   size_t item_count;
@@ -478,6 +487,7 @@ static void test_cchecks_check_result_items(void **state) {
 }
 
 static void test_cchecks_check_result_can_fix(void **state) {
+  (void)state;
   CChecksStatus status;
   char *message;
   IntItem *items;
@@ -527,6 +537,7 @@ static void test_cchecks_check_result_can_fix(void **state) {
 }
 
 static void test_cchecks_check_result_can_skip(void **state) {
+  (void)state;
   CChecksStatus status;
   char *message;
   IntItem *items;
@@ -576,6 +587,7 @@ static void test_cchecks_check_result_can_skip(void **state) {
 }
 
 static void test_cchecks_check_result_error(void **state) {
+  (void)state;
   CChecksStatus status;
   char *message;
   IntItem *items;
@@ -615,6 +627,7 @@ static void test_cchecks_check_result_error(void **state) {
 }
 
 static void test_cchecks_check_result_check_duration(void **state) {
+  (void)state;
   CChecksStatus status = CChecksStatusPassed;
   char *message = NULL;
   IntItem *items = NULL;
@@ -633,6 +646,7 @@ static void test_cchecks_check_result_check_duration(void **state) {
 }
 
 static void test_cchecks_check_result_fix_duration(void **state) {
+  (void)state;
   CChecksStatus status = CChecksStatusPassed;
   char *message = NULL;
   IntItem *items = NULL;
