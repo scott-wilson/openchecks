@@ -30,8 +30,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   IntResult result =
       IntResult{status, message, int_items, can_fix, can_skip, error};
 
-  bool a = result.can_fix();
-  bool b = result.can_skip();
   assert(result.status() == status);
   assert(result.message() == message);
   assert(result.error() == error);

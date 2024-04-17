@@ -27,6 +27,8 @@ CChecksItems *int_items_clone_fn(const CChecksItems *items) {
     int_item_clone_in_place(&(int_items->values[i]),
                             &(new_int_items->values[i]));
   }
+
+  return (CChecksItems *)new_int_items;
 }
 
 size_t int_items_length_fn(const CChecksItems *items) {

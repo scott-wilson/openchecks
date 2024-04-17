@@ -44,5 +44,6 @@ foreach(TEST ${TESTS})
         cmocka
         cchecks
     )
+    target_compile_options(${TEST} PRIVATE -Werror -Wall)
     add_test(NAME ${TEST} COMMAND ${TEST})
 endforeach()

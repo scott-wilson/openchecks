@@ -47,6 +47,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
   assert(result_status == status);
   assert(message == result_message);
+  assert(cchecks_items_eq((CChecksItems *)int_items, result_items));
 
   if (status == CChecksStatusSystemError) {
     assert(cchecks_check_result_can_fix(&result) == false);

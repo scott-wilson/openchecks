@@ -106,7 +106,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   assert(check.description() == check._description);
   assert(check.hint() == check._hint);
 
-  IntResult result = check.check();
+  IntResult result = CPPCHECKS_NAMESPACE::run(check);
 
   CPPCHECKS_NAMESPACE::Status result_status = result.status();
   std::string_view result_message = result.message();
@@ -120,6 +120,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     assert(result.can_fix() == check._can_fix);
     assert(result.can_skip() == check._can_skip);
   }
+
+  assert(result_message == check._message);
+  assert(result_items == check._items);
+  assert(result_error == check._error);
 
   if (result_status.has_failed() && result.can_fix()) {
     CPPCHECKS_NAMESPACE::CheckResult fix_result =

@@ -22,13 +22,13 @@ void validate_result(IntResult &result, CPPCHECKS_NAMESPACE::Status &status,
   const std::optional<IntItems> result_items = result.items();
   EXPECT_NE(result_items, std::nullopt);
 
-  int index = 0;
+  size_t index = 0;
 
   for (index = 0; index < result_items.value().length(); index++) {
     const std::optional<IntItem> item = result_items.value()[index];
 
     EXPECT_NE(item, std::nullopt);
-    EXPECT_EQ(item.value().value(), index);
+    EXPECT_EQ((int)item.value().value(), index);
   }
 
   EXPECT_EQ(index, items.size());

@@ -41,6 +41,8 @@ CChecksItem *int_item_clone_in_place(const IntItem *item, IntItem *new_item) {
   }
 
   new_item->value = item->value;
+
+  return (CChecksItem *)new_item;
 }
 
 const char *int_item_type_hint_fn(const CChecksItem *item) {
@@ -164,6 +166,8 @@ CChecksItem *string_item_clone_fn(const CChecksItem *item) {
     strcpy(new_value, old_item->value);
     new_str_item->value = new_value;
   }
+
+  return (CChecksItem *)new_str_item;
 }
 
 void string_item_destroy_fn(CChecksItem *item) {

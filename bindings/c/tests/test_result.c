@@ -270,7 +270,6 @@ static void test_cchecks_check_result_destroy(void **state) {
   CChecksStatus status;
   char *message;
   size_t item_count;
-  size_t item_size;
   IntItems *items;
   bool can_fix;
   bool can_skip;
@@ -281,7 +280,6 @@ static void test_cchecks_check_result_destroy(void **state) {
   status = CChecksStatusPassed;
   message = NULL;
   item_count = 0;
-  item_size = 0;
   items = NULL;
   can_fix = false;
   can_skip = false;
@@ -295,7 +293,6 @@ static void test_cchecks_check_result_destroy(void **state) {
   status = CChecksStatusPassed;
   message = "test";
   item_count = 5;
-  item_size = sizeof(IntItem);
   items = create_int_items(item_count);
   can_fix = false;
   can_skip = false;
@@ -313,8 +310,6 @@ static void test_cchecks_check_result_destroy(void **state) {
 static void test_cchecks_check_result_status(void **state) {
   CChecksStatus status;
   char *message;
-  size_t item_count;
-  size_t item_size;
   IntItems *items;
   bool can_fix;
   bool can_skip;
@@ -329,8 +324,6 @@ static void test_cchecks_check_result_status(void **state) {
   for (size_t i = 0; i < 6; i++) {
     status = statuses[i];
     message = NULL;
-    item_count = 0;
-    item_size = 0;
     items = NULL;
     can_fix = false;
     can_skip = false;
@@ -345,8 +338,6 @@ static void test_cchecks_check_result_status(void **state) {
 static void test_cchecks_check_result_message(void **state) {
   CChecksStatus status;
   char *message;
-  size_t item_count;
-  size_t item_size;
   IntItems *items;
   bool can_fix;
   bool can_skip;
@@ -357,8 +348,6 @@ static void test_cchecks_check_result_message(void **state) {
   // Null message.
   status = CChecksStatusPassed;
   message = NULL;
-  item_count = 0;
-  item_size = 0;
   items = NULL;
   can_fix = false;
   can_skip = false;
@@ -373,8 +362,6 @@ static void test_cchecks_check_result_message(void **state) {
   // Non-null message.
   status = CChecksStatusPassed;
   message = "test";
-  item_count = 0;
-  item_size = 0;
   items = NULL;
   can_fix = false;
   can_skip = false;
@@ -493,8 +480,6 @@ static void test_cchecks_check_result_items(void **state) {
 static void test_cchecks_check_result_can_fix(void **state) {
   CChecksStatus status;
   char *message;
-  size_t item_count;
-  size_t item_size;
   IntItem *items;
   bool can_fix;
   bool can_skip;
@@ -512,8 +497,6 @@ static void test_cchecks_check_result_can_fix(void **state) {
   for (size_t i = 0; i < 6; i++) {
     status = statuses[i];
     message = NULL;
-    item_count = 0;
-    item_size = 0;
     items = NULL;
     can_fix = true;
     can_skip = false;
@@ -530,8 +513,6 @@ static void test_cchecks_check_result_can_fix(void **state) {
   for (size_t i = 0; i < 6; i++) {
     status = statuses[i];
     message = NULL;
-    item_count = 0;
-    item_size = 0;
     items = NULL;
     can_fix = false;
     can_skip = false;
@@ -548,8 +529,6 @@ static void test_cchecks_check_result_can_fix(void **state) {
 static void test_cchecks_check_result_can_skip(void **state) {
   CChecksStatus status;
   char *message;
-  size_t item_count;
-  size_t item_size;
   IntItem *items;
   bool can_fix;
   bool can_skip;
@@ -567,8 +546,6 @@ static void test_cchecks_check_result_can_skip(void **state) {
   for (size_t i = 0; i < 6; i++) {
     status = statuses[i];
     message = NULL;
-    item_count = 0;
-    item_size = 0;
     items = NULL;
     can_fix = false;
     can_skip = true;
@@ -585,8 +562,6 @@ static void test_cchecks_check_result_can_skip(void **state) {
   for (size_t i = 0; i < 6; i++) {
     status = statuses[i];
     message = NULL;
-    item_count = 0;
-    item_size = 0;
     items = NULL;
     can_fix = false;
     can_skip = false;
@@ -603,8 +578,6 @@ static void test_cchecks_check_result_can_skip(void **state) {
 static void test_cchecks_check_result_error(void **state) {
   CChecksStatus status;
   char *message;
-  size_t item_count;
-  size_t item_size;
   IntItem *items;
   bool can_fix;
   bool can_skip;
@@ -615,8 +588,6 @@ static void test_cchecks_check_result_error(void **state) {
   // Null error.
   status = CChecksStatusPassed;
   message = NULL;
-  item_count = 0;
-  item_size = 0;
   items = NULL;
   can_fix = false;
   can_skip = false;
@@ -625,14 +596,12 @@ static void test_cchecks_check_result_error(void **state) {
   result = cchecks_check_result_new(status, message, (CChecksItems *)items,
                                     can_fix, can_skip, error);
   msg = cchecks_check_result_error(&result);
-  assert_string_equal(msg, "");
+  assert_null(msg);
   cchecks_check_result_destroy(&result);
 
   // Non-null message.
   status = CChecksStatusPassed;
   message = NULL;
-  item_count = 0;
-  item_size = 0;
   items = NULL;
   can_fix = false;
   can_skip = false;
@@ -648,8 +617,6 @@ static void test_cchecks_check_result_error(void **state) {
 static void test_cchecks_check_result_check_duration(void **state) {
   CChecksStatus status = CChecksStatusPassed;
   char *message = NULL;
-  size_t item_count = 0;
-  size_t item_size = 0;
   IntItem *items = NULL;
 
   bool can_fix = false;
@@ -668,8 +635,6 @@ static void test_cchecks_check_result_check_duration(void **state) {
 static void test_cchecks_check_result_fix_duration(void **state) {
   CChecksStatus status = CChecksStatusPassed;
   char *message = NULL;
-  size_t item_count = 0;
-  size_t item_size = 0;
   IntItem *items = NULL;
 
   bool can_fix = false;
@@ -695,10 +660,12 @@ int main(void) {
       cmocka_unit_test(test_cchecks_check_result_warning),
       cmocka_unit_test(test_cchecks_check_result_failed),
       cmocka_unit_test(test_cchecks_check_result_destroy),
+      cmocka_unit_test(test_cchecks_check_result_status),
       cmocka_unit_test(test_cchecks_check_result_message),
       cmocka_unit_test(test_cchecks_check_result_items),
       cmocka_unit_test(test_cchecks_check_result_can_fix),
       cmocka_unit_test(test_cchecks_check_result_can_skip),
+      cmocka_unit_test(test_cchecks_check_result_error),
       cmocka_unit_test(test_cchecks_check_result_check_duration),
       cmocka_unit_test(test_cchecks_check_result_fix_duration),
   };

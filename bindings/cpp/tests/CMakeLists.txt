@@ -1,5 +1,4 @@
 set(TESTS
-    test_check
     test_item
     test_items
     test_result
@@ -7,8 +6,10 @@ set(TESTS
     test_status
 )
 set(TEST_HEADERS
+    check_impl.h
     item_impl.h
     items_impl.h
+    result_impl.h
 )
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -33,5 +34,6 @@ foreach(TEST ${TESTS})
         gtest_main
         cppchecks
     )
+    target_compile_options(${TEST} PRIVATE -Werror -Wall)
     add_test(NAME ${TEST} COMMAND ${TEST})
 endforeach()

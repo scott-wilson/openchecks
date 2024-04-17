@@ -140,6 +140,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   const CChecksItems *result_items = cchecks_check_result_items(&result);
   const char *result_error = cchecks_check_result_error(&result);
 
+  assert(result_message == check.message);
+  assert(cchecks_items_eq(result_items, ((CChecksItems *)check.items)));
+
+  if (check.has_error) {
+    assert(result_error != nullptr);
+    assert(std::string_view(result_error) == check.error);
+  } else {
+    assert(result_error == nullptr);
+  }
+
   if (result_status == CChecksStatusSystemError) {
     assert(cchecks_check_result_can_fix(&result) == false);
     assert(cchecks_check_result_can_skip(&result) == false);
