@@ -27,6 +27,8 @@ public:
 
   size_t length() const noexcept;
 
+  virtual inline size_t item_size() const noexcept;
+
   virtual inline bool operator==(const Items<T> &other) const;
 
   virtual inline bool operator!=(const Items<T> &other) const;
@@ -64,6 +66,10 @@ Items<T>::operator[](size_t index) const {
 
 template <class T> size_t Items<T>::length() const noexcept {
   return this->_items.size();
+}
+
+template <class T> size_t Items<T>::item_size() const noexcept {
+  return sizeof(CPPCHECKS_NAMESPACE::Item<T>);
 }
 
 template <class T>
@@ -110,7 +116,9 @@ template <class T> size_t Items<T>::_length_impl(const CChecksItems *items) {
 }
 
 template <class T> size_t Items<T>::_item_size_impl(const CChecksItems *items) {
-  return sizeof(CPPCHECKS_NAMESPACE::Item<T>);
+  const Items<T> *cppitems = (const Items<T> *)items;
+
+  return cppitems->item_size();
 }
 
 template <class T>

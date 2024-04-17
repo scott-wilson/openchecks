@@ -36,6 +36,7 @@ foreach(TEST ${TESTS})
     )
 
     if (MSVC)
+        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
         target_compile_options(${TEST} PRIVATE -WX -W4)
     else()
         target_compile_options(${TEST} PRIVATE -Werror -Wall)
