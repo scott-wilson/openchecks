@@ -96,8 +96,9 @@ public:
     c_result.error = nullptr;
   }
 
-  static CheckResult passed(const std::string &message, const Items<T> &items,
-                            bool can_fix, bool can_skip) {
+  static CheckResult passed(const std::string &message,
+                            const std::optional<Items<T>> &items, bool can_fix,
+                            bool can_skip) {
     return CheckResult{CPPCHECKS_NAMESPACE::Status::Passed,
                        message,
                        items,
@@ -106,8 +107,9 @@ public:
                        std::nullopt};
   }
 
-  static CheckResult skipped(const std::string &message, const Items<T> &items,
-                             bool can_fix, bool can_skip) {
+  static CheckResult skipped(const std::string &message,
+                             const std::optional<Items<T>> &items, bool can_fix,
+                             bool can_skip) {
     return CheckResult{CPPCHECKS_NAMESPACE::Status::Skipped,
                        message,
                        items,
@@ -116,8 +118,9 @@ public:
                        std::nullopt};
   }
 
-  static CheckResult warning(const std::string &message, const Items<T> &items,
-                             bool can_fix, bool can_skip) {
+  static CheckResult warning(const std::string &message,
+                             const std::optional<Items<T>> &items, bool can_fix,
+                             bool can_skip) {
     return CheckResult{CPPCHECKS_NAMESPACE::Status::Warning,
                        message,
                        items,
@@ -126,8 +129,9 @@ public:
                        std::nullopt};
   }
 
-  static CheckResult failed(const std::string &message, const Items<T> &items,
-                            bool can_fix, bool can_skip) {
+  static CheckResult failed(const std::string &message,
+                            const std::optional<Items<T>> &items, bool can_fix,
+                            bool can_skip) {
     return CheckResult{CPPCHECKS_NAMESPACE::Status::Failed,
                        message,
                        items,
