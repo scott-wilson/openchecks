@@ -14,9 +14,10 @@ set(TEST_HEADERS
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CPPCHECKS_COMPILE_FLAGS -fsanitize=address)
+
 if (BUILD_WITH_CHECK_COVERAGE)
-    SET(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_C_FLAGS "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
+    set(CPPCHECKS_COMPILE_FLAGS ${CPPCHECKS_COMPILE_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage)
     SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 endif()
 
@@ -35,12 +36,7 @@ foreach(TEST ${TESTS})
         cppchecks
     )
 
-    if (MSVC)
-        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-        target_compile_options(${TEST} PRIVATE -WX -W4)
-    else()
-        target_compile_options(${TEST} PRIVATE -Werror -Wall)
-    endif()
+    target_compile_options(${TEST} PRIVATE ${CCHECKS_COMPILE_FLAGS})
 
     add_test(NAME ${TEST} COMMAND ${TEST})
 endforeach()
