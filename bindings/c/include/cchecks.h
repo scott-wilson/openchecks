@@ -141,7 +141,7 @@ typedef struct CChecksItem {
    * function not actually modify/destroy the data, and leave that up to a
    * process outside of the validation library.
    */
-  void (*clone_fn)(const struct CChecksItem*, struct CChecksItem*);
+  struct CChecksItem *(*clone_fn)(const struct CChecksItem*);
   /**
    * Destroy the owned data.
    *
@@ -191,27 +191,56 @@ typedef struct CChecksItem {
  */
 typedef struct CChecksItems {
   /**
-   * The pointer to the check item array. Must be `item_size * length` in
-   * memory, or is invalid.
+   * Get an item from the container.
+   *
+   * # Safety
+   *
+   * The container pointer must not be null. Passing an invalid index will
+   * return a null pointer.
    */
-  struct CChecksItem *ptr;
+  const struct CChecksItem *(*get_fn)(const struct CChecksItems*, size_t);
   /**
-   * The size of an item in the array. Must be `sizeof(item)`, and not
-   * `sizeof(item_value)`. For example, if there's an `IntItem` container
-   * that represents integers, then `item_size == sizeof(IntItem)`.
+   * Clone the container.
+   *
+   * # Safety
+   *
+   * The container pointer must not be null.
    */
-  size_t item_size;
+  struct CChecksItems *(*clone_fn)(const struct CChecksItems*);
   /**
-   * The length of the array is the number of items in the array. If there's
-   * 5 items, then the length is 5.
+   * Get the length of the container.
+   *
+   * # Safety
+   *
+   * The container pointer must not be null.
    */
-  size_t length;
+  size_t (*length_fn)(const struct CChecksItems*);
   /**
-   * The destroy function is responsible for freeing the pointer once the
-   * items have been destroyed. Trying to destroy the items in this function
-   * will cause double frees.
+   * Get the size of each item in the container. This must be the same for
+   * all items in the container.
+   *
+   * # Safety
+   *
+   * The container pointer must not be null.
    */
-  void (*destroy_fn)(struct CChecksItem*);
+  size_t (*item_size_fn)(const struct CChecksItems*);
+  /**
+   * The compare function is used to compare containers.
+   *
+   * # Safety
+   *
+   * This must support comparing a null with another null or non-null value.
+   * Null == null is true, but null != non-null is false.
+   */
+  bool (*eq_fn)(const struct CChecksItems*, const struct CChecksItems*);
+  /**
+   * Destroy the container.
+   *
+   * # Safety
+   *
+   * The container pointer must not be null.
+   */
+  void (*destroy_fn)(struct CChecksItems*);
 } CChecksItems;
 
 /**
@@ -474,9 +503,10 @@ void cchecks_check_result_destroy(struct CChecksCheckResult *result);
  *
  * # Safety
  *
- * The result pointer must not be null.
+ * The result pointer is null if there are no errors. Otherwise it will point
+ * to a valid message.
  */
-struct CChecksStringView cchecks_check_result_error(const struct CChecksCheckResult *result);
+const char *cchecks_check_result_error(const struct CChecksCheckResult *result);
 
 /**
  * Create a new result that failed a check.
@@ -490,19 +520,14 @@ struct CChecksStringView cchecks_check_result_error(const struct CChecksCheckRes
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
- *
- * `items_destroy_fn` must not destroy the items before it destroys the item
- * array, otherwise that will cause a double free.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_failed(const char *message,
-                                                      struct CChecksItem *items,
-                                                      size_t item_size,
-                                                      size_t item_count,
+                                                      struct CChecksItems *items,
                                                       bool can_fix,
-                                                      bool can_skip,
-                                                      void (*items_destroy_fn)(struct CChecksItem*));
+                                                      bool can_skip);
 
 /**
  * The duration of an auto-fix.
@@ -522,7 +547,7 @@ double cchecks_check_result_fix_duration(const struct CChecksCheckResult *result
  *
  * # Safety
  *
- * The result pointer must not be null.
+ * A null result pointer represents that there are no items.
  */
 const struct CChecksItems *cchecks_check_result_items(const struct CChecksCheckResult *result);
 
@@ -549,24 +574,19 @@ struct CChecksStringView cchecks_check_result_message(const struct CChecksCheckR
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  *
  * Error can be a null pointer. It is also copied, so the caller may be able to
  * free the memory once the method is called.
- *
- * `items_destroy_fn` must not destroy the items before it destroys the item
- * array, otherwise that will cause a double free.
  */
 struct CChecksCheckResult cchecks_check_result_new(enum CChecksStatus status,
                                                    const char *message,
-                                                   struct CChecksItem *items,
-                                                   size_t item_size,
-                                                   size_t item_count,
+                                                   struct CChecksItems *items,
                                                    bool can_fix,
                                                    bool can_skip,
-                                                   const char *error,
-                                                   void (*items_destroy_fn)(struct CChecksItem*));
+                                                   const char *error);
 
 /**
  * Create a new result that passed a check.
@@ -576,19 +596,14 @@ struct CChecksCheckResult cchecks_check_result_new(enum CChecksStatus status,
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
- *
- * `items_destroy_fn` must not destroy the items before it destroys the item
- * array, otherwise that will cause a double free.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_passed(const char *message,
-                                                      struct CChecksItem *items,
-                                                      size_t item_size,
-                                                      size_t item_count,
+                                                      struct CChecksItems *items,
                                                       bool can_fix,
-                                                      bool can_skip,
-                                                      void (*items_destroy_fn)(struct CChecksItem*));
+                                                      bool can_skip);
 
 /**
  * Create a new result that skipped a check.
@@ -598,19 +613,14 @@ struct CChecksCheckResult cchecks_check_result_passed(const char *message,
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
- *
- * `items_destroy_fn` must not destroy the items before it destroys the item
- * array, otherwise that will cause a double free.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_skipped(const char *message,
-                                                       struct CChecksItem *items,
-                                                       size_t item_size,
-                                                       size_t item_count,
+                                                       struct CChecksItems *items,
                                                        bool can_fix,
-                                                       bool can_skip,
-                                                       void (*items_destroy_fn)(struct CChecksItem*));
+                                                       bool can_skip);
 
 /**
  * The status of the result.
@@ -633,19 +643,14 @@ enum CChecksStatus cchecks_check_result_status(const struct CChecksCheckResult *
  * The message pointer must not be null. It is also copied, so the caller may
  * be able to free the memory once the method is called.
  *
- * The items can be null if there are no items. Also, the items pointer must be
- * `item_size * item_count` in bytes.
- *
- * `items_destroy_fn` must not destroy the items before it destroys the item
- * array, otherwise that will cause a double free.
+ * The items can be null if there are no items. Also, the result will take
+ * ownership of the pointer and be responsible for cleaning it once the result
+ * is destroyed.
  */
 struct CChecksCheckResult cchecks_check_result_warning(const char *message,
-                                                       struct CChecksItem *items,
-                                                       size_t item_size,
-                                                       size_t item_count,
+                                                       struct CChecksItems *items,
                                                        bool can_fix,
-                                                       bool can_skip,
-                                                       void (*items_destroy_fn)(struct CChecksItem*));
+                                                       bool can_skip);
 
 /**
  * The human readable title for the check.
@@ -665,7 +670,7 @@ struct CChecksStringView cchecks_check_title(const struct CChecksBaseCheck *chec
  *
  * The item pointer must not be null.
  */
-void cchecks_item_clone(const struct CChecksItem *item, struct CChecksItem *new_item);
+struct CChecksItem *cchecks_item_clone(const struct CChecksItem *item);
 
 /**
  * Create a debug string for the item.
@@ -769,6 +774,48 @@ const char *cchecks_item_type_hint(const struct CChecksItem *item);
 const void *cchecks_item_value(const struct CChecksItem *item);
 
 /**
+ * Clone the items.
+ *
+ * # Safety
+ *
+ * The items pointer must not be null.
+ */
+struct CChecksItems *cchecks_items_clone(const struct CChecksItems *items);
+
+void cchecks_items_destroy(struct CChecksItems *items);
+
+/**
+ * Compare two items containers for equality.
+ *
+ * # Safety
+ *
+ * The items pointer and the other items pointer can be null. If both are null,
+ * then this will return true. If one is null and the other is not, then this
+ * will return false.
+ */
+bool cchecks_items_eq(const struct CChecksItems *items, const struct CChecksItems *other_items);
+
+/**
+ * Get an item from the container.
+ *
+ * A null pointer is returned if the index is invalid.
+ *
+ * # Safety
+ *
+ * The items pointer must not be null.
+ */
+const struct CChecksItem *cchecks_items_get(const struct CChecksItems *items, size_t index);
+
+/**
+ * Get the size of each item in the items. All items must be the same size.
+ *
+ * # Safety
+ *
+ * The items pointer must not be null.
+ */
+size_t cchecks_items_item_size(const struct CChecksItems *items);
+
+/**
  * Create a new iterator to iterate over the items.
  *
  * # Safety
@@ -778,20 +825,13 @@ const void *cchecks_item_value(const struct CChecksItem *item);
 struct CChecksItemsIterator cchecks_items_iterator_new(const struct CChecksItems *items);
 
 /**
- * Create a new item container.
+ * Get the length of the items.
  *
  * # Safety
  *
- * The items pointer must be not null, and the size must be
- * `item_size * length` in bytes.
- *
- * The destroy function must only free the items pointer. Trying to destroy the
- * items will cause a double free error.
+ * The items pointer must not be null.
  */
-struct CChecksItems cchecks_items_new(struct CChecksItem *items,
-                                      size_t item_size,
-                                      size_t length,
-                                      void (*destroy_fn)(struct CChecksItem*));
+size_t cchecks_items_length(const struct CChecksItems *items);
 
 /**
  * Run a check.

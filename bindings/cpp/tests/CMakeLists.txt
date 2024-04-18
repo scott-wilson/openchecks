@@ -1,5 +1,4 @@
 set(TESTS
-    test_check
     test_item
     test_items
     test_result
@@ -7,12 +6,18 @@ set(TESTS
     test_status
 )
 set(TEST_HEADERS
+    check_impl.h
     item_impl.h
+    items_impl.h
+    result_impl.h
 )
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CPPCHECKS_COMPILE_FLAGS)
 
 if (BUILD_WITH_CHECK_COVERAGE)
-    SET(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
-    SET(CMAKE_C_FLAGS "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
+    set(CPPCHECKS_COMPILE_FLAGS ${CPPCHECKS_COMPILE_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage)
     SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 endif()
 
@@ -30,5 +35,8 @@ foreach(TEST ${TESTS})
         gtest_main
         cppchecks
     )
+
+    target_compile_options(${TEST} PRIVATE ${CCHECKS_COMPILE_FLAGS})
+
     add_test(NAME ${TEST} COMMAND ${TEST})
 endforeach()

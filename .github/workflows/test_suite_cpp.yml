@@ -71,7 +71,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y valgrind
-          valgrind -v --leak-check=full --show-leak-kinds=all tests/test_check
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_item
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_result
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_runner

@@ -1,5 +1,4 @@
-extern "C"
-{
+extern "C" {
 #include <cchecks.h>
 }
 
@@ -7,4 +6,6 @@ extern "C"
 #include "cppchecks/core.h"
 #include "cppchecks/item.h"
 #include "cppchecks/items.h"
+#include "cppchecks/result.h"
+#include "cppchecks/runner.h"
 #include "cppchecks/status.h"

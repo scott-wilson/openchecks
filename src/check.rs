@@ -4,6 +4,7 @@ bitflags::bitflags! {
     /// The check hint flags contains useful information such as whether the
     /// check should support auto-fixing issues.
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
     pub struct CheckHint: u8 {
         /// The check supports no extra features.
         ///

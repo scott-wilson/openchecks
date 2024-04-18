@@ -71,7 +71,7 @@ impl checks::CheckMetadata for CChecksBaseCheck {
 
 impl checks::Check for CChecksBaseCheck {
     type Item = crate::item::ChecksItemWrapper;
-    type Items = crate::CChecksItems;
+    type Items = crate::items::CChecksItemsWrapper;
 
     fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
         let c_result = unsafe { (self.check_fn)(self) };
@@ -202,7 +202,10 @@ pub unsafe extern "C" fn cchecks_check_auto_fix_error(
     message: *const c_char,
 ) -> CChecksAutoFixResult {
     let message = if message.is_null() {
-        unsafe { CString::from_vec_unchecked(b"".to_vec()).into_raw() }
+        CStr::from_bytes_with_nul(b"\0")
+            .unwrap()
+            .to_owned()
+            .into_raw()
     } else {
         unsafe { CStr::from_ptr(message) }.to_owned().into_raw()
     };

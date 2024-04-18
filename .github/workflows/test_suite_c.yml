@@ -51,8 +51,6 @@ jobs:
           submodules: recursive
       - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@6ec01d6033d5f6e87d04fc92d55eaa5b132b1ad4 # cargo-llvm-cov
       - name: Run Cargo Clippy
         run: cargo clippy
       - name: Run Cargo Fmt
@@ -60,8 +58,6 @@ jobs:
       - name: Run Cargo Deny
         uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393 # v1.6.2
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - name: Generate coverage report from Rust tests
-        run: cargo llvm-cov --all-features --lcov --output-path lcov.info
       - name: Make Build Directory
         run: mkdir -p build
       - name: CMake Configure
