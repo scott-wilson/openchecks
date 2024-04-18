@@ -70,7 +70,7 @@ static void test_item_clone_success(void **state) {
   assert_ptr_not_equal(&int_item.type_hint, new_int_item->type_hint);
 
   cchecks_item_destroy((CChecksItem *)&int_item);
-  cchecks_item_destroy((CChecksItem *)&new_int_item);
+  cchecks_item_destroy((CChecksItem *)new_int_item);
 
   StringItem string_item;
 
