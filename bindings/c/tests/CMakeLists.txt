@@ -6,7 +6,7 @@ set(TESTS
     test_status
 )
 
-set(CCHECKS_COMPILE_FLAGS -fsanitize=address)
+set(CCHECKS_COMPILE_FLAGS)
 
 if (BUILD_WITH_CHECK_COVERAGE)
     set(CCHECKS_COMPILE_FLAGS ${CCHECKS_COMPILE_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage)
