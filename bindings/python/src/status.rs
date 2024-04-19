@@ -49,20 +49,20 @@ pub(crate) enum Status {
     SystemError,
 }
 
-impl std::convert::From<checks::Status> for Status {
-    fn from(status: checks::Status) -> Self {
+impl std::convert::From<base_checks::Status> for Status {
+    fn from(status: base_checks::Status) -> Self {
         match status {
-            checks::Status::Pending => Self::Pending,
-            checks::Status::Skipped => Self::Skipped,
-            checks::Status::Passed => Self::Passed,
-            checks::Status::Warning => Self::Warning,
-            checks::Status::Failed => Self::Failed,
-            checks::Status::SystemError => Self::SystemError,
+            base_checks::Status::Pending => Self::Pending,
+            base_checks::Status::Skipped => Self::Skipped,
+            base_checks::Status::Passed => Self::Passed,
+            base_checks::Status::Warning => Self::Warning,
+            base_checks::Status::Failed => Self::Failed,
+            base_checks::Status::SystemError => Self::SystemError,
         }
     }
 }
 
-impl std::convert::From<Status> for checks::Status {
+impl std::convert::From<Status> for base_checks::Status {
     fn from(status: Status) -> Self {
         match status {
             Status::Pending => Self::Pending,
@@ -84,7 +84,7 @@ impl Status {
     /// Returns:
     ///     bool: Whether the check is waiting to run.
     pub(crate) fn is_pending(&self) -> bool {
-        let status: checks::Status = (*self).into();
+        let status: base_checks::Status = (*self).into();
         status.is_pending()
     }
 
@@ -95,7 +95,7 @@ impl Status {
     /// Returns:
     ///     bool: Whether the check has passed or not.
     pub(crate) fn has_passed(&self) -> bool {
-        let status: checks::Status = (*self).into();
+        let status: base_checks::Status = (*self).into();
         status.has_passed()
     }
 
@@ -106,7 +106,7 @@ impl Status {
     /// Returns:
     ///     bool: Whether the check has failed or not.
     pub(crate) fn has_failed(&self) -> bool {
-        let status: checks::Status = (*self).into();
+        let status: base_checks::Status = (*self).into();
         status.has_failed()
     }
 }

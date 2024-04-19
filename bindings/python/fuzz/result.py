@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import atheris
+import checks
 import hypothesis
-import pychecks
 from hypothesis import strategies
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -16,52 +16,52 @@ if TYPE_CHECKING:  # pragma: no cover
 @hypothesis.given(
     status=strategies.sampled_from(
         [
-            pychecks.Status.Pending,
-            pychecks.Status.Skipped,
-            pychecks.Status.Passed,
-            pychecks.Status.Warning,
-            pychecks.Status.Failed,
-            pychecks.Status.SystemError,
+            checks.Status.Pending,
+            checks.Status.Skipped,
+            checks.Status.Passed,
+            checks.Status.Warning,
+            checks.Status.Failed,
+            checks.Status.SystemError,
         ]
     ),
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(pychecks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(checks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
     error=strategies.one_of(strategies.none(), strategies.builds(Exception)),
 )
 def fuzz(
-    status: pychecks.Status,
+    status: checks.Status,
     message: str,
-    items: Optional[List[pychecks.Item[int]]],
+    items: Optional[List[checks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
     error: Optional[BaseException],
 ) -> None:
-    result = pychecks.CheckResult(status, message, items, can_fix, can_skip, error)
+    result = checks.CheckResult(status, message, items, can_fix, can_skip, error)
     _validate(result, status, message, items, can_fix, can_skip, error)
 
-    result = pychecks.CheckResult.passed(message, items, can_fix, can_skip)
-    _validate(result, pychecks.Status.Passed, message, items, can_fix, can_skip, None)
+    result = checks.CheckResult.passed(message, items, can_fix, can_skip)
+    _validate(result, checks.Status.Passed, message, items, can_fix, can_skip, None)
 
-    result = pychecks.CheckResult.skipped(message, items, can_fix, can_skip)
-    _validate(result, pychecks.Status.Skipped, message, items, can_fix, can_skip, None)
+    result = checks.CheckResult.skipped(message, items, can_fix, can_skip)
+    _validate(result, checks.Status.Skipped, message, items, can_fix, can_skip, None)
 
-    result = pychecks.CheckResult.warning(message, items, can_fix, can_skip)
-    _validate(result, pychecks.Status.Warning, message, items, can_fix, can_skip, None)
+    result = checks.CheckResult.warning(message, items, can_fix, can_skip)
+    _validate(result, checks.Status.Warning, message, items, can_fix, can_skip, None)
 
-    result = pychecks.CheckResult.failed(message, items, can_fix, can_skip)
-    _validate(result, pychecks.Status.Failed, message, items, can_fix, can_skip, None)
+    result = checks.CheckResult.failed(message, items, can_fix, can_skip)
+    _validate(result, checks.Status.Failed, message, items, can_fix, can_skip, None)
 
 
 def _validate(
-    result: pychecks.CheckResult[int],
-    status: pychecks.Status,
+    result: checks.CheckResult[int],
+    status: checks.Status,
     message: str,
-    items: Optional[List[pychecks.Item[int]]],
+    items: Optional[List[checks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
     error: Optional[BaseException],
@@ -76,12 +76,12 @@ def _validate(
 
         assert result_items == items
 
-    if status == pychecks.Status.SystemError:
+    if status == checks.Status.SystemError:
         assert result.can_fix() is False
     else:
         assert result.can_fix() == can_fix
 
-    if status == pychecks.Status.SystemError:
+    if status == checks.Status.SystemError:
         assert result.can_skip() is False
     else:
         assert result.can_skip() == can_skip
@@ -91,7 +91,7 @@ def _validate(
     if error is None:
         assert error_result is None
     else:
-        assert isinstance(error_result, pychecks.CheckError)
+        assert isinstance(error_result, checks.CheckError)
         assert str(error_result) == str(error)
 
 

@@ -8,15 +8,15 @@ help: ## This help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
 .PHONY: build
-build: dev-build-packages ## Builds Rust code and pychecks Python modules
+build: dev-build-packages ## Builds Rust code and checks Python modules
 	python -m maturin build
 
 .PHONY: build-release
-build-release: dev-build-packages ## Build pychecks module in release mode
+build-release: dev-build-packages ## Build checks module in release mode
 	python -m maturin build --release
 
 .PHONY: install
-install: dev-build-packages ## Install pychecks module into current virtualenv
+install: dev-build-packages ## Install checks module into current virtualenv
 	python -m maturin develop --release
 
 .PHONY: publish
@@ -48,15 +48,15 @@ cargo-clippy: ## Run cargo clippy only
 	cargo clippy
 
 .PHONY: test
-test: cargo-test dev-test-packages build quicktest ## Intall pychecks module and run tests
+test: cargo-test dev-test-packages build quicktest ## Intall checks module and run tests
 
 .PHONY: quicktest
-quicktest: dev-test-packages ## Run tests on already installed pychecks module
+quicktest: dev-test-packages ## Run tests on already installed checks module
 	python -m pytest --hypothesis-profile default  -n=auto tests/
 
 .PHONY: coverage
-coverage: cargo-test dev-test-packages ## Intall pychecks module and run tests with code coverage[]
-	python -m pytest --hypothesis-profile default --cov-report term-missing --cov=pychecks -n=auto tests/
+coverage: cargo-test dev-test-packages ## Intall checks module and run tests with code coverage[]
+	python -m pytest --hypothesis-profile default --cov-report term-missing --cov=checks -n=auto tests/
 
 .PHONY: build-profile
 build-profile: ## Builds binary for profiling

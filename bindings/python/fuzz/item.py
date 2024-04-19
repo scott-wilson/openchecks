@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import atheris
+import checks
 import hypothesis
-import pychecks
 import pytest
 from hypothesis import strategies
 
@@ -25,7 +25,7 @@ def fuzz(
     other_value: int,
     type_hint: Optional[str],
 ) -> None:
-    item = pychecks.Item(value, type_hint)
+    item = checks.Item(value, type_hint)
 
     assert item.value() == value
     assert item.type_hint() == type_hint
@@ -47,7 +47,7 @@ def fuzz(
     with pytest.raises(TypeError):
         item >= value  # type: ignore
 
-    other_item = pychecks.Item(other_value, type_hint)
+    other_item = checks.Item(other_value, type_hint)
 
     assert (item < other_item) == (value < other_value)
     assert (item <= other_item) == (value <= other_value)

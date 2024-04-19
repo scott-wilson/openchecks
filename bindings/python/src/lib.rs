@@ -17,7 +17,7 @@ use runner::{async_auto_fix, async_run, auto_fix, run};
 use status::Status;
 
 #[pymodule]
-fn pychecks(py: Python, m: &PyModule) -> PyResult<()> {
+fn checks(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(async_auto_fix, m)?)?;
     m.add_function(wrap_pyfunction!(async_run, m)?)?;
     m.add_function(wrap_pyfunction!(auto_fix, m)?)?;

@@ -1,7 +1,7 @@
-pychecks
-========
+checks
+======
 
 .. toctree::
    :maxdepth: 4
 
-   pychecks
+   checks

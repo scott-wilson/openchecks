@@ -6,12 +6,12 @@ license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "pychecks"
+name = "checks"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.20.3" }
-checks = { path = "../../" }
+base_checks = { path = "../../", package = "checks" }
 pyo3-asyncio = { version = "0.20.0", features = [
     "attributes",
     "tokio-runtime",
