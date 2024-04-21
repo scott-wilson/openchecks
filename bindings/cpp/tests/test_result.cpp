@@ -62,26 +62,23 @@ TEST_P(ResultParameterizedTestFixture, ResultSuccess) {
   validate_result(result, status, message, items, can_fix, can_skip, error);
 }
 
-// clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    CheckResult,
-    ResultParameterizedTestFixture,
+    CheckResult, ResultParameterizedTestFixture,
     ::testing::Combine(
         ::testing::Values(CPPCHECKS_NAMESPACE::Status::Pending,
-        CPPCHECKS_NAMESPACE::Status::Skipped,
-        CPPCHECKS_NAMESPACE::Status::Passed,
-        CPPCHECKS_NAMESPACE::Status::Warning,
-        CPPCHECKS_NAMESPACE::Status::Failed,
-        CPPCHECKS_NAMESPACE::Status::SystemError),
-        ::testing::Values(std::string("message")),
-        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1,
-        ""), IntItem(2, "")}),
-        ::testing::Bool(),
-        ::testing::Bool(),
-        ::testing::Values(std::string("error"), std::string(), std::nullopt)
-    )
-);
-// clang-format on
+                          CPPCHECKS_NAMESPACE::Status::Skipped,
+                          CPPCHECKS_NAMESPACE::Status::Passed,
+                          CPPCHECKS_NAMESPACE::Status::Warning,
+                          CPPCHECKS_NAMESPACE::Status::Failed,
+                          CPPCHECKS_NAMESPACE::Status::SystemError), // status
+        ::testing::Values(std::string("message")),                   // message
+        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1, ""),
+                                               IntItem(2, "")}), // items
+        ::testing::Bool(),                                       // can_fix
+        ::testing::Bool(),                                       // can_skip
+        ::testing::Values(std::string("error"), std::string(),
+                          std::nullopt) // error
+        ));
 
 class PassedResultParameterizedTestFixture
     : public ::testing::TestWithParam<
@@ -100,19 +97,15 @@ TEST_P(PassedResultParameterizedTestFixture, ResultPassedSuccess) {
   validate_result(result, status, message, items, can_fix, can_skip, error);
 }
 
-// clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    CheckResult,
-    PassedResultParameterizedTestFixture,
-    ::testing::Combine(
-        ::testing::Values(std::string("message")),
-        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1,
-        ""), IntItem(2, "")}),
-        ::testing::Bool(),
-        ::testing::Bool()
-    )
-);
-// clang-format on
+    CheckResult, PassedResultParameterizedTestFixture,
+    ::testing::Combine(::testing::Values(std::string("message")), // message
+                       ::testing::Values(std::vector<IntItem>{
+                           IntItem(0, ""), IntItem(1, ""),
+                           IntItem(2, "")}), // items
+                       ::testing::Bool(),    // can_fix
+                       ::testing::Bool()     // can_skip
+                       ));
 
 class SkippedResultParameterizedTestFixture
     : public ::testing::TestWithParam<
@@ -131,19 +124,15 @@ TEST_P(SkippedResultParameterizedTestFixture, ResultSkippedSuccess) {
   validate_result(result, status, message, items, can_fix, can_skip, error);
 }
 
-// clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    CheckResult,
-    SkippedResultParameterizedTestFixture,
-    ::testing::Combine(
-        ::testing::Values(std::string("message")),
-        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1,
-        ""), IntItem(2, "")}),
-        ::testing::Bool(),
-        ::testing::Bool()
-    )
-);
-// clang-format on
+    CheckResult, SkippedResultParameterizedTestFixture,
+    ::testing::Combine(::testing::Values(std::string("message")), // message
+                       ::testing::Values(std::vector<IntItem>{
+                           IntItem(0, ""), IntItem(1, ""),
+                           IntItem(2, "")}), // items
+                       ::testing::Bool(),    // can_fix
+                       ::testing::Bool()     // can_skip
+                       ));
 
 class WarningResultParameterizedTestFixture
     : public ::testing::TestWithParam<
@@ -162,19 +151,15 @@ TEST_P(WarningResultParameterizedTestFixture, ResultWarningSuccess) {
   validate_result(result, status, message, items, can_fix, can_skip, error);
 }
 
-// clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    CheckResult,
-    WarningResultParameterizedTestFixture,
-    ::testing::Combine(
-        ::testing::Values(std::string("message")),
-        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1,
-        ""), IntItem(2, "")}),
-        ::testing::Bool(),
-        ::testing::Bool()
-    )
-);
-// clang-format on
+    CheckResult, WarningResultParameterizedTestFixture,
+    ::testing::Combine(::testing::Values(std::string("message")), // message
+                       ::testing::Values(std::vector<IntItem>{
+                           IntItem(0, ""), IntItem(1, ""),
+                           IntItem(2, "")}), // items
+                       ::testing::Bool(),    // can_fix
+                       ::testing::Bool()     // can_skip
+                       ));
 
 class FailedResultParameterizedTestFixture
     : public ::testing::TestWithParam<
@@ -193,16 +178,12 @@ TEST_P(FailedResultParameterizedTestFixture, ResultFailedSuccess) {
   validate_result(result, status, message, items, can_fix, can_skip, error);
 }
 
-// clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    CheckResult,
-    FailedResultParameterizedTestFixture,
-    ::testing::Combine(
-        ::testing::Values(std::string("message")),
-        ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1,
-        ""), IntItem(2, "")}),
-        ::testing::Bool(),
-        ::testing::Bool()
-    )
-);
-// clang-format on
+    CheckResult, FailedResultParameterizedTestFixture,
+    ::testing::Combine(::testing::Values(std::string("message")), // message
+                       ::testing::Values(std::vector<IntItem>{
+                           IntItem(0, ""), IntItem(1, ""),
+                           IntItem(2, "")}), // items
+                       ::testing::Bool(),    // can_fix
+                       ::testing::Bool()     // can_skip
+                       ));

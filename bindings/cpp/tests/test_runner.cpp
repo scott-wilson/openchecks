@@ -15,21 +15,19 @@
 #include "items_impl.h"
 #include "result_impl.h"
 
-// clang-format off
 class CheckParameterizedTestFixture
-    : public ::testing::TestWithParam<std::tuple<
-    std::string,  // title
-    std::string,  // description
-    CPPCHECKS_NAMESPACE::CheckHint,  // hint
-    CPPCHECKS_NAMESPACE::Status,  // status
-    CPPCHECKS_NAMESPACE::Status,  // fix_status
-    std::string,  // message
-    std::optional<IntItems>,  // items
-    bool,  // can_fix
-    bool,  // can_skip
-    std::optional<std::string>  // error
-    >> {};
-// clang-format on
+    : public ::testing::TestWithParam<
+          std::tuple<std::string,                    // title
+                     std::string,                    // description
+                     CPPCHECKS_NAMESPACE::CheckHint, // hint
+                     CPPCHECKS_NAMESPACE::Status,    // status
+                     CPPCHECKS_NAMESPACE::Status,    // fix_status
+                     std::string,                    // message
+                     std::optional<IntItems>,        // items
+                     bool,                           // can_fix
+                     bool,                           // can_skip
+                     std::optional<std::string>      // error
+                     >> {};
 
 TEST_P(CheckParameterizedTestFixture, ResultSuccess) {
   std::string title = std::get<0>(GetParam());
@@ -114,36 +112,35 @@ TEST_P(CheckParameterizedTestFixture, ResultSuccess) {
   }
 }
 
-// clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    CheckResult,
-    CheckParameterizedTestFixture,
+    CheckResult, CheckParameterizedTestFixture,
     ::testing::Combine(
-        ::testing::Values(std::string("title"), std::string("")),
-        ::testing::Values(std::string("description"), std::string("")),
-        ::testing::Values(CPPCHECKS_NAMESPACE::CheckHint::None, CPPCHECKS_NAMESPACE::CheckHint::AutoFix),
+        ::testing::Values(std::string("title"), std::string("")), // title
+        ::testing::Values(std::string("description"),
+                          std::string("")), // description
+        ::testing::Values(CPPCHECKS_NAMESPACE::CheckHint::None,
+                          CPPCHECKS_NAMESPACE::CheckHint::AutoFix), // hint
         ::testing::Values(CPPCHECKS_NAMESPACE::Status::Pending,
-        CPPCHECKS_NAMESPACE::Status::Skipped,
-        CPPCHECKS_NAMESPACE::Status::Passed,
-        CPPCHECKS_NAMESPACE::Status::Warning,
-        CPPCHECKS_NAMESPACE::Status::Failed,
-        CPPCHECKS_NAMESPACE::Status::SystemError),
-        ::testing::Values(CPPCHECKS_NAMESPACE::Status::Pending,
-        CPPCHECKS_NAMESPACE::Status::Skipped,
-        CPPCHECKS_NAMESPACE::Status::Passed,
-        CPPCHECKS_NAMESPACE::Status::Warning,
-        CPPCHECKS_NAMESPACE::Status::Failed,
-        CPPCHECKS_NAMESPACE::Status::SystemError),
-        ::testing::Values(std::string("message"), std::string("")),
+                          CPPCHECKS_NAMESPACE::Status::Skipped,
+                          CPPCHECKS_NAMESPACE::Status::Passed,
+                          CPPCHECKS_NAMESPACE::Status::Warning,
+                          CPPCHECKS_NAMESPACE::Status::Failed,
+                          CPPCHECKS_NAMESPACE::Status::SystemError), // status
         ::testing::Values(
-            IntItems{std::vector<IntItem>{IntItem(0, ""), IntItem(1, ""), IntItem(2, "")}},
-            IntItems{std::vector<IntItem>{IntItem(0, "")}},
-            IntItems{std::vector<IntItem>{}},
-            std::nullopt
-        ),
-        ::testing::Bool(),
-        ::testing::Bool(),
-        ::testing::Values(std::string("error"), std::string(), std::nullopt)
-    )
-);
-// clang-format on
+            CPPCHECKS_NAMESPACE::Status::Pending,
+            CPPCHECKS_NAMESPACE::Status::Skipped,
+            CPPCHECKS_NAMESPACE::Status::Passed,
+            CPPCHECKS_NAMESPACE::Status::Warning,
+            CPPCHECKS_NAMESPACE::Status::Failed,
+            CPPCHECKS_NAMESPACE::Status::SystemError), // fix_status
+        ::testing::Values(std::string("message"), std::string("")), // message
+        ::testing::Values(IntItems{std::vector<IntItem>{
+                              IntItem(0, ""), IntItem(1, ""), IntItem(2, "")}},
+                          IntItems{std::vector<IntItem>{IntItem(0, "")}},
+                          IntItems{std::vector<IntItem>{}},
+                          std::nullopt), // items
+        ::testing::Bool(),               // can_fix
+        ::testing::Bool(),               // can_skip
+        ::testing::Values(std::string("error"), std::string(),
+                          std::nullopt) // error
+        ));
