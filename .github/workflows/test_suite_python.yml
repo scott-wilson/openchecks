@@ -45,6 +45,10 @@ jobs:
           - "3.11"
           - "3.12"
           - "3" # Latest version
+        exclude:
+          # Skip Python 3.7 on macos-latest due to no support.
+          - os: macos-latest
+            python-version: "3.7"
     runs-on: ${{matrix.os}}
     steps:
       - name: Harden Runner
@@ -88,7 +92,7 @@ jobs:
         run: python -m pip install .[test]
       - name: Lint with Ruff
         run: |
-          python -m ruff --output-format=github .
+          python -m ruff check --output-format=github .
       - name: Lint with Ruff
         run: |
           python -m ruff format --check .
