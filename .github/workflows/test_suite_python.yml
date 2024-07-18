@@ -45,14 +45,18 @@ jobs:
           - "3.11"
           - "3.12"
           - "3" # Latest version
+        exclude:
+          # Skip Python 3.7 on macos-latest due to no support.
+          - os: macos-latest
+            python-version: "3.7"
     runs-on: ${{matrix.os}}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           submodules: recursive
       - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
@@ -62,11 +66,11 @@ jobs:
       - name: Run Cargo Fmt
         run: cargo fmt --check
       - name: Run Cargo Deny
-        uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393 # v1.6.2
+        uses: EmbarkStudios/cargo-deny-action@3f4a782664881cf5725d0ffd23969fcce89fd868 # v1.6.3
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Setup Python ${{matrix.python-version}}
         id: setup-python
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
         with:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
@@ -88,12 +92,12 @@ jobs:
         run: python -m pip install .[test]
       - name: Lint with Ruff
         run: |
-          python -m ruff --output-format=github .
+          python -m ruff check --output-format=github .
       - name: Lint with Ruff
         run: |
           python -m ruff format --check .
       - name: Build Rust
-        uses: PyO3/maturin-action@bf468cfccfe9a3fec2554b0eebf2e9276cf066aa # v1.42.1
+        uses: PyO3/maturin-action@2c5c1560848aaa364c3545136054932db5fa27b7 # v1.44.0
         with:
           command: develop
           sccache: 'true'
