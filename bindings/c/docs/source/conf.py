@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Untitled Checks Framework"
+project = "Open Checks Framework"
 copyright = "2022, Scott Wilson"
 author = "Scott Wilson"
 release = "0.1.0"
@@ -61,5 +61,5 @@ myst_enable_extensions = [
 
 # -- Breathe -----------------------------------------------------------------
 
-breathe_projects = {"cchecks": "_doxygen/xml"}
-breathe_default_project = "cchecks"
+breathe_projects = {"openchecks": "_doxygen/xml"}
+breathe_default_project = "openchecks"

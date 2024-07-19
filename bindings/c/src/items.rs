@@ -1,15 +1,16 @@
 use std::ptr::null;
-/// The CChecksItems iterable container is used to iterate over any number of
+
+/// The OpenChecksItems iterable container is used to iterate over any number of
 /// and any sized objects.
 #[repr(C)]
-pub struct CChecksItems {
+pub struct OpenChecksItems {
     /// Get an item from the container.
     ///
     /// # Safety
     ///
     /// The container pointer must not be null. Passing an invalid index will
     /// return a null pointer.
-    pub get_fn: unsafe extern "C" fn(*const Self, usize) -> *const crate::CChecksItem,
+    pub get_fn: unsafe extern "C" fn(*const Self, usize) -> *const crate::OpenChecksItem,
     /// Clone the container.
     ///
     /// # Safety
@@ -44,18 +45,18 @@ pub struct CChecksItems {
     pub destroy_fn: unsafe extern "C" fn(*mut Self),
 }
 
-impl Drop for CChecksItems {
+impl Drop for OpenChecksItems {
     fn drop(&mut self) {
         unsafe { (self.destroy_fn)(self) }
     }
 }
 
-impl std::iter::IntoIterator for CChecksItems {
+impl std::iter::IntoIterator for OpenChecksItems {
     type Item = crate::item::ChecksItemWrapper;
-    type IntoIter = CChecksItemsIterator;
+    type IntoIter = OpenChecksItemsIterator;
 
     fn into_iter(self) -> Self::IntoIter {
-        CChecksItemsIterator::new(&self)
+        OpenChecksItemsIterator::new(&self)
     }
 }
 
@@ -67,10 +68,10 @@ impl std::iter::IntoIterator for CChecksItems {
 ///
 /// The items pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_items_get(
-    items: *const CChecksItems,
+pub unsafe extern "C" fn openchecks_items_get(
+    items: *const OpenChecksItems,
     index: usize,
-) -> *const crate::CChecksItem {
+) -> *const crate::OpenChecksItem {
     ((*items).get_fn)(items, index)
 }
 
@@ -80,7 +81,9 @@ pub unsafe extern "C" fn cchecks_items_get(
 ///
 /// The items pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_items_clone(items: *const CChecksItems) -> *mut CChecksItems {
+pub unsafe extern "C" fn openchecks_items_clone(
+    items: *const OpenChecksItems,
+) -> *mut OpenChecksItems {
     ((*items).clone_fn)(items)
 }
 
@@ -90,7 +93,7 @@ pub unsafe extern "C" fn cchecks_items_clone(items: *const CChecksItems) -> *mut
 ///
 /// The items pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_items_length(items: *const CChecksItems) -> usize {
+pub unsafe extern "C" fn openchecks_items_length(items: *const OpenChecksItems) -> usize {
     ((*items).length_fn)(items)
 }
 
@@ -100,7 +103,7 @@ pub unsafe extern "C" fn cchecks_items_length(items: *const CChecksItems) -> usi
 ///
 /// The items pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_items_item_size(items: *const CChecksItems) -> usize {
+pub unsafe extern "C" fn openchecks_items_item_size(items: *const OpenChecksItems) -> usize {
     ((*items).item_size_fn)(items)
 }
 
@@ -112,9 +115,9 @@ pub unsafe extern "C" fn cchecks_items_item_size(items: *const CChecksItems) -> 
 /// then this will return true. If one is null and the other is not, then this
 /// will return false.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_items_eq(
-    items: *const CChecksItems,
-    other_items: *const CChecksItems,
+pub unsafe extern "C" fn openchecks_items_eq(
+    items: *const OpenChecksItems,
+    other_items: *const OpenChecksItems,
 ) -> bool {
     if items.is_null() && other_items.is_null() {
         true
@@ -128,7 +131,7 @@ pub unsafe extern "C" fn cchecks_items_eq(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_items_destroy(items: *mut CChecksItems) {
+pub unsafe extern "C" fn openchecks_items_destroy(items: *mut OpenChecksItems) {
     ((*items).destroy_fn)(items)
 }
 
@@ -138,32 +141,32 @@ pub unsafe extern "C" fn cchecks_items_destroy(items: *mut CChecksItems) {
 ///
 /// The items pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_items_iterator_new(
-    items: *const CChecksItems,
-) -> CChecksItemsIterator {
-    CChecksItemsIterator { items, index: 0 }
+pub unsafe extern "C" fn openchecks_items_iterator_new(
+    items: *const OpenChecksItems,
+) -> OpenChecksItemsIterator {
+    OpenChecksItemsIterator { items, index: 0 }
 }
 
 #[repr(C)]
-pub struct CChecksItemsIterator {
-    pub items: *const CChecksItems,
+pub struct OpenChecksItemsIterator {
+    pub items: *const OpenChecksItems,
     pub index: usize,
 }
 
-impl CChecksItemsIterator {
+impl OpenChecksItemsIterator {
     pub(crate) fn item(&self) -> Option<<Self as Iterator>::Item> {
         unsafe {
-            if self.index >= cchecks_items_length(self.items) {
+            if self.index >= openchecks_items_length(self.items) {
                 return None;
             }
 
-            let result = cchecks_items_get(self.items, self.index);
+            let result = openchecks_items_get(self.items, self.index);
             Some(crate::item::ChecksItemWrapper::new(result))
         }
     }
 }
 
-impl Iterator for CChecksItemsIterator {
+impl Iterator for OpenChecksItemsIterator {
     type Item = crate::item::ChecksItemWrapper;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -174,8 +177,8 @@ impl Iterator for CChecksItemsIterator {
     }
 }
 
-impl CChecksItemsIterator {
-    fn new(items: *const CChecksItems) -> Self {
+impl OpenChecksItemsIterator {
+    fn new(items: *const OpenChecksItems) -> Self {
         Self { items, index: 0 }
     }
 }
@@ -187,9 +190,9 @@ impl CChecksItemsIterator {
 ///
 /// The iterator pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_iterator_next(
-    iterator: *mut CChecksItemsIterator,
-) -> *const crate::CChecksItem {
+pub unsafe extern "C" fn openchecks_item_iterator_next(
+    iterator: *mut OpenChecksItemsIterator,
+) -> *const crate::OpenChecksItem {
     unsafe {
         match (*iterator).next() {
             Some(item) => item.ptr(),
@@ -205,9 +208,9 @@ pub unsafe extern "C" fn cchecks_item_iterator_next(
 ///
 /// The iterator pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_iterator_item(
-    iterator: *mut CChecksItemsIterator,
-) -> *const crate::CChecksItem {
+pub unsafe extern "C" fn openchecks_item_iterator_item(
+    iterator: *mut OpenChecksItemsIterator,
+) -> *const crate::OpenChecksItem {
     unsafe {
         match (*iterator).item() {
             Some(item) => item.ptr(),
@@ -222,25 +225,25 @@ pub unsafe extern "C" fn cchecks_item_iterator_item(
 ///
 /// The iterator pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_iterator_is_done(
-    iterator: *const CChecksItemsIterator,
+pub unsafe extern "C" fn openchecks_item_iterator_is_done(
+    iterator: *const OpenChecksItemsIterator,
 ) -> bool {
     unsafe {
         let iterator = &(*iterator);
 
-        iterator.index >= cchecks_items_length(iterator.items)
+        iterator.index >= openchecks_items_length(iterator.items)
     }
 }
 
-pub struct CChecksItemsWrapper {
-    pub ptr: *mut CChecksItems,
+pub struct OpenChecksItemsWrapper {
+    pub ptr: *mut OpenChecksItems,
 }
 
-impl std::iter::IntoIterator for CChecksItemsWrapper {
+impl std::iter::IntoIterator for OpenChecksItemsWrapper {
     type Item = crate::item::ChecksItemWrapper;
-    type IntoIter = CChecksItemsIterator;
+    type IntoIter = OpenChecksItemsIterator;
 
     fn into_iter(self) -> Self::IntoIter {
-        CChecksItemsIterator::new(self.ptr)
+        OpenChecksItemsIterator::new(self.ptr)
     }
 }

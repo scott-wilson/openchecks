@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cchecks"
+name = "openchecks"
 description = "A simple checks framework"
 authors = [{ name = "Scott Wilson", email = "scott@propersquid.com" }]
 license = { text = "MIT OR Apache-2.0" }

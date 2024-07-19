@@ -7,14 +7,14 @@
 #include <vector>
 
 extern "C" {
-#include <cchecks.h>
+#include <openchecks.h>
 }
 
-#include "cppchecks/core.h"
-#include "cppchecks/item.h"
+#include "openchecks/core.h"
+#include "openchecks/item.h"
 
-namespace CPPCHECKS_NAMESPACE {
-template <class T> class Items : private CChecksItems {
+namespace OPENCHECKS_NAMESPACE {
+template <class T> class Items : private OpenChecksItems {
 public:
   Items();
 
@@ -22,7 +22,7 @@ public:
 
   virtual ~Items() = default;
 
-  const std::optional<CPPCHECKS_NAMESPACE::Item<T>>
+  const std::optional<OPENCHECKS_NAMESPACE::Item<T>>
   operator[](size_t index) const;
 
   size_t length() const noexcept;
@@ -34,17 +34,18 @@ public:
   virtual inline bool operator!=(const Items<T> &other) const;
 
 private:
-  std::vector<CPPCHECKS_NAMESPACE::Item<T>> _items;
+  std::vector<OPENCHECKS_NAMESPACE::Item<T>> _items;
 
   void init();
 
-  static const CChecksItem *_get_impl(const CChecksItems *items, size_t index);
-  static CChecksItems *_clone_impl(const CChecksItems *items);
-  static size_t _length_impl(const CChecksItems *items);
-  static size_t _item_size_impl(const CChecksItems *items);
-  static bool _eq_impl(const CChecksItems *items,
-                       const CChecksItems *other_items);
-  static void _destroy_impl(CChecksItems *items);
+  static const OpenChecksItem *_get_impl(const OpenChecksItems *items,
+                                         size_t index);
+  static OpenChecksItems *_clone_impl(const OpenChecksItems *items);
+  static size_t _length_impl(const OpenChecksItems *items);
+  static size_t _item_size_impl(const OpenChecksItems *items);
+  static bool _eq_impl(const OpenChecksItems *items,
+                       const OpenChecksItems *other_items);
+  static void _destroy_impl(OpenChecksItems *items);
 };
 
 template <class T> Items<T>::Items() { this->init(); }
@@ -55,7 +56,7 @@ template <class T> Items<T>::Items(const std::vector<Item<T>> &items) {
 }
 
 template <class T>
-const std::optional<CPPCHECKS_NAMESPACE::Item<T>>
+const std::optional<OPENCHECKS_NAMESPACE::Item<T>>
 Items<T>::operator[](size_t index) const {
   if (index < this->_items.size()) {
     return this->_items[index];
@@ -69,7 +70,7 @@ template <class T> size_t Items<T>::length() const noexcept {
 }
 
 template <class T> size_t Items<T>::item_size() const noexcept {
-  return sizeof(CPPCHECKS_NAMESPACE::Item<T>);
+  return sizeof(OPENCHECKS_NAMESPACE::Item<T>);
 }
 
 template <class T>
@@ -92,38 +93,39 @@ template <class T> void Items<T>::init() {
 }
 
 template <class T>
-const CChecksItem *Items<T>::_get_impl(const CChecksItems *items,
-                                       size_t index) {
+const OpenChecksItem *Items<T>::_get_impl(const OpenChecksItems *items,
+                                          size_t index) {
   const Items<T> *cppitems = (const Items<T> *)items;
 
-  return (const CChecksItem *)&cppitems[index];
+  return (const OpenChecksItem *)&cppitems[index];
 }
 
 template <class T>
-CChecksItems *Items<T>::_clone_impl(const CChecksItems *items) {
+OpenChecksItems *Items<T>::_clone_impl(const OpenChecksItems *items) {
   const Items<T> *cppitems = (const Items<T> *)items;
 
   Items<T> *new_items = new Items<T>;
   new_items->_items = cppitems->_items;
 
-  return (CChecksItems *)new_items;
+  return (OpenChecksItems *)new_items;
 }
 
-template <class T> size_t Items<T>::_length_impl(const CChecksItems *items) {
+template <class T> size_t Items<T>::_length_impl(const OpenChecksItems *items) {
   const Items<T> *cppitems = (const Items<T> *)items;
 
   return cppitems->length();
 }
 
-template <class T> size_t Items<T>::_item_size_impl(const CChecksItems *items) {
+template <class T>
+size_t Items<T>::_item_size_impl(const OpenChecksItems *items) {
   const Items<T> *cppitems = (const Items<T> *)items;
 
   return cppitems->item_size();
 }
 
 template <class T>
-bool Items<T>::_eq_impl(const CChecksItems *items,
-                        const CChecksItems *other_items) {
+bool Items<T>::_eq_impl(const OpenChecksItems *items,
+                        const OpenChecksItems *other_items) {
   if (items == nullptr && other_items == nullptr) {
     return true;
   } else if (items == nullptr && other_items != nullptr) {
@@ -138,10 +140,10 @@ bool Items<T>::_eq_impl(const CChecksItems *items,
   return *cppitems == *cppother_items;
 }
 
-template <class T> void Items<T>::_destroy_impl(CChecksItems *items) {
+template <class T> void Items<T>::_destroy_impl(OpenChecksItems *items) {
   Items<T> *cppitems = (Items<T> *)items;
 
   delete cppitems;
 }
 
-} // namespace CPPCHECKS_NAMESPACE
+} // namespace OPENCHECKS_NAMESPACE

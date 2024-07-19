@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import checks
 import hypothesis
+import openchecks
 from hypothesis import strategies
 
 if TYPE_CHECKING:
@@ -15,32 +15,32 @@ if TYPE_CHECKING:
 @hypothesis.given(
     status=strategies.sampled_from(
         [
-            checks.Status.Pending,
-            checks.Status.Skipped,
-            checks.Status.Passed,
-            checks.Status.Warning,
-            checks.Status.Failed,
-            checks.Status.SystemError,
+            openchecks.Status.Pending,
+            openchecks.Status.Skipped,
+            openchecks.Status.Passed,
+            openchecks.Status.Warning,
+            openchecks.Status.Failed,
+            openchecks.Status.SystemError,
         ]
     ),
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(checks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
     error=strategies.one_of(strategies.none(), strategies.builds(Exception)),
 )
 def test_check_result_success(
-    status: checks.Status,
+    status: openchecks.Status,
     message: str,
-    items: Optional[List[checks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
     error: Optional[BaseException],
 ) -> None:
-    result = checks.CheckResult(status, message, items, can_fix, can_skip, error)
+    result = openchecks.CheckResult(status, message, items, can_fix, can_skip, error)
 
     assert result.status() == status
     assert result.message() == message
@@ -52,12 +52,12 @@ def test_check_result_success(
 
         assert result_items == items
 
-    if status == checks.Status.SystemError:
+    if status == openchecks.Status.SystemError:
         assert result.can_fix() is False
     else:
         assert result.can_fix() == can_fix
 
-    if status == checks.Status.SystemError:
+    if status == openchecks.Status.SystemError:
         assert result.can_skip() is False
     else:
         assert result.can_skip() == can_skip
@@ -67,7 +67,7 @@ def test_check_result_success(
     if error is None:
         assert error_result is None
     else:
-        assert isinstance(error_result, checks.CheckError)
+        assert isinstance(error_result, openchecks.CheckError)
         assert str(error_result) == str(error)
 
 
@@ -75,19 +75,19 @@ def test_check_result_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(checks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_skipped_success(
     message: str,
-    items: Optional[List[checks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = checks.Status.Skipped
-    result = checks.CheckResult.skipped(message, items, can_fix, can_skip)
+    status = openchecks.Status.Skipped
+    result = openchecks.CheckResult.skipped(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message
@@ -108,19 +108,19 @@ def test_check_result_skipped_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(checks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_passed_success(
     message: str,
-    items: Optional[List[checks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = checks.Status.Passed
-    result = checks.CheckResult.passed(message, items, can_fix, can_skip)
+    status = openchecks.Status.Passed
+    result = openchecks.CheckResult.passed(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message
@@ -141,19 +141,19 @@ def test_check_result_passed_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(checks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_warning_success(
     message: str,
-    items: Optional[List[checks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = checks.Status.Warning
-    result = checks.CheckResult.warning(message, items, can_fix, can_skip)
+    status = openchecks.Status.Warning
+    result = openchecks.CheckResult.warning(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message
@@ -174,19 +174,19 @@ def test_check_result_warning_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(checks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_failed_success(
     message: str,
-    items: Optional[List[checks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = checks.Status.Failed
-    result = checks.CheckResult.failed(message, items, can_fix, can_skip)
+    status = openchecks.Status.Failed
+    result = openchecks.CheckResult.failed(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message

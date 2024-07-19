@@ -6,18 +6,18 @@ set(TESTS
     test_status
 )
 
-set(CCHECKS_COMPILE_FLAGS)
+set(COPENCHECKS_COMPILE_FLAGS)
 
 if (BUILD_WITH_CHECK_COVERAGE)
-    set(CCHECKS_COMPILE_FLAGS ${CCHECKS_COMPILE_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage)
+    set(COPENCHECKS_COMPILE_FLAGS ${COPENCHECKS_COMPILE_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage)
     SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 endif()
 
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    set(CCHECKS_COMPILE_FLAGS ${CCHECKS_COMPILE_FLAGS} -WX -W4)
+    set(COPENCHECKS_COMPILE_FLAGS ${COPENCHECKS_COMPILE_FLAGS} -WX -W4)
 else()
-    set(CCHECKS_COMPILE_FLAGS ${CCHECKS_COMPILE_FLAGS} -Werror -Wall)
+    set(COPENCHECKS_COMPILE_FLAGS ${COPENCHECKS_COMPILE_FLAGS} -Werror -Wall)
 endif()
 
 if(CODE_COVERAGE AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
@@ -50,10 +50,10 @@ foreach(TEST ${TESTS})
     target_link_libraries(${TEST}
         PUBLIC
         cmocka
-        cchecks
+        copenchecks
     )
 
-    target_compile_options(${TEST} PRIVATE ${CCHECKS_COMPILE_FLAGS})
+    target_compile_options(${TEST} PRIVATE ${COPENCHECKS_COMPILE_FLAGS})
 
     add_test(NAME ${TEST} COMMAND ${TEST})
 endforeach()

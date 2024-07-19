@@ -34,7 +34,7 @@ impl Status {
     /// # Examples
     ///
     /// ```rust
-    /// # use checks::Status;
+    /// # use openchecks::Status;
     /// let status = Status::Pending;
     /// assert_eq!(status.is_pending(), true);
     ///
@@ -54,7 +54,7 @@ impl Status {
     /// # Examples
     ///
     /// ```rust
-    /// # use checks::Status;
+    /// # use openchecks::Status;
     /// let status = Status::Passed;
     /// assert_eq!(status.has_passed(), true);
     ///
@@ -79,7 +79,7 @@ impl Status {
     /// # Examples
     ///
     /// ```rust
-    /// # use checks::Status;
+    /// # use openchecks::Status;
     /// let status = Status::Passed;
     /// assert_eq!(status.has_failed(), false);
     ///

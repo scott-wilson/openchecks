@@ -77,7 +77,7 @@ jobs:
         working-directory: bindings/cpp/build
         run: |
           # Make cmocka a static dependency when testing.
-          cmake ../ -DBUILD_SHARED_LIBS=OFF -DBUILD_CPPCHECKS_TESTS=ON
+          cmake ../ -DBUILD_SHARED_LIBS=OFF -DBUILD_CPPOPENCHECKS_TESTS=ON
       - name: CMake Build
         working-directory: bindings/cpp/build
         run: |

@@ -1,5 +1,5 @@
-#ifndef cchecks_h
-#define cchecks_h
+#ifndef copenchecks_h
+#define copenchecks_h
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -8,43 +8,43 @@
 #include <stdlib.h>
 
 
-typedef enum CChecksAutoFixStatus {
-  CChecksAutoFixStatusOk,
-  CChecksAutoFixStatusError,
-} CChecksAutoFixStatus;
+typedef enum OpenChecksAutoFixStatus {
+  OpenChecksAutoFixStatusOk,
+  OpenChecksAutoFixStatusError,
+} OpenChecksAutoFixStatus;
 
 /**
  * The status enum represents a result status.
  */
-typedef enum CChecksStatus {
+typedef enum OpenChecksStatus {
   /**
    * The check is waiting to run. A check should not return this status, but
    * instead this can be used by a user interface to let a user know that the
    * check is ready to run.
    */
-  CChecksStatusPending,
+  OpenChecksStatusPending,
   /**
    * The check has been skipped. A check might return this to let the user
    * know that an element it depends on is invalid (such as a file doesn't)
    * exist, or a check scheduler may make child checks return this status if
    * a check fails.
    */
-  CChecksStatusSkipped,
+  OpenChecksStatusSkipped,
   /**
    * The check has successfully passed without issue.
    */
-  CChecksStatusPassed,
+  OpenChecksStatusPassed,
   /**
    * There were issues found, but they are not deemed failures. This can be
    * treated the same as a pass.
    */
-  CChecksStatusWarning,
+  OpenChecksStatusWarning,
   /**
    * The check found an issue that caused it to fail. A validation system
    * should block the process following the validations to have the issue
    * fixed, unless the result allows skipping the check.
    */
-  CChecksStatusFailed,
+  OpenChecksStatusFailed,
   /**
    * There was an issue with a check or runner itself. For example, code that
    * the check depends on has an error, or the check is otherwise invalid.
@@ -52,29 +52,29 @@ typedef enum CChecksStatus {
    * process should not let the next process after run at all until the check
    * has been fixed by a developer.
    */
-  CChecksStatusSystemError,
-} CChecksStatus;
+  OpenChecksStatusSystemError,
+} OpenChecksStatus;
 
 /**
- * The CChecksString contains an owned pointer to a C style string.
+ * The OpenChecksString contains an owned pointer to a C style string.
  *
  * # Safety
  *
- * The pointer to the string must be destroyed with `cchecks_string_destroy`
+ * The pointer to the string must be destroyed with `openchecks_string_destroy`
  * once it is no longer needed. Also, the pointer must not be modified at all
  * by any functions not exposed by the validation library.
  *
- * Internally, if a CChecksString is created, the system will create a copy of
- * the string being pointed to.
+ * Internally, if a OpenChecksString is created, the system will create a copy
+ * of the string being pointed to.
  */
-typedef struct CChecksString {
+typedef struct OpenChecksString {
   /**
    * The owned pointer to a string.
    *
    * # Safety
    *
    * This should not be modified at all outside of the validation library.
-   * Also, it should only be destroyed with `cchecks_string_destroy`.
+   * Also, it should only be destroyed with `openchecks_string_destroy`.
    */
   char *string;
   /**
@@ -86,8 +86,8 @@ typedef struct CChecksString {
    *
    * The destroy function should handle if the string pointer is null.
    */
-  void (*destroy_fn)(struct CChecksString*);
-} CChecksString;
+  void (*destroy_fn)(struct OpenChecksString*);
+} OpenChecksString;
 
 /**
  * The item is a wrapper to make a result item more user interface friendly.
@@ -103,7 +103,7 @@ typedef struct CChecksString {
  *
  * It is assumed that the value the item contains is owned by the item wrapper.
  */
-typedef struct CChecksItem {
+typedef struct OpenChecksItem {
   /**
    * A type hint can be used to add a hint to a system that the given type
    * represents something else. For example, the value could be a string, but
@@ -119,7 +119,7 @@ typedef struct CChecksItem {
    * also contain type information needed by the `value_fn` for casting the
    * void pointer to the correct type.
    */
-  const char *(*type_hint_fn)(const struct CChecksItem*);
+  const char *(*type_hint_fn)(const struct OpenChecksItem*);
   /**
    * The value that is wrapped.
    *
@@ -129,7 +129,7 @@ typedef struct CChecksItem {
    * type_hint_fn must contain type information needed to cast the void
    * pointer to the correct type.
    */
-  const void *(*value_fn)(const struct CChecksItem*);
+  const void *(*value_fn)(const struct OpenChecksItem*);
   /**
    * The clone function will create a full copy of the item and its value.
    *
@@ -141,7 +141,7 @@ typedef struct CChecksItem {
    * function not actually modify/destroy the data, and leave that up to a
    * process outside of the validation library.
    */
-  struct CChecksItem *(*clone_fn)(const struct CChecksItem*);
+  struct OpenChecksItem *(*clone_fn)(const struct OpenChecksItem*);
   /**
    * Destroy the owned data.
    *
@@ -149,7 +149,7 @@ typedef struct CChecksItem {
    *
    * The destroy function should be called once at most.
    */
-  void (*destroy_fn)(struct CChecksItem*);
+  void (*destroy_fn)(struct OpenChecksItem*);
   /**
    * The debug function is used to create a string for debugging issues.
    *
@@ -161,7 +161,7 @@ typedef struct CChecksItem {
    * example, if the string was created with `malloc`, it should be deleted
    * with `free`.
    */
-  struct CChecksString (*debug_fn)(const struct CChecksItem*);
+  struct OpenChecksString (*debug_fn)(const struct OpenChecksItem*);
   /**
    * The display function is used to create a string for displaying to a
    * user.
@@ -174,22 +174,22 @@ typedef struct CChecksItem {
    * example, if the string was created with `malloc`, it should be deleted
    * with `free`
    */
-  struct CChecksString (*display_fn)(const struct CChecksItem*);
+  struct OpenChecksString (*display_fn)(const struct OpenChecksItem*);
   /**
    * The order function is used to order items in user interfaces.
    */
-  bool (*lt_fn)(const struct CChecksItem*, const struct CChecksItem*);
+  bool (*lt_fn)(const struct OpenChecksItem*, const struct OpenChecksItem*);
   /**
    * The compare function is used to order items in user interfaces.
    */
-  bool (*eq_fn)(const struct CChecksItem*, const struct CChecksItem*);
-} CChecksItem;
+  bool (*eq_fn)(const struct OpenChecksItem*, const struct OpenChecksItem*);
+} OpenChecksItem;
 
 /**
- * The CChecksItems iterable container is used to iterate over any number of
+ * The OpenChecksItems iterable container is used to iterate over any number of
  * and any sized objects.
  */
-typedef struct CChecksItems {
+typedef struct OpenChecksItems {
   /**
    * Get an item from the container.
    *
@@ -198,7 +198,7 @@ typedef struct CChecksItems {
    * The container pointer must not be null. Passing an invalid index will
    * return a null pointer.
    */
-  const struct CChecksItem *(*get_fn)(const struct CChecksItems*, size_t);
+  const struct OpenChecksItem *(*get_fn)(const struct OpenChecksItems*, size_t);
   /**
    * Clone the container.
    *
@@ -206,7 +206,7 @@ typedef struct CChecksItems {
    *
    * The container pointer must not be null.
    */
-  struct CChecksItems *(*clone_fn)(const struct CChecksItems*);
+  struct OpenChecksItems *(*clone_fn)(const struct OpenChecksItems*);
   /**
    * Get the length of the container.
    *
@@ -214,7 +214,7 @@ typedef struct CChecksItems {
    *
    * The container pointer must not be null.
    */
-  size_t (*length_fn)(const struct CChecksItems*);
+  size_t (*length_fn)(const struct OpenChecksItems*);
   /**
    * Get the size of each item in the container. This must be the same for
    * all items in the container.
@@ -223,7 +223,7 @@ typedef struct CChecksItems {
    *
    * The container pointer must not be null.
    */
-  size_t (*item_size_fn)(const struct CChecksItems*);
+  size_t (*item_size_fn)(const struct OpenChecksItems*);
   /**
    * The compare function is used to compare containers.
    *
@@ -232,7 +232,7 @@ typedef struct CChecksItems {
    * This must support comparing a null with another null or non-null value.
    * Null == null is true, but null != non-null is false.
    */
-  bool (*eq_fn)(const struct CChecksItems*, const struct CChecksItems*);
+  bool (*eq_fn)(const struct OpenChecksItems*, const struct OpenChecksItems*);
   /**
    * Destroy the container.
    *
@@ -240,8 +240,8 @@ typedef struct CChecksItems {
    *
    * The container pointer must not be null.
    */
-  void (*destroy_fn)(struct CChecksItems*);
-} CChecksItems;
+  void (*destroy_fn)(struct OpenChecksItems*);
+} OpenChecksItems;
 
 /**
  * A check result contains all of the information needed to know the status of
@@ -266,30 +266,30 @@ typedef struct CChecksItems {
  *   failed to go forward with, for example, publishing an asset. Sometimes a
  *   studio might decide that the error isn't critical enough to always fail if
  *   a supervisor approves the fail to pass through.
- * - Error: If the status is CChecksStatusSystemError, then it may also contain
- *   the error that caused the result. Other statuses shouldn't contain an
- *   error.
+ * - Error: If the status is OpenChecksStatusSystemError, then it may also
+ *   contain the error that caused the result. Other statuses shouldn't contain
+ *   an error.
  * - Check duration: A diagnostic tool that could be exposed in a user
  *   interface to let the user know how long it took to run the check.
  * - Fix duration: A diagnostic tool that could be exposed in a user
  *   interface to let the user know how long it took to run the auto-fix.
  */
-typedef struct CChecksCheckResult {
-  enum CChecksStatus status;
+typedef struct OpenChecksCheckResult {
+  enum OpenChecksStatus status;
   char *message;
-  struct CChecksItems *items;
+  struct OpenChecksItems *items;
   bool can_fix;
   bool can_skip;
   char *error;
   double check_duration;
   double fix_duration;
-} CChecksCheckResult;
+} OpenChecksCheckResult;
 
 /**
  * The check hint flags contains useful information such as whether the check
  * should support auto-fixing issues.
  */
-typedef uint8_t CChecksCheckHint;
+typedef uint8_t OpenChecksCheckHint;
 
 /**
  * The result of the auto fix. The message should only contain a value if the
@@ -300,24 +300,24 @@ typedef uint8_t CChecksCheckHint;
  * The message pointer must not be modified or destroyed. The auto-fix runner
  * is responsible for destroying the message once done.
  */
-typedef struct CChecksAutoFixResult {
+typedef struct OpenChecksAutoFixResult {
   /**
    * The status of the auto-fix.
    */
-  enum CChecksAutoFixStatus status;
+  enum OpenChecksAutoFixStatus status;
   /**
    * The error message. Null means no message.
    */
   char *message;
-} CChecksAutoFixResult;
+} OpenChecksAutoFixResult;
 
-typedef struct CChecksBaseCheck {
+typedef struct OpenChecksBaseCheck {
   /**
    * The human readable title for the check.
    *
    * User interfaces should use the title for displaying the check.
    */
-  const char *(*title_fn)(const struct CChecksBaseCheck*);
+  const char *(*title_fn)(const struct OpenChecksBaseCheck*);
   /**
    * The human readable description for the check.
    *
@@ -325,31 +325,31 @@ typedef struct CChecksBaseCheck {
    * what are the conditions for the different statuses it supports, and if
    * there's an auto-fix, what the auto-fix will do.
    */
-  const char *(*description_fn)(const struct CChecksBaseCheck*);
+  const char *(*description_fn)(const struct OpenChecksBaseCheck*);
   /**
    * The hint gives information about what features the check supports.
    */
-  CChecksCheckHint (*hint_fn)(const struct CChecksBaseCheck*);
+  OpenChecksCheckHint (*hint_fn)(const struct OpenChecksBaseCheck*);
   /**
    * Run a validation on the input data and output the result of the
    * validation.
    */
-  struct CChecksCheckResult (*check_fn)(const struct CChecksBaseCheck*);
+  struct OpenChecksCheckResult (*check_fn)(const struct OpenChecksBaseCheck*);
   /**
    * Automatically fix the issue detected by the check method.
    */
-  struct CChecksAutoFixResult (*auto_fix_fn)(struct CChecksBaseCheck*);
-} CChecksBaseCheck;
+  struct OpenChecksAutoFixResult (*auto_fix_fn)(struct OpenChecksBaseCheck*);
+} OpenChecksBaseCheck;
 
 /**
- * The CChecksStringView creates a borrowed pointer to a C style string.
+ * The OpenChecksStringView creates a borrowed pointer to a C style string.
  *
  * # Safety
  *
  * The pointer must not outlive the container that owns the string. Also, the
  * pointer should not be null, but that is not a strict requirement.
  */
-typedef struct CChecksStringView {
+typedef struct OpenChecksStringView {
   /**
    * The borrowed pointer to a string.
    *
@@ -358,12 +358,12 @@ typedef struct CChecksStringView {
    * The string must not outlive the container that owns it.
    */
   const char *string;
-} CChecksStringView;
+} OpenChecksStringView;
 
-typedef struct CChecksItemsIterator {
-  const struct CChecksItems *items;
+typedef struct OpenChecksItemsIterator {
+  const struct OpenChecksItems *items;
   size_t index;
-} CChecksItemsIterator;
+} OpenChecksItemsIterator;
 
 /**
  * The check supports auto-fixing.
@@ -371,7 +371,7 @@ typedef struct CChecksItemsIterator {
  * This does not guarantee that the auto-fix is implemented, but instead that
  * the auto-fix should be implemented.
  */
-#define CCHECKS_CHECK_HINT_AUTO_FIX 1
+#define OPENCHECKS_CHECK_HINT_AUTO_FIX 1
 
 /**
  * The check supports no extra features.
@@ -379,7 +379,7 @@ typedef struct CChecksItemsIterator {
  * This should be considered the most conservative check *feature*. For
  * example, no auto-fix, check cannot be skipped before running, etc.
  */
-#define CCHECKS_CHECK_HINT_NONE 0
+#define OPENCHECKS_CHECK_HINT_NONE 0
 
 /**
  * Automatically fix an issue found by a check.
@@ -391,8 +391,8 @@ typedef struct CChecksItemsIterator {
  * The auto-fix will re-run the check runner to validate that it has actually
  * fixed the issue.
  *
- * This will return a result with the `CChecksStatusSystemError` status if the
- * check does not have the CheckHint::AUTO_FIX flag set, or an auto-fix
+ * This will return a result with the `OpenChecksStatusSystemError` status if
+ * the check does not have the CheckHint::AUTO_FIX flag set, or an auto-fix
  * returned an error. In the case of the latter, it will include the error with
  * the check result.
  *
@@ -400,7 +400,7 @@ typedef struct CChecksItemsIterator {
  *
  * The check pointer must not be null.
  */
-struct CChecksCheckResult cchecks_auto_fix(struct CChecksBaseCheck *check);
+struct OpenChecksCheckResult openchecks_auto_fix(struct OpenChecksBaseCheck *check);
 
 /**
  * The auto-fix returned an error.
@@ -411,7 +411,7 @@ struct CChecksCheckResult cchecks_auto_fix(struct CChecksBaseCheck *check);
  * after calling this method. Also, a null pointer will be converted to an
  * empty string.
  */
-struct CChecksAutoFixResult cchecks_check_auto_fix_error(const char *message);
+struct OpenChecksAutoFixResult openchecks_check_auto_fix_error(const char *message);
 
 /**
  * The auto-fix was successful, and did not return any errors.
@@ -420,7 +420,7 @@ struct CChecksAutoFixResult cchecks_check_auto_fix_error(const char *message);
  *
  * The pointer should not be null, and point to valid memory.
  */
-struct CChecksAutoFixResult cchecks_check_auto_fix_ok(void);
+struct OpenChecksAutoFixResult openchecks_check_auto_fix_ok(void);
 
 /**
  * The human readable description for the check.
@@ -433,7 +433,7 @@ struct CChecksAutoFixResult cchecks_check_auto_fix_ok(void);
  *
  * The pointer should not be null, and point to valid memory.
  */
-struct CChecksStringView cchecks_check_description(const struct CChecksBaseCheck *check);
+struct OpenChecksStringView openchecks_check_description(const struct OpenChecksBaseCheck *check);
 
 /**
  * Run a validation on the input data and output the result of the validation.
@@ -442,19 +442,19 @@ struct CChecksStringView cchecks_check_description(const struct CChecksBaseCheck
  *
  * The pointer should not be null, and point to valid memory.
  */
-CChecksCheckHint cchecks_check_hint(const struct CChecksBaseCheck *check);
+OpenChecksCheckHint openchecks_check_hint(const struct OpenChecksBaseCheck *check);
 
 /**
  * Whether the result can be fixed or not.
  *
- * If the status is `CChecksStatusSystemError`, then the check can **never** be
- * fixed without fixing the issue with the validation system.
+ * If the status is `OpenChecksStatusSystemError`, then the check can **never**
+ * be fixed without fixing the issue with the validation system.
  *
  * # Safety
  *
  * The result pointer must not be null.
  */
-bool cchecks_check_result_can_fix(const struct CChecksCheckResult *result);
+bool openchecks_check_result_can_fix(const struct OpenChecksCheckResult *result);
 
 /**
  * Whether the result can be skipped or not.
@@ -464,14 +464,14 @@ bool cchecks_check_result_can_fix(const struct CChecksCheckResult *result);
  * Also, it is recommended that check results are not skipped unless a
  * supervisor overrides the skip.
  *
- * If the status is `CChecksStatusSystemError`, then the check can **never** be
- * skipped without fixing the issue with the validation system.
+ * If the status is `OpenChecksStatusSystemError`, then the check can **never**
+ * be skipped without fixing the issue with the validation system.
  *
  * # Safety
  *
  * The result pointer must not be null.
  */
-bool cchecks_check_result_can_skip(const struct CChecksCheckResult *result);
+bool openchecks_check_result_can_skip(const struct OpenChecksCheckResult *result);
 
 /**
  * The duration of a check.
@@ -484,7 +484,7 @@ bool cchecks_check_result_can_skip(const struct CChecksCheckResult *result);
  *
  * The result pointer must not be null.
  */
-double cchecks_check_result_check_duration(const struct CChecksCheckResult *result);
+double openchecks_check_result_check_duration(const struct OpenChecksCheckResult *result);
 
 /**
  * Destroy the result.
@@ -493,12 +493,12 @@ double cchecks_check_result_check_duration(const struct CChecksCheckResult *resu
  *
  * The result pointer must be not null, and must not be already destroyed.
  */
-void cchecks_check_result_destroy(struct CChecksCheckResult *result);
+void openchecks_check_result_destroy(struct OpenChecksCheckResult *result);
 
 /**
  * The error that caused the result.
  *
- * This only really applies to the `CChecksStatusSystemError` status. Other
+ * This only really applies to the `OpenChecksStatusSystemError` status. Other
  * results should not include the error object.
  *
  * # Safety
@@ -506,7 +506,7 @@ void cchecks_check_result_destroy(struct CChecksCheckResult *result);
  * The result pointer is null if there are no errors. Otherwise it will point
  * to a valid message.
  */
-const char *cchecks_check_result_error(const struct CChecksCheckResult *result);
+const char *openchecks_check_result_error(const struct OpenChecksCheckResult *result);
 
 /**
  * Create a new result that failed a check.
@@ -524,10 +524,10 @@ const char *cchecks_check_result_error(const struct CChecksCheckResult *result);
  * ownership of the pointer and be responsible for cleaning it once the result
  * is destroyed.
  */
-struct CChecksCheckResult cchecks_check_result_failed(const char *message,
-                                                      struct CChecksItems *items,
-                                                      bool can_fix,
-                                                      bool can_skip);
+struct OpenChecksCheckResult openchecks_check_result_failed(const char *message,
+                                                            struct OpenChecksItems *items,
+                                                            bool can_fix,
+                                                            bool can_skip);
 
 /**
  * The duration of an auto-fix.
@@ -540,7 +540,7 @@ struct CChecksCheckResult cchecks_check_result_failed(const char *message,
  *
  * The result pointer must not be null.
  */
-double cchecks_check_result_fix_duration(const struct CChecksCheckResult *result);
+double openchecks_check_result_fix_duration(const struct OpenChecksCheckResult *result);
 
 /**
  * The items that caused the result.
@@ -549,7 +549,7 @@ double cchecks_check_result_fix_duration(const struct CChecksCheckResult *result
  *
  * A null result pointer represents that there are no items.
  */
-const struct CChecksItems *cchecks_check_result_items(const struct CChecksCheckResult *result);
+const struct OpenChecksItems *openchecks_check_result_items(const struct OpenChecksCheckResult *result);
 
 /**
  * A human readable message for the result.
@@ -561,13 +561,13 @@ const struct CChecksItems *cchecks_check_result_items(const struct CChecksCheckR
  *
  * The result pointer must not be null.
  */
-struct CChecksStringView cchecks_check_result_message(const struct CChecksCheckResult *result);
+struct OpenChecksStringView openchecks_check_result_message(const struct OpenChecksCheckResult *result);
 
 /**
  * Create a new result.
  *
- * It is suggested to use one of the other `cchecks_check_result_*` methods
- * such as cchecks_check_result_passed` for convenience.
+ * It is suggested to use one of the other `openchecks_check_result_*` methods
+ * such as `openchecks_check_result_passed` for convenience.
  *
  * # Safety
  *
@@ -581,12 +581,12 @@ struct CChecksStringView cchecks_check_result_message(const struct CChecksCheckR
  * Error can be a null pointer. It is also copied, so the caller may be able to
  * free the memory once the method is called.
  */
-struct CChecksCheckResult cchecks_check_result_new(enum CChecksStatus status,
-                                                   const char *message,
-                                                   struct CChecksItems *items,
-                                                   bool can_fix,
-                                                   bool can_skip,
-                                                   const char *error);
+struct OpenChecksCheckResult openchecks_check_result_new(enum OpenChecksStatus status,
+                                                         const char *message,
+                                                         struct OpenChecksItems *items,
+                                                         bool can_fix,
+                                                         bool can_skip,
+                                                         const char *error);
 
 /**
  * Create a new result that passed a check.
@@ -600,10 +600,10 @@ struct CChecksCheckResult cchecks_check_result_new(enum CChecksStatus status,
  * ownership of the pointer and be responsible for cleaning it once the result
  * is destroyed.
  */
-struct CChecksCheckResult cchecks_check_result_passed(const char *message,
-                                                      struct CChecksItems *items,
-                                                      bool can_fix,
-                                                      bool can_skip);
+struct OpenChecksCheckResult openchecks_check_result_passed(const char *message,
+                                                            struct OpenChecksItems *items,
+                                                            bool can_fix,
+                                                            bool can_skip);
 
 /**
  * Create a new result that skipped a check.
@@ -617,10 +617,10 @@ struct CChecksCheckResult cchecks_check_result_passed(const char *message,
  * ownership of the pointer and be responsible for cleaning it once the result
  * is destroyed.
  */
-struct CChecksCheckResult cchecks_check_result_skipped(const char *message,
-                                                       struct CChecksItems *items,
-                                                       bool can_fix,
-                                                       bool can_skip);
+struct OpenChecksCheckResult openchecks_check_result_skipped(const char *message,
+                                                             struct OpenChecksItems *items,
+                                                             bool can_fix,
+                                                             bool can_skip);
 
 /**
  * The status of the result.
@@ -629,7 +629,7 @@ struct CChecksCheckResult cchecks_check_result_skipped(const char *message,
  *
  * The result pointer must not be null.
  */
-enum CChecksStatus cchecks_check_result_status(const struct CChecksCheckResult *result);
+enum OpenChecksStatus openchecks_check_result_status(const struct OpenChecksCheckResult *result);
 
 /**
  * Create a new result that passed a check, but with a warning.
@@ -647,10 +647,10 @@ enum CChecksStatus cchecks_check_result_status(const struct CChecksCheckResult *
  * ownership of the pointer and be responsible for cleaning it once the result
  * is destroyed.
  */
-struct CChecksCheckResult cchecks_check_result_warning(const char *message,
-                                                       struct CChecksItems *items,
-                                                       bool can_fix,
-                                                       bool can_skip);
+struct OpenChecksCheckResult openchecks_check_result_warning(const char *message,
+                                                             struct OpenChecksItems *items,
+                                                             bool can_fix,
+                                                             bool can_skip);
 
 /**
  * The human readable title for the check.
@@ -661,7 +661,7 @@ struct CChecksCheckResult cchecks_check_result_warning(const char *message,
  *
  * The pointer should not be null, and point to valid memory.
  */
-struct CChecksStringView cchecks_check_title(const struct CChecksBaseCheck *check);
+struct OpenChecksStringView openchecks_check_title(const struct OpenChecksBaseCheck *check);
 
 /**
  * Create a copy of the value contained by the item.
@@ -670,7 +670,7 @@ struct CChecksStringView cchecks_check_title(const struct CChecksBaseCheck *chec
  *
  * The item pointer must not be null.
  */
-struct CChecksItem *cchecks_item_clone(const struct CChecksItem *item);
+struct OpenChecksItem *openchecks_item_clone(const struct OpenChecksItem *item);
 
 /**
  * Create a debug string for the item.
@@ -679,7 +679,7 @@ struct CChecksItem *cchecks_item_clone(const struct CChecksItem *item);
  *
  * The item pointer must not be null.
  */
-struct CChecksString cchecks_item_debug(const struct CChecksItem *item);
+struct OpenChecksString openchecks_item_debug(const struct OpenChecksItem *item);
 
 /**
  * Destroy an item and its contents.
@@ -689,7 +689,7 @@ struct CChecksString cchecks_item_debug(const struct CChecksItem *item);
  * The item pointer must not be null, and the item must not be deleted multiple
  * times (AKA: double free).
  */
-void cchecks_item_destroy(struct CChecksItem *item);
+void openchecks_item_destroy(struct OpenChecksItem *item);
 
 /**
  * Create a display string for the item for users.
@@ -698,7 +698,7 @@ void cchecks_item_destroy(struct CChecksItem *item);
  *
  * The item pointer must not be null.
  */
-struct CChecksString cchecks_item_display(const struct CChecksItem *item);
+struct OpenChecksString openchecks_item_display(const struct OpenChecksItem *item);
 
 /**
  * Return if the item is is equal to the other item.
@@ -709,7 +709,7 @@ struct CChecksString cchecks_item_display(const struct CChecksItem *item);
  *
  * The item pointer must not be null.
  */
-bool cchecks_item_eq(const struct CChecksItem *item, const struct CChecksItem *other);
+bool openchecks_item_eq(const struct OpenChecksItem *item, const struct OpenChecksItem *other);
 
 /**
  * Return if the iterator has finished.
@@ -718,7 +718,7 @@ bool cchecks_item_eq(const struct CChecksItem *item, const struct CChecksItem *o
  *
  * The iterator pointer must not be null.
  */
-bool cchecks_item_iterator_is_done(const struct CChecksItemsIterator *iterator);
+bool openchecks_item_iterator_is_done(const struct OpenChecksItemsIterator *iterator);
 
 /**
  * Return the pointer to the current item. A null pointer represents no more
@@ -728,7 +728,7 @@ bool cchecks_item_iterator_is_done(const struct CChecksItemsIterator *iterator);
  *
  * The iterator pointer must not be null.
  */
-const struct CChecksItem *cchecks_item_iterator_item(struct CChecksItemsIterator *iterator);
+const struct OpenChecksItem *openchecks_item_iterator_item(struct OpenChecksItemsIterator *iterator);
 
 /**
  * Return the pointer to the next item. A null pointer represents no more
@@ -738,7 +738,7 @@ const struct CChecksItem *cchecks_item_iterator_item(struct CChecksItemsIterator
  *
  * The iterator pointer must not be null.
  */
-const struct CChecksItem *cchecks_item_iterator_next(struct CChecksItemsIterator *iterator);
+const struct OpenChecksItem *openchecks_item_iterator_next(struct OpenChecksItemsIterator *iterator);
 
 /**
  * Return if the item is should be before or after the other item.
@@ -749,7 +749,7 @@ const struct CChecksItem *cchecks_item_iterator_next(struct CChecksItemsIterator
  *
  * The item pointer must not be null.
  */
-bool cchecks_item_lt(const struct CChecksItem *item, const struct CChecksItem *other);
+bool openchecks_item_lt(const struct OpenChecksItem *item, const struct OpenChecksItem *other);
 
 /**
  * A type hint can be used to add a hint to a system that the given type
@@ -762,7 +762,7 @@ bool cchecks_item_lt(const struct CChecksItem *item, const struct CChecksItem *o
  *
  * The item pointer must not be null.
  */
-const char *cchecks_item_type_hint(const struct CChecksItem *item);
+const char *openchecks_item_type_hint(const struct OpenChecksItem *item);
 
 /**
  * The value that is wrapped.
@@ -771,7 +771,7 @@ const char *cchecks_item_type_hint(const struct CChecksItem *item);
  *
  * The item pointer must not be null.
  */
-const void *cchecks_item_value(const struct CChecksItem *item);
+const void *openchecks_item_value(const struct OpenChecksItem *item);
 
 /**
  * Clone the items.
@@ -780,9 +780,9 @@ const void *cchecks_item_value(const struct CChecksItem *item);
  *
  * The items pointer must not be null.
  */
-struct CChecksItems *cchecks_items_clone(const struct CChecksItems *items);
+struct OpenChecksItems *openchecks_items_clone(const struct OpenChecksItems *items);
 
-void cchecks_items_destroy(struct CChecksItems *items);
+void openchecks_items_destroy(struct OpenChecksItems *items);
 
 /**
  * Compare two items containers for equality.
@@ -793,7 +793,8 @@ void cchecks_items_destroy(struct CChecksItems *items);
  * then this will return true. If one is null and the other is not, then this
  * will return false.
  */
-bool cchecks_items_eq(const struct CChecksItems *items, const struct CChecksItems *other_items);
+bool openchecks_items_eq(const struct OpenChecksItems *items,
+                         const struct OpenChecksItems *other_items);
 
 /**
  * Get an item from the container.
@@ -804,7 +805,8 @@ bool cchecks_items_eq(const struct CChecksItems *items, const struct CChecksItem
  *
  * The items pointer must not be null.
  */
-const struct CChecksItem *cchecks_items_get(const struct CChecksItems *items, size_t index);
+const struct OpenChecksItem *openchecks_items_get(const struct OpenChecksItems *items,
+                                                  size_t index);
 
 /**
  * Get the size of each item in the items. All items must be the same size.
@@ -813,7 +815,7 @@ const struct CChecksItem *cchecks_items_get(const struct CChecksItems *items, si
  *
  * The items pointer must not be null.
  */
-size_t cchecks_items_item_size(const struct CChecksItems *items);
+size_t openchecks_items_item_size(const struct OpenChecksItems *items);
 
 /**
  * Create a new iterator to iterate over the items.
@@ -822,7 +824,7 @@ size_t cchecks_items_item_size(const struct CChecksItems *items);
  *
  * The items pointer must not be null.
  */
-struct CChecksItemsIterator cchecks_items_iterator_new(const struct CChecksItems *items);
+struct OpenChecksItemsIterator openchecks_items_iterator_new(const struct OpenChecksItems *items);
 
 /**
  * Get the length of the items.
@@ -831,7 +833,7 @@ struct CChecksItemsIterator cchecks_items_iterator_new(const struct CChecksItems
  *
  * The items pointer must not be null.
  */
-size_t cchecks_items_length(const struct CChecksItems *items);
+size_t openchecks_items_length(const struct OpenChecksItems *items);
 
 /**
  * Run a check.
@@ -840,7 +842,7 @@ size_t cchecks_items_length(const struct CChecksItems *items);
  *
  * The check pointer must not be null.
  */
-struct CChecksCheckResult cchecks_run(const struct CChecksBaseCheck *check);
+struct OpenChecksCheckResult openchecks_run(const struct OpenChecksBaseCheck *check);
 
 /**
  * Return if a check has failed.
@@ -849,7 +851,7 @@ struct CChecksCheckResult cchecks_run(const struct CChecksBaseCheck *check);
  *
  * The status must not be a null pointer.
  */
-bool cchecks_status_has_failed(const enum CChecksStatus *status);
+bool openchecks_status_has_failed(const enum OpenChecksStatus *status);
 
 /**
  * Return if a check has passed.
@@ -858,7 +860,7 @@ bool cchecks_status_has_failed(const enum CChecksStatus *status);
  *
  * The status must not be a null pointer.
  */
-bool cchecks_status_has_passed(const enum CChecksStatus *status);
+bool openchecks_status_has_passed(const enum OpenChecksStatus *status);
 
 /**
  * Return if a check is waiting to be run.
@@ -867,7 +869,7 @@ bool cchecks_status_has_passed(const enum CChecksStatus *status);
  *
  * The status must not be a null pointer.
  */
-bool cchecks_status_is_pending(const enum CChecksStatus *status);
+bool openchecks_status_is_pending(const enum OpenChecksStatus *status);
 
 /**
  * Destroy a string pointer.
@@ -878,6 +880,6 @@ bool cchecks_status_is_pending(const enum CChecksStatus *status);
  * double free). Once the destroy function is called, all pointers to the
  * string are invalid.
  */
-void cchecks_string_destroy(struct CChecksString *string);
+void openchecks_string_destroy(struct OpenChecksString *string);
 
-#endif /* cchecks_h */
+#endif /* copenchecks_h */

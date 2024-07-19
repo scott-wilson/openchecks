@@ -3,33 +3,33 @@
 from __future__ import annotations
 
 import atheris
-import checks
 import hypothesis
+import openchecks
 from hypothesis import strategies
 
 
 @hypothesis.given(
     status=strategies.sampled_from(
         [
-            checks.Status.Pending,
-            checks.Status.Skipped,
-            checks.Status.Passed,
-            checks.Status.Warning,
-            checks.Status.Failed,
-            checks.Status.SystemError,
+            openchecks.Status.Pending,
+            openchecks.Status.Skipped,
+            openchecks.Status.Passed,
+            openchecks.Status.Warning,
+            openchecks.Status.Failed,
+            openchecks.Status.SystemError,
         ]
     ),
 )
 @atheris.instrument_func
 def fuzz(
-    status: checks.Status,
+    status: openchecks.Status,
 ) -> None:
-    assert status.is_pending() == (status == checks.Status.Pending)
+    assert status.is_pending() == (status == openchecks.Status.Pending)
     assert status.has_passed() == (
-        status in [checks.Status.Passed, checks.Status.Warning]
+        status in [openchecks.Status.Passed, openchecks.Status.Warning]
     )
     assert status.has_failed() == (
-        status in [checks.Status.Failed, checks.Status.SystemError]
+        status in [openchecks.Status.Failed, openchecks.Status.SystemError]
     )
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cppchecks/core.h>
-#include <cppchecks/item.h>
+#include <openchecks/core.h>
+#include <openchecks/item.h>
 #include <string>
 
-using IntItem = CPPCHECKS_NAMESPACE::Item<int>;
+using IntItem = OPENCHECKS_NAMESPACE::Item<int>;

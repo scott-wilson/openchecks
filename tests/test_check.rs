@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use checks::{AsyncCheck, Check, CheckHint, CheckMetadata, CheckResult, Item};
+use openchecks::{AsyncCheck, Check, CheckHint, CheckMetadata, CheckResult, Item};
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 struct TestItem {
@@ -66,7 +66,7 @@ fn test_check_auto_fix_failed_not_implemented() {
         type Item = TestItem;
         type Items = Vec<Self::Item>;
 
-        fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+        fn check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
             CheckResult::new_failed("Test", None, true, false)
         }
     }
@@ -101,7 +101,7 @@ async fn test_async_check_async_auto_fix_failed_not_implemented() {
         type Item = TestItem;
         type Items = Vec<Self::Item>;
 
-        async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+        async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
             CheckResult::new_failed("Test", None, true, false)
         }
     }

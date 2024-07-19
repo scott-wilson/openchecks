@@ -1,4 +1,4 @@
-use checks::Status;
+use openchecks::Status;
 
 macro_rules! test_is_pending {
         ($($name:ident: $value:expr,)*) => {

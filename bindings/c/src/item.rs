@@ -5,14 +5,14 @@ use std::{
 
 #[derive(Debug, PartialEq, PartialOrd)]
 #[repr(transparent)]
-pub struct ChecksItemWrapper(*const CChecksItem);
+pub struct ChecksItemWrapper(*const OpenChecksItem);
 
 impl ChecksItemWrapper {
-    pub(crate) fn new(item: *const CChecksItem) -> Self {
+    pub(crate) fn new(item: *const OpenChecksItem) -> Self {
         Self(item)
     }
 
-    pub(crate) fn ptr(&self) -> *const CChecksItem {
+    pub(crate) fn ptr(&self) -> *const OpenChecksItem {
         self.0
     }
 }
@@ -41,7 +41,7 @@ impl std::fmt::Display for ChecksItemWrapper {
 ///
 /// It is assumed that the value the item contains is owned by the item wrapper.
 #[repr(C)]
-pub struct CChecksItem {
+pub struct OpenChecksItem {
     /// A type hint can be used to add a hint to a system that the given type
     /// represents something else. For example, the value could be a string, but
     /// this is a scene path.
@@ -90,7 +90,7 @@ pub struct CChecksItem {
     /// memory outside of the context in which the memory was created. For
     /// example, if the string was created with `malloc`, it should be deleted
     /// with `free`.
-    pub debug_fn: unsafe extern "C" fn(*const Self) -> crate::CChecksString,
+    pub debug_fn: unsafe extern "C" fn(*const Self) -> crate::OpenChecksString,
     /// The display function is used to create a string for displaying to a
     /// user.
     ///
@@ -101,20 +101,20 @@ pub struct CChecksItem {
     /// memory outside of the context in which the memory was created. For
     /// example, if the string was created with `malloc`, it should be deleted
     /// with `free`
-    pub display_fn: unsafe extern "C" fn(*const Self) -> crate::CChecksString,
+    pub display_fn: unsafe extern "C" fn(*const Self) -> crate::OpenChecksString,
     /// The order function is used to order items in user interfaces.
     pub lt_fn: unsafe extern "C" fn(*const Self, *const Self) -> bool,
     /// The compare function is used to order items in user interfaces.
     pub eq_fn: unsafe extern "C" fn(*const Self, *const Self) -> bool,
 }
 
-impl Drop for CChecksItem {
+impl Drop for OpenChecksItem {
     fn drop(&mut self) {
         unsafe { (self.destroy_fn)(self) }
     }
 }
 
-impl std::fmt::Display for CChecksItem {
+impl std::fmt::Display for OpenChecksItem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let c_display = unsafe { (self.display_fn)(self) };
 
@@ -134,7 +134,7 @@ impl std::fmt::Display for CChecksItem {
     }
 }
 
-impl std::fmt::Debug for CChecksItem {
+impl std::fmt::Debug for OpenChecksItem {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let c_display = unsafe { (self.debug_fn)(self) };
 
@@ -154,13 +154,13 @@ impl std::fmt::Debug for CChecksItem {
     }
 }
 
-impl std::cmp::PartialEq for CChecksItem {
+impl std::cmp::PartialEq for OpenChecksItem {
     fn eq(&self, other: &Self) -> bool {
         unsafe { (self.eq_fn)(self, other) }
     }
 }
 
-impl std::cmp::PartialOrd for CChecksItem {
+impl std::cmp::PartialOrd for OpenChecksItem {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         if unsafe { (self.lt_fn)(self, other) } {
             Some(std::cmp::Ordering::Less)
@@ -172,7 +172,7 @@ impl std::cmp::PartialOrd for CChecksItem {
     }
 }
 
-impl checks::Item for CChecksItem {
+impl base_openchecks::Item for OpenChecksItem {
     type Value = *const c_void;
 
     fn value(&self) -> Self::Value {
@@ -180,7 +180,7 @@ impl checks::Item for CChecksItem {
     }
 }
 
-impl checks::Item for ChecksItemWrapper {
+impl base_openchecks::Item for ChecksItemWrapper {
     type Value = *const c_void;
 
     fn value(&self) -> Self::Value {
@@ -205,7 +205,7 @@ impl checks::Item for ChecksItemWrapper {
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_type_hint(item: *const CChecksItem) -> *const c_char {
+pub unsafe extern "C" fn openchecks_item_type_hint(item: *const OpenChecksItem) -> *const c_char {
     ((*item).type_hint_fn)(item)
 }
 
@@ -215,7 +215,7 @@ pub unsafe extern "C" fn cchecks_item_type_hint(item: *const CChecksItem) -> *co
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_value(item: *const CChecksItem) -> *const c_void {
+pub unsafe extern "C" fn openchecks_item_value(item: *const OpenChecksItem) -> *const c_void {
     ((*item).value_fn)(item)
 }
 
@@ -225,7 +225,7 @@ pub unsafe extern "C" fn cchecks_item_value(item: *const CChecksItem) -> *const 
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_clone(item: *const CChecksItem) -> *mut CChecksItem {
+pub unsafe extern "C" fn openchecks_item_clone(item: *const OpenChecksItem) -> *mut OpenChecksItem {
     ((*item).clone_fn)(item)
 }
 
@@ -236,7 +236,7 @@ pub unsafe extern "C" fn cchecks_item_clone(item: *const CChecksItem) -> *mut CC
 /// The item pointer must not be null, and the item must not be deleted multiple
 /// times (AKA: double free).
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_destroy(item: *mut CChecksItem) {
+pub unsafe extern "C" fn openchecks_item_destroy(item: *mut OpenChecksItem) {
     ((*item).destroy_fn)(item)
 }
 
@@ -246,10 +246,12 @@ pub unsafe extern "C" fn cchecks_item_destroy(item: *mut CChecksItem) {
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_debug(item: *const CChecksItem) -> crate::CChecksString {
+pub unsafe extern "C" fn openchecks_item_debug(
+    item: *const OpenChecksItem,
+) -> crate::OpenChecksString {
     let result = format!("Item({:?})", (*item));
 
-    crate::CChecksString::new(result)
+    crate::OpenChecksString::new(result)
 }
 
 /// Create a display string for the item for users.
@@ -258,9 +260,11 @@ pub unsafe extern "C" fn cchecks_item_debug(item: *const CChecksItem) -> crate::
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_display(item: *const CChecksItem) -> crate::CChecksString {
+pub unsafe extern "C" fn openchecks_item_display(
+    item: *const OpenChecksItem,
+) -> crate::OpenChecksString {
     let result = format!("{}", (*item));
-    crate::CChecksString::new(result)
+    crate::OpenChecksString::new(result)
 }
 
 /// Return if the item is should be before or after the other item.
@@ -271,9 +275,9 @@ pub unsafe extern "C" fn cchecks_item_display(item: *const CChecksItem) -> crate
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_lt(
-    item: *const CChecksItem,
-    other: *const CChecksItem,
+pub unsafe extern "C" fn openchecks_item_lt(
+    item: *const OpenChecksItem,
+    other: *const OpenChecksItem,
 ) -> bool {
     (*item) < (*other)
 }
@@ -286,17 +290,17 @@ pub unsafe extern "C" fn cchecks_item_lt(
 ///
 /// The item pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_item_eq(
-    item: *const CChecksItem,
-    other: *const CChecksItem,
+pub unsafe extern "C" fn openchecks_item_eq(
+    item: *const OpenChecksItem,
+    other: *const OpenChecksItem,
 ) -> bool {
     let item = match unsafe { item.as_ref() } {
         Some(i) => i,
-        None => panic!("cchecks_item_eq received a null pointer."),
+        None => panic!("openchecks_item_eq received a null pointer."),
     };
     let other = match unsafe { other.as_ref() } {
         Some(i) => i,
-        None => panic!("cchecks_item_eq received a null pointer."),
+        None => panic!("openchecks_item_eq received a null pointer."),
     };
     (*item) == (*other)
 }

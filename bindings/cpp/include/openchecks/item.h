@@ -6,17 +6,17 @@
 #include <string_view>
 
 extern "C" {
-#include <cchecks.h>
+#include <openchecks.h>
 }
 
-#include "cppchecks/core.h"
+#include "openchecks/core.h"
 
-namespace CPPCHECKS_NAMESPACE {
+namespace OPENCHECKS_NAMESPACE {
 namespace _private {
-void destroy_str_fn(struct CChecksString *str) { delete[] str->string; }
+void destroy_str_fn(struct OpenChecksString *str) { delete[] str->string; }
 } // namespace _private
 
-template <class T> class Item : private CChecksItem {
+template <class T> class Item : private OpenChecksItem {
 public:
   Item(const T &value, const std::string &type_hint)
       : _value(value), _type_hint(type_hint) {
@@ -88,7 +88,7 @@ private:
     this->eq_fn = _eq_impl;
   }
 
-  static const char *_type_hint_impl(const CChecksItem *item) {
+  static const char *_type_hint_impl(const OpenChecksItem *item) {
     const char *type_hint = ((Item<T> *)item)->type_hint().c_str();
 
     if (type_hint == nullptr || std::string_view(type_hint).empty()) {
@@ -98,22 +98,24 @@ private:
     return type_hint;
   }
 
-  static const void *_value_impl(const CChecksItem *item) {
+  static const void *_value_impl(const OpenChecksItem *item) {
     const T *value = &((Item<T> *)item)->value();
 
     return (void *)value;
   }
 
-  static CChecksItem *_clone_impl(const CChecksItem *other) {
+  static OpenChecksItem *_clone_impl(const OpenChecksItem *other) {
     Item<T> *item = new Item<T>{};
     item->clone((Item<T> *)other);
 
-    return (CChecksItem *)item;
+    return (OpenChecksItem *)item;
   }
 
-  static void _destroy_impl(CChecksItem *item) { ((Item<T> *)item)->~Item(); };
+  static void _destroy_impl(OpenChecksItem *item) {
+    ((Item<T> *)item)->~Item();
+  };
 
-  static CChecksString _debug_impl(const CChecksItem *item) {
+  static OpenChecksString _debug_impl(const OpenChecksItem *item) {
     Item<T> *cppitem = (Item<T> *)item;
 
     std::string msg = cppitem->display();
@@ -121,14 +123,14 @@ private:
     char *cstr = new char[msg.length() + 1];
     std::strcpy(cstr, msg.c_str());
 
-    CChecksString cchecks_msg;
-    cchecks_msg.string = cstr;
-    cchecks_msg.destroy_fn = CPPCHECKS_NAMESPACE::_private::destroy_str_fn;
+    OpenChecksString openchecks_msg;
+    openchecks_msg.string = cstr;
+    openchecks_msg.destroy_fn = OPENCHECKS_NAMESPACE::_private::destroy_str_fn;
 
-    return cchecks_msg;
+    return openchecks_msg;
   }
 
-  static CChecksString _display_impl(const CChecksItem *item) {
+  static OpenChecksString _display_impl(const OpenChecksItem *item) {
     Item<T> *cppitem = (Item<T> *)item;
 
     std::string msg = cppitem->display();
@@ -136,19 +138,21 @@ private:
     char *cstr = new char[msg.length() + 1];
     std::strcpy(cstr, msg.c_str());
 
-    CChecksString cchecks_msg;
-    cchecks_msg.string = cstr;
-    cchecks_msg.destroy_fn = CPPCHECKS_NAMESPACE::_private::destroy_str_fn;
+    OpenChecksString openchecks_msg;
+    openchecks_msg.string = cstr;
+    openchecks_msg.destroy_fn = OPENCHECKS_NAMESPACE::_private::destroy_str_fn;
 
-    return cchecks_msg;
+    return openchecks_msg;
   }
 
-  static bool _lt_impl(const CChecksItem *item, const CChecksItem *other) {
+  static bool _lt_impl(const OpenChecksItem *item,
+                       const OpenChecksItem *other) {
     return (*(Item<T> *)item) < (*(Item<T> *)other);
   }
 
-  static bool _eq_impl(const CChecksItem *item, const CChecksItem *other) {
+  static bool _eq_impl(const OpenChecksItem *item,
+                       const OpenChecksItem *other) {
     return (*(Item<T> *)item) == (*(Item<T> *)other);
   }
 };
-} // namespace CPPCHECKS_NAMESPACE
+} // namespace OPENCHECKS_NAMESPACE

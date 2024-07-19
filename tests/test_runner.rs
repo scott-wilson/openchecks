@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use checks::{
+use openchecks::{
     async_auto_fix, async_run, auto_fix, run, AsyncCheck, Check, CheckHint, CheckMetadata,
     CheckResult, Error, Item, Status,
 };
@@ -46,7 +46,7 @@ impl Check for TestCheckNoAutoFix {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -87,7 +87,7 @@ impl Check for TestCheckAutoFix {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -105,7 +105,7 @@ impl Check for TestCheckAutoFix {
         }
     }
 
-    fn auto_fix(&mut self) -> Result<(), checks::Error> {
+    fn auto_fix(&mut self) -> Result<(), openchecks::Error> {
         self.value = 0;
         Ok(())
     }
@@ -133,7 +133,7 @@ impl Check for TestCheckAutoFixNoFix {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -151,7 +151,7 @@ impl Check for TestCheckAutoFixNoFix {
         }
     }
 
-    fn auto_fix(&mut self) -> Result<(), checks::Error> {
+    fn auto_fix(&mut self) -> Result<(), openchecks::Error> {
         Ok(())
     }
 }
@@ -178,7 +178,7 @@ impl Check for TestCheckAutoFixError {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -196,7 +196,7 @@ impl Check for TestCheckAutoFixError {
         }
     }
 
-    fn auto_fix(&mut self) -> Result<(), checks::Error> {
+    fn auto_fix(&mut self) -> Result<(), openchecks::Error> {
         Err(Error::new("test"))
     }
 }
@@ -223,7 +223,7 @@ impl Check for TestCheckAutoFixNotImplemented {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -264,7 +264,7 @@ impl Check for TestCheckAutoFixNoneHint {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -282,7 +282,7 @@ impl Check for TestCheckAutoFixNoneHint {
         }
     }
 
-    fn auto_fix(&mut self) -> Result<(), checks::Error> {
+    fn auto_fix(&mut self) -> Result<(), openchecks::Error> {
         Ok(())
     }
 }
@@ -310,7 +310,7 @@ impl AsyncCheck for AsyncTestCheckNoAutoFix {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -352,7 +352,7 @@ impl AsyncCheck for AsyncTestCheckAutoFix {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -370,7 +370,7 @@ impl AsyncCheck for AsyncTestCheckAutoFix {
         }
     }
 
-    async fn async_auto_fix(&mut self) -> Result<(), checks::Error> {
+    async fn async_auto_fix(&mut self) -> Result<(), openchecks::Error> {
         self.value = 0;
         Ok(())
     }
@@ -399,7 +399,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixNoFix {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -417,7 +417,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixNoFix {
         }
     }
 
-    async fn async_auto_fix(&mut self) -> Result<(), checks::Error> {
+    async fn async_auto_fix(&mut self) -> Result<(), openchecks::Error> {
         Ok(())
     }
 }
@@ -445,7 +445,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixError {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -463,7 +463,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixError {
         }
     }
 
-    async fn async_auto_fix(&mut self) -> Result<(), checks::Error> {
+    async fn async_auto_fix(&mut self) -> Result<(), openchecks::Error> {
         Err(Error::new("test"))
     }
 }
@@ -491,7 +491,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixNotImplemented {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -533,7 +533,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixNoneHint {
     type Item = TestItem;
     type Items = Vec<Self::Item>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
         if self.value != 0 {
             CheckResult::new_failed(
                 "Value is not 0",
@@ -551,7 +551,7 @@ impl AsyncCheck for AsyncTestCheckAutoFixNoneHint {
         }
     }
 
-    async fn async_auto_fix(&mut self) -> Result<(), checks::Error> {
+    async fn async_auto_fix(&mut self) -> Result<(), openchecks::Error> {
         Ok(())
     }
 }

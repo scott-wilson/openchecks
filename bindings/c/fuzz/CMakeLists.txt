@@ -15,7 +15,7 @@ status_is_pending
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang)
 
-project(cchecks_fuzz)
+project(copenchecks_fuzz)
 
 link_directories("${PROJECT_SOURCE_DIR}/../build")
 
@@ -35,7 +35,7 @@ foreach(FUZZ_TARGET ${FUZZ_TARGETS})
 
     target_link_libraries(${FUZZ_TARGET}
         PUBLIC
-        cchecks
+        copenchecks
         PRIVATE $<$<C_COMPILER_ID:Clang>:-fsanitize=fuzzer>
     )
 endforeach(FUZZ_TARGET ${FUZZ_TARGETS})

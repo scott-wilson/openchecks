@@ -6,20 +6,20 @@ use std::{
 
 /// The check hint flags contains useful information such as whether the check
 /// should support auto-fixing issues.
-pub type CChecksCheckHint = u8;
+pub type OpenChecksCheckHint = u8;
 /// The check supports no extra features.
 ///
 /// This should be considered the most conservative check *feature*. For
 /// example, no auto-fix, check cannot be skipped before running, etc.
-pub const CCHECKS_CHECK_HINT_NONE: CChecksCheckHint = 0b0;
+pub const OPENCHECKS_CHECK_HINT_NONE: OpenChecksCheckHint = 0b0;
 /// The check supports auto-fixing.
 ///
 /// This does not guarantee that the auto-fix is implemented, but instead that
 /// the auto-fix should be implemented.
-pub const CCHECKS_CHECK_HINT_AUTO_FIX: CChecksCheckHint = 0b1;
+pub const OPENCHECKS_CHECK_HINT_AUTO_FIX: OpenChecksCheckHint = 0b1;
 
 #[repr(C)]
-pub struct CChecksBaseCheck {
+pub struct OpenChecksBaseCheck {
     /// The human readable title for the check.
     ///
     /// User interfaces should use the title for displaying the check.
@@ -33,17 +33,17 @@ pub struct CChecksBaseCheck {
     pub description_fn: unsafe extern "C" fn(*const Self) -> *const c_char,
 
     /// The hint gives information about what features the check supports.
-    pub hint_fn: unsafe extern "C" fn(*const Self) -> CChecksCheckHint,
+    pub hint_fn: unsafe extern "C" fn(*const Self) -> OpenChecksCheckHint,
 
     /// Run a validation on the input data and output the result of the
     /// validation.
-    pub check_fn: unsafe extern "C" fn(*const Self) -> crate::CChecksCheckResult,
+    pub check_fn: unsafe extern "C" fn(*const Self) -> crate::OpenChecksCheckResult,
 
     /// Automatically fix the issue detected by the check method.
-    pub auto_fix_fn: Option<unsafe extern "C" fn(*mut Self) -> CChecksAutoFixResult>,
+    pub auto_fix_fn: Option<unsafe extern "C" fn(*mut Self) -> OpenChecksAutoFixResult>,
 }
 
-impl checks::CheckMetadata for CChecksBaseCheck {
+impl base_openchecks::CheckMetadata for OpenChecksBaseCheck {
     fn title(&self) -> Cow<str> {
         let ptr = unsafe { (self.title_fn)(self) };
 
@@ -64,27 +64,27 @@ impl checks::CheckMetadata for CChecksBaseCheck {
         unsafe { CStr::from_ptr(ptr) }.to_str().unwrap_or("").into()
     }
 
-    fn hint(&self) -> checks::CheckHint {
-        cchecks_check_hint_into_check_hint(unsafe { (self.hint_fn)(self) })
+    fn hint(&self) -> base_openchecks::CheckHint {
+        openchecks_check_hint_into_check_hint(unsafe { (self.hint_fn)(self) })
     }
 }
 
-impl checks::Check for CChecksBaseCheck {
+impl base_openchecks::Check for OpenChecksBaseCheck {
     type Item = crate::item::ChecksItemWrapper;
-    type Items = crate::items::CChecksItemsWrapper;
+    type Items = crate::items::OpenChecksItemsWrapper;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> base_openchecks::CheckResult<Self::Item, Self::Items> {
         let c_result = unsafe { (self.check_fn)(self) };
         c_result.into()
     }
 
-    fn auto_fix(&mut self) -> Result<(), checks::Error> {
+    fn auto_fix(&mut self) -> Result<(), base_openchecks::Error> {
         match self.auto_fix_fn {
             Some(auto_fix_fn) => {
                 let result = unsafe { auto_fix_fn(self) };
                 match result.status {
-                    CChecksAutoFixStatus::CChecksAutoFixStatusOk => Ok(()),
-                    CChecksAutoFixStatus::CChecksAutoFixStatusError => {
+                    OpenChecksAutoFixStatus::OpenChecksAutoFixStatusOk => Ok(()),
+                    OpenChecksAutoFixStatus::OpenChecksAutoFixStatusError => {
                         let message = if result.message.is_null() {
                             ""
                         } else {
@@ -92,7 +92,7 @@ impl checks::Check for CChecksBaseCheck {
                                 .to_str()
                                 .unwrap_or("")
                         };
-                        Err(checks::Error::new(message))
+                        Err(base_openchecks::Error::new(message))
                     }
                 }
             }
@@ -109,10 +109,10 @@ impl checks::Check for CChecksBaseCheck {
 ///
 /// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_title(
-    check: *const CChecksBaseCheck,
-) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr(((*check).title_fn)(check))
+pub unsafe extern "C" fn openchecks_check_title(
+    check: *const OpenChecksBaseCheck,
+) -> crate::OpenChecksStringView {
+    crate::OpenChecksStringView::from_ptr(((*check).title_fn)(check))
 }
 
 /// The human readable description for the check.
@@ -125,10 +125,10 @@ pub unsafe extern "C" fn cchecks_check_title(
 ///
 /// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_description(
-    check: *const CChecksBaseCheck,
-) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr(((*check).description_fn)(check))
+pub unsafe extern "C" fn openchecks_check_description(
+    check: *const OpenChecksBaseCheck,
+) -> crate::OpenChecksStringView {
+    crate::OpenChecksStringView::from_ptr(((*check).description_fn)(check))
 }
 
 /// Run a validation on the input data and output the result of the validation.
@@ -137,12 +137,14 @@ pub unsafe extern "C" fn cchecks_check_description(
 ///
 /// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_hint(check: *const CChecksBaseCheck) -> CChecksCheckHint {
+pub unsafe extern "C" fn openchecks_check_hint(
+    check: *const OpenChecksBaseCheck,
+) -> OpenChecksCheckHint {
     ((*check).hint_fn)(check)
 }
 
-fn cchecks_check_hint_into_check_hint(hint: CChecksCheckHint) -> checks::CheckHint {
-    checks::CheckHint::from_bits_truncate(hint)
+fn openchecks_check_hint_into_check_hint(hint: OpenChecksCheckHint) -> base_openchecks::CheckHint {
+    base_openchecks::CheckHint::from_bits_truncate(hint)
 }
 
 /// The result of the auto fix. The message should only contain a value if the
@@ -153,15 +155,15 @@ fn cchecks_check_hint_into_check_hint(hint: CChecksCheckHint) -> checks::CheckHi
 /// The message pointer must not be modified or destroyed. The auto-fix runner
 /// is responsible for destroying the message once done.
 #[repr(C)]
-pub struct CChecksAutoFixResult {
+pub struct OpenChecksAutoFixResult {
     /// The status of the auto-fix.
-    pub status: CChecksAutoFixStatus,
+    pub status: OpenChecksAutoFixStatus,
 
     /// The error message. Null means no message.
     pub message: *mut c_char,
 }
 
-impl Drop for CChecksAutoFixResult {
+impl Drop for OpenChecksAutoFixResult {
     fn drop(&mut self) {
         if !self.message.is_null() {
             let message = unsafe { CString::from_raw(self.message) };
@@ -172,9 +174,9 @@ impl Drop for CChecksAutoFixResult {
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
-pub enum CChecksAutoFixStatus {
-    CChecksAutoFixStatusOk,
-    CChecksAutoFixStatusError,
+pub enum OpenChecksAutoFixStatus {
+    OpenChecksAutoFixStatusOk,
+    OpenChecksAutoFixStatusError,
 }
 
 /// The auto-fix was successful, and did not return any errors.
@@ -183,9 +185,9 @@ pub enum CChecksAutoFixStatus {
 ///
 /// The pointer should not be null, and point to valid memory.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_auto_fix_ok() -> CChecksAutoFixResult {
-    CChecksAutoFixResult {
-        status: CChecksAutoFixStatus::CChecksAutoFixStatusOk,
+pub unsafe extern "C" fn openchecks_check_auto_fix_ok() -> OpenChecksAutoFixResult {
+    OpenChecksAutoFixResult {
+        status: OpenChecksAutoFixStatus::OpenChecksAutoFixStatusOk,
         message: null_mut(),
     }
 }
@@ -198,9 +200,9 @@ pub unsafe extern "C" fn cchecks_check_auto_fix_ok() -> CChecksAutoFixResult {
 /// after calling this method. Also, a null pointer will be converted to an
 /// empty string.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_auto_fix_error(
+pub unsafe extern "C" fn openchecks_check_auto_fix_error(
     message: *const c_char,
-) -> CChecksAutoFixResult {
+) -> OpenChecksAutoFixResult {
     let message = if message.is_null() {
         CStr::from_bytes_with_nul(b"\0")
             .unwrap()
@@ -209,8 +211,8 @@ pub unsafe extern "C" fn cchecks_check_auto_fix_error(
     } else {
         unsafe { CStr::from_ptr(message) }.to_owned().into_raw()
     };
-    CChecksAutoFixResult {
-        status: CChecksAutoFixStatus::CChecksAutoFixStatusError,
+    OpenChecksAutoFixResult {
+        status: OpenChecksAutoFixStatus::OpenChecksAutoFixStatusError,
         message,
     }
 }

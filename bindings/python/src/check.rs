@@ -15,10 +15,10 @@ use pyo3::pyclass::CompareOp;
 #[pyclass]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct CheckHint {
-    inner: base_checks::CheckHint,
+    inner: base_openchecks::CheckHint,
 }
 
-impl From<CheckHint> for base_checks::CheckHint {
+impl From<CheckHint> for base_openchecks::CheckHint {
     fn from(hint: CheckHint) -> Self {
         hint.inner
     }
@@ -30,7 +30,7 @@ impl CheckHint {
     #[allow(non_snake_case)]
     pub(crate) fn NONE() -> Self {
         Self {
-            inner: base_checks::CheckHint::NONE,
+            inner: base_openchecks::CheckHint::NONE,
         }
     }
 
@@ -42,7 +42,7 @@ impl CheckHint {
     #[allow(non_snake_case)]
     pub(crate) fn AUTO_FIX() -> Self {
         Self {
-            inner: base_checks::CheckHint::AUTO_FIX,
+            inner: base_openchecks::CheckHint::AUTO_FIX,
         }
     }
 
@@ -111,7 +111,7 @@ impl CheckHint {
     #[staticmethod]
     pub(crate) fn all() -> Self {
         Self {
-            inner: base_checks::CheckHint::all(),
+            inner: base_openchecks::CheckHint::all(),
         }
     }
 }
@@ -120,12 +120,12 @@ impl CheckHint {
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct CheckHintIterator {
     index: usize,
-    hint: base_checks::CheckHint,
+    hint: base_openchecks::CheckHint,
 }
 
 #[pymethods]
 impl CheckHintIterator {
-    const ITEMS: &'static [base_checks::CheckHint] = &[base_checks::CheckHint::AUTO_FIX];
+    const ITEMS: &'static [base_openchecks::CheckHint] = &[base_openchecks::CheckHint::AUTO_FIX];
 
     pub(crate) fn __next__(&mut self) -> Option<CheckHint> {
         if self.index > Self::ITEMS.len() {

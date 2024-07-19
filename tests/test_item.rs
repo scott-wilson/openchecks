@@ -1,4 +1,4 @@
-use checks::Item;
+use openchecks::Item;
 
 #[derive(Debug, PartialEq, PartialOrd)]
 struct TestItem {

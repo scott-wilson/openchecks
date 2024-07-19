@@ -5,24 +5,24 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import atheris
-import checks
 import hypothesis
+import openchecks
 from hypothesis import strategies
 
 if TYPE_CHECKING:  # pragma: no cover
     from typing import List, Optional
 
 
-class Check(checks.BaseCheck):
+class Check(openchecks.BaseCheck):
     def __init__(
         self,
         title: str,
         description: str,
-        hint: checks.CheckHint,
-        status: checks.Status,
-        fix_status: checks.Status,
+        hint: openchecks.CheckHint,
+        status: openchecks.Status,
+        fix_status: openchecks.Status,
         message: str,
-        items: Optional[List[checks.Item[int]]],
+        items: Optional[List[openchecks.Item[int]]],
         can_fix: bool,
         can_skip: bool,
         error: Optional[BaseException],
@@ -44,11 +44,11 @@ class Check(checks.BaseCheck):
     def description(self) -> str:
         return self._description
 
-    def hint(self) -> checks.CheckHint:
+    def hint(self) -> openchecks.CheckHint:
         return self._hint
 
-    def check(self) -> checks.CheckResult[int]:
-        return checks.CheckResult(
+    def check(self) -> openchecks.CheckResult[int]:
+        return openchecks.CheckResult(
             self._status,
             self._message,
             self._items,
@@ -65,11 +65,11 @@ class Check(checks.BaseCheck):
 
 
 @strategies.composite
-def check_hints(draw: strategies.DrawFn) -> checks.CheckHint:
-    hint = checks.CheckHint.NONE
+def check_hints(draw: strategies.DrawFn) -> openchecks.CheckHint:
+    hint = openchecks.CheckHint.NONE
 
     if draw(strategies.booleans()):
-        hint |= checks.CheckHint.AUTO_FIX
+        hint |= openchecks.CheckHint.AUTO_FIX
 
     return hint
 
@@ -82,22 +82,22 @@ def check_hints(draw: strategies.DrawFn) -> checks.CheckHint:
         hint=check_hints(),
         status=strategies.sampled_from(
             [
-                checks.Status.Pending,
-                checks.Status.Skipped,
-                checks.Status.Passed,
-                checks.Status.Warning,
-                checks.Status.Failed,
-                checks.Status.SystemError,
+                openchecks.Status.Pending,
+                openchecks.Status.Skipped,
+                openchecks.Status.Passed,
+                openchecks.Status.Warning,
+                openchecks.Status.Failed,
+                openchecks.Status.SystemError,
             ]
         ),
         fix_status=strategies.sampled_from(
             [
-                checks.Status.Pending,
-                checks.Status.Skipped,
-                checks.Status.Passed,
-                checks.Status.Warning,
-                checks.Status.Failed,
-                checks.Status.SystemError,
+                openchecks.Status.Pending,
+                openchecks.Status.Skipped,
+                openchecks.Status.Passed,
+                openchecks.Status.Warning,
+                openchecks.Status.Failed,
+                openchecks.Status.SystemError,
             ]
         ),
         message=strategies.text(),
@@ -105,7 +105,7 @@ def check_hints(draw: strategies.DrawFn) -> checks.CheckHint:
             strategies.none(),
             strategies.lists(
                 strategies.builds(
-                    checks.Item,
+                    openchecks.Item,
                     value=strategies.integers(),
                     type_hint=strategies.one_of(strategies.none(), strategies.text()),
                 )
@@ -133,13 +133,13 @@ def fuzz(
     assert result.items() == check._items
 
     if check._error:
-        assert isinstance(result.error(), checks.CheckError)
+        assert isinstance(result.error(), openchecks.CheckError)
 
         assert str(result.error()) == str(check._error)
     else:
         assert result.error() is None
 
-    if result.status() == checks.Status.SystemError:
+    if result.status() == openchecks.Status.SystemError:
         assert result.can_fix() is False
         assert result.can_skip() is False
     else:
@@ -147,20 +147,20 @@ def fuzz(
         assert result.can_skip() == check._can_skip
 
     if result.status().has_failed() and result.can_fix():
-        fix_result = checks.auto_fix(check)
+        fix_result = openchecks.auto_fix(check)
 
-        if not check.hint() & checks.CheckHint.AUTO_FIX:
-            assert fix_result.status() == checks.Status.SystemError
+        if not check.hint() & openchecks.CheckHint.AUTO_FIX:
+            assert fix_result.status() == openchecks.Status.SystemError
             assert fix_result.message() == "Check does not implement auto fix."
             assert fix_result.items() is None
             assert fix_result.error() is None
         elif fix_result.error():
-            assert fix_result.status() == checks.Status.SystemError
+            assert fix_result.status() == openchecks.Status.SystemError
             assert fix_result.message() == "Error in auto fix."
             assert fix_result.items() is None
 
             if check._error:
-                assert isinstance(fix_result.error(), checks.CheckError)
+                assert isinstance(fix_result.error(), openchecks.CheckError)
 
                 assert (
                     str(fix_result.error())
@@ -174,7 +174,7 @@ def fuzz(
             assert fix_result.items() == check._items
             assert fix_result.error() is None
 
-        if fix_result.status() == checks.Status.SystemError:
+        if fix_result.status() == openchecks.Status.SystemError:
             assert fix_result.can_fix() is False
             assert fix_result.can_skip() is False
         else:

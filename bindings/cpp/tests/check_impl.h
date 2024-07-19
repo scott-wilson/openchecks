@@ -3,18 +3,18 @@
 #include <optional>
 #include <string>
 
-#include <cppchecks/check.h>
-#include <cppchecks/core.h>
-#include <cppchecks/result.h>
-#include <cppchecks/status.h>
+#include <openchecks/check.h>
+#include <openchecks/core.h>
+#include <openchecks/result.h>
+#include <openchecks/status.h>
 
 #include "items_impl.h"
 
-class Check : public CPPCHECKS_NAMESPACE::BaseCheck<int> {
+class Check : public OPENCHECKS_NAMESPACE::BaseCheck<int> {
 public:
   Check(std::string title, std::string description,
-        CPPCHECKS_NAMESPACE::CheckHint hint, CPPCHECKS_NAMESPACE::Status status,
-        CPPCHECKS_NAMESPACE::Status fix_status, std::string message,
+        OPENCHECKS_NAMESPACE::CheckHint hint, OPENCHECKS_NAMESPACE::Status status,
+        OPENCHECKS_NAMESPACE::Status fix_status, std::string message,
         std::optional<IntItems> items, bool can_fix, bool can_skip,
         std::optional<std::string> error)
       : _title(title), _description(description), _hint(hint), _status(status),
@@ -25,12 +25,12 @@ public:
 
   virtual const std::string &description() const { return _description; }
 
-  virtual const CPPCHECKS_NAMESPACE::CheckHint hint() const {
+  virtual const OPENCHECKS_NAMESPACE::CheckHint hint() const {
     return this->_hint;
   }
 
-  virtual CPPCHECKS_NAMESPACE::CheckResult<int> check() const {
-    return CPPCHECKS_NAMESPACE::CheckResult{_status,  _message,  _items,
+  virtual OPENCHECKS_NAMESPACE::CheckResult<int> check() const {
+    return OPENCHECKS_NAMESPACE::CheckResult{_status,  _message,  _items,
                                             _can_fix, _can_skip, _error};
   }
 
@@ -45,9 +45,9 @@ public:
 
   std::string _title;
   std::string _description;
-  CPPCHECKS_NAMESPACE::CheckHint _hint;
-  CPPCHECKS_NAMESPACE::Status _status;
-  CPPCHECKS_NAMESPACE::Status _fix_status;
+  OPENCHECKS_NAMESPACE::CheckHint _hint;
+  OPENCHECKS_NAMESPACE::Status _status;
+  OPENCHECKS_NAMESPACE::Status _fix_status;
   std::string _message;
   std::optional<IntItems> _items;
   bool _can_fix;

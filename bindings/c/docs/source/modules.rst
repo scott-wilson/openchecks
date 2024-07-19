@@ -1,7 +1,7 @@
-cchecks
-=======
+openchecks
+==========
 
 .. toctree::
    :maxdepth: 4
 
-   cchecks
+   openchecks

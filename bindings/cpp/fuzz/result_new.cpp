@@ -9,16 +9,17 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include <cppchecks/result.h>
+#include <openchecks/result.h>
 
 #include "common.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   FuzzedDataProvider provider(data, size);
 
-  CPPCHECKS_NAMESPACE::Status status =
-      (CChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
-          (uint8_t)CChecksStatusPending, (uint8_t)CChecksStatusSystemError);
+  OPENCHECKS_NAMESPACE::Status status =
+      (OpenChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
+          (uint8_t)OpenChecksStatusPending,
+          (uint8_t)OpenChecksStatusSystemError);
   std::string message = get_message(provider);
   bool can_fix = provider.ConsumeBool();
   bool can_skip = provider.ConsumeBool();
@@ -34,7 +35,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   assert(result.message() == message);
   assert(result.error() == error);
 
-  if (status == CPPCHECKS_NAMESPACE::Status::SystemError) {
+  if (status == OPENCHECKS_NAMESPACE::Status::SystemError) {
     assert(result.can_fix() == false);
     assert(result.can_skip() == false);
   } else {

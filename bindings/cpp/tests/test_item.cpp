@@ -1,9 +1,9 @@
 extern "C" {
-#include <cchecks.h>
+#include <openchecks.h>
 }
 
-#include <cppchecks/item.h>
 #include <gtest/gtest.h>
+#include <openchecks/item.h>
 #include <sstream>
 #include <string>
 
@@ -128,46 +128,46 @@ TEST(Item, IntItemNeSuccess) {
 
 TEST(Item, CIntItemValueSuccess) {
   IntItem item{1, std::string("test")};
-  ASSERT_EQ(*(int *)cchecks_item_value((CChecksItem *)&item), 1);
+  ASSERT_EQ(*(int *)openchecks_item_value((OpenChecksItem *)&item), 1);
 }
 
 TEST(Item, CIntItemTypeHintSuccess) {
   IntItem item{1, std::string("test")};
-  CChecksItem *citem = (CChecksItem *)&item;
-  const char *ctype_hint = cchecks_item_type_hint(citem);
+  OpenChecksItem *citem = (OpenChecksItem *)&item;
+  const char *ctype_hint = openchecks_item_type_hint(citem);
 
   ASSERT_STREQ(ctype_hint, "test");
 
   item = IntItem{1, ""};
-  citem = (CChecksItem *)&item;
-  ctype_hint = cchecks_item_type_hint(citem);
+  citem = (OpenChecksItem *)&item;
+  ctype_hint = openchecks_item_type_hint(citem);
 
   ASSERT_EQ(ctype_hint, nullptr);
 }
 
 TEST(Item, CIntItemDisplaySuccess) {
   IntItem item{1, std::string("test")};
-  CChecksItem *citem = (CChecksItem *)&item;
-  CChecksString display = cchecks_item_display(citem);
+  OpenChecksItem *citem = (OpenChecksItem *)&item;
+  OpenChecksString display = openchecks_item_display(citem);
 
   ASSERT_STREQ(display.string, "1");
 
-  cchecks_string_destroy(&display);
+  openchecks_string_destroy(&display);
 }
 
 TEST(Item, CIntItemDebugSuccess) {
   IntItem item{1, std::string("test")};
-  CChecksItem *citem = (CChecksItem *)&item;
-  CChecksString debug = cchecks_item_debug(citem);
+  OpenChecksItem *citem = (OpenChecksItem *)&item;
+  OpenChecksString debug = openchecks_item_debug(citem);
 
   ASSERT_STREQ(debug.string, "Item(1)");
 
-  cchecks_string_destroy(&debug);
+  openchecks_string_destroy(&debug);
 }
 
 TEST(Item, CIntItemCloneSuccess) {
   IntItem item{1, std::string("test")};
-  IntItem *other = (IntItem *)cchecks_item_clone((CChecksItem *)&item);
+  IntItem *other = (IntItem *)openchecks_item_clone((OpenChecksItem *)&item);
 
   ASSERT_EQ(item.value(), other->value());
   ASSERT_EQ(item.type_hint(), other->type_hint());
@@ -178,22 +178,26 @@ TEST(Item, CIntItemLtSuccess) {
   IntItem item{1, std::string("test")};
   IntItem other{2, std::string("test")};
 
-  ASSERT_TRUE(cchecks_item_lt((CChecksItem *)&item, (CChecksItem *)&other));
+  ASSERT_TRUE(
+      openchecks_item_lt((OpenChecksItem *)&item, (OpenChecksItem *)&other));
 
   item = IntItem{1, std::string("test")};
   other = IntItem{1, std::string("test")};
 
-  ASSERT_FALSE(cchecks_item_lt((CChecksItem *)&item, (CChecksItem *)&other));
+  ASSERT_FALSE(
+      openchecks_item_lt((OpenChecksItem *)&item, (OpenChecksItem *)&other));
 }
 
 TEST(Item, CIntItemEqSuccess) {
   IntItem item{1, std::string("test")};
   IntItem other{1, std::string("test")};
 
-  ASSERT_TRUE(cchecks_item_eq((CChecksItem *)&item, (CChecksItem *)&other));
+  ASSERT_TRUE(
+      openchecks_item_eq((OpenChecksItem *)&item, (OpenChecksItem *)&other));
 
   item = IntItem{1, std::string("test")};
   other = IntItem{2, std::string("test")};
 
-  ASSERT_FALSE(cchecks_item_eq((CChecksItem *)&item, (CChecksItem *)&other));
+  ASSERT_FALSE(
+      openchecks_item_eq((OpenChecksItem *)&item, (OpenChecksItem *)&other));
 }
