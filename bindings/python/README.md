@@ -1,4 +1,4 @@
-# Untitled Checks Framework
+# Open Checks Framework
 
 ## Overview
 
@@ -12,28 +12,15 @@ computer.
 
 ## Features
 
-- A Rust, C, and Python 3 API
+- A Rust, C, C++, and Python 3 API
 - Automatically fixing issues
 - Marking checks with whether they are skippable or not.
 - Exposing the result of checks in a user interface.
 
 ## Requirements
 
-- Make
 - Rust: 1.66 or later (This is not the guaranteed minimum supported Rust
   version)
-- Python: 3.7 or later
-- Maturin
-
-## Install
-
-### For development
-
-```bash
-cd /path/to/checks/bindings/python
-
-make build
-```
 
 ## Design
 
@@ -107,32 +94,71 @@ and only if the check runner's result says that the result supports fixing.
 After it has attempted fixing the issue, it will run the check again and return
 a result to validate that the fix actually fixed the issue or not.
 
+## Install
+
+### Rust
+
+```bash
+cd /to/your/project
+cargo add --git https://github.com/scott-wilson/openchecks.git
+```
+
+### Python
+
+#### For development
+
+```bash
+cd /path/to/checks/bindings/python
+
+make build
+```
+
+### C
+
+```bash
+cd /path/to/checks/bindings/c
+
+make build
+```
+
+### C++
+
+#### For development
+
+```bash
+cd /path/to/checks/bindings/cpp
+
+make build
+```
+
 ## Wishlist
 
 - [ ] A unique name for the package
-      [Issue](https://github.com/scott-wilson/checks/issues/5)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/5)
 - [ ] To have the Python package named the same as the Rust package. (Currently,
       the Python package is called `pycheck`.)
-      [Issue](https://github.com/scott-wilson/checks/issues/6)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/6)
 - [ ] A C++ API (using the C API as a base)
-      [Issue](https://github.com/scott-wilson/checks/issues/9)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/9)
 - [ ] A scheduler to manage running the checks and returning results. This could
       also include having checks depend on other checks.
-      [Issue](https://github.com/scott-wilson/checks/issues/7)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/7)
 - [ ] Test discovery for situations where a context is given (a character rig
       for project XYZ or animating the shot ABC_010), and a list of checks are
       produced, ready to be ran.
-      [Issue](https://github.com/scott-wilson/checks/issues/8)
-- [ ] A Qt GUI [Issue](https://github.com/scott-wilson/checks/issues/10)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/8)
+- [ ] A Qt GUI [Issue](https://github.com/scott-wilson/openchecks/issues/10)
 - [ ] Blender integration
-      [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Gaffer integration
-      [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Natron integration
-      [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Houdini integration
-      [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Katana integration
-      [Issue](https://github.com/scott-wilson/checks/issues/11)
-- [ ] Maya integration [Issue](https://github.com/scott-wilson/checks/issues/11)
-- [ ] Nuke integration [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
+- [ ] Maya integration
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
+- [ ] Nuke integration
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)

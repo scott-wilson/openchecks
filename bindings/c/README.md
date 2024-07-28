@@ -12,30 +12,15 @@ computer.
 
 ## Features
 
-- A Rust, C, and Python 3 API
+- A Rust, C, C++, and Python 3 API
 - Automatically fixing issues
 - Marking checks with whether they are skippable or not.
 - Exposing the result of checks in a user interface.
 
 ## Requirements
 
-- Make
-- CMake: 3.15 or later
 - Rust: 1.66 or later (This is not the guaranteed minimum supported Rust
   version)
-- Doxygen (optional, for documentation)
-- Python (optional, for documentation): 3.7 or later
-- Poetry (optional, for documentation)
-
-## Install
-
-# For development
-
-```bash
-cd /path/to/checks/bindings/c
-
-make build
-```
 
 ## Design
 
@@ -108,6 +93,43 @@ method for the check. The auto-fix runner should be run after the check runner,
 and only if the check runner's result says that the result supports fixing.
 After it has attempted fixing the issue, it will run the check again and return
 a result to validate that the fix actually fixed the issue or not.
+
+## Install
+
+### Rust
+
+```bash
+cd /to/your/project
+cargo add --git https://github.com/scott-wilson/openchecks.git
+```
+
+### Python
+
+#### For development
+
+```bash
+cd /path/to/checks/bindings/python
+
+make build
+```
+
+### C
+
+```bash
+cd /path/to/checks/bindings/c
+
+make build
+```
+
+### C++
+
+#### For development
+
+```bash
+cd /path/to/checks/bindings/cpp
+
+make build
+```
 
 ## Wishlist
 

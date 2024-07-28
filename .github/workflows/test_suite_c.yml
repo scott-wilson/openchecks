@@ -38,7 +38,6 @@ jobs:
           - macos-latest
         include:
           - os: ubuntu-latest
-            cmake_flags: -DBUILD_WITH_CHECK_COVERAGE=ON
     runs-on: ${{matrix.os}}
     steps:
       - name: Harden Runner
@@ -58,20 +57,38 @@ jobs:
       - name: Run Cargo Deny
         uses: EmbarkStudios/cargo-deny-action@3f4a782664881cf5725d0ffd23969fcce89fd868 # v1.6.3
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - name: Make Build Directory
-        run: mkdir -p build
-      - name: CMake Configure
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
+        with:
+          python-version: 3
+          cache: 'pip'
+      - name: Cache virtualenv
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        with:
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
+          path: .venv
+      - name: Setup virtual environment
+        run: |
+          python -m venv .venv
+
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            source .venv/Scripts/activate
+          else
+            source .venv/bin/activate
+          fi
+      - name: Install meson
+        run: python -m pip install .[build]
+      - name: Meson Setup
+        run: meson setup build -Dtests=true -Db_coverage=true
+      - name: Meson Compile
         working-directory: bindings/c/build
         run: |
-          # Make cmocka a static dependency when testing.
-          cmake ../ -DBUILD_SHARED_LIBS=OFF -DBUILD_COPENCHECKS_TESTS=ON ${{ matrix.cmake_flags }}
-      - name: CMake Build
+          meson compile
+      - name: Meson Test
         working-directory: bindings/c/build
         run: |
-          cmake --build . --config=Debug
-      - name: Run Test
-        working-directory: bindings/c/build
-        run: ctest -C Debug -VV --output-on-failure
+          meson test
       - name: Run Valgrind
         working-directory: bindings/c/build
         if: ${{ matrix.os == 'ubuntu-latest' }}

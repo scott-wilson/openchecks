@@ -71,17 +71,29 @@ jobs:
       # Build C Project
       - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
-      - name: Make Build Directory
-        run: mkdir -p build
-      - name: CMake Configure
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
+        with:
+          python-version: 3
+          cache: 'pip'
+      - name: Cache virtualenv
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        with:
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
+          path: .venv
+      - name: Setup virtual environment
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+      - name: Install meson
+        run: python -m pip install .[build]
+      - name: Meson Setup
+        run: meson setup build -Dtests=true -Db_coverage=true
+      - name: Meson Compile
         working-directory: bindings/c/build
         run: |
-          # Make cmocka a static dependency when testing.
-          cmake ../ -DBUILD_SHARED_LIBS=OFF -DBUILD_COPENCHECKS_TESTS=ON
-      - name: CMake Build
-        working-directory: bindings/c/build
-        run: |
-          cmake --build . --config=Debug
+          meson compile
 
       # Run the analysis
       - name: Perform CodeQL Analysis

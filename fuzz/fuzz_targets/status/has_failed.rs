@@ -2,8 +2,8 @@
 
 use libfuzzer_sys::fuzz_target;
 
-fuzz_target!(|status: checks::Status| {
-    if status == checks::Status::Failed || status == checks::Status::SystemError {
+fuzz_target!(|status: openchecks::Status| {
+    if status == openchecks::Status::Failed || status == openchecks::Status::SystemError {
         assert!(status.has_failed());
     } else {
         assert!(!status.has_failed());

@@ -14,7 +14,7 @@ impl std::fmt::Display for Item {
     }
 }
 
-impl checks::Item for Item {
+impl openchecks::Item for Item {
     type Value = u32;
 
     fn value(&self) -> Self::Value {
@@ -24,18 +24,18 @@ impl checks::Item for Item {
 
 #[derive(Debug, Arbitrary)]
 struct Input {
-    status: checks::Status,
+    status: openchecks::Status,
     message: String,
     items: Option<Vec<Item>>,
     can_fix: bool,
     can_skip: bool,
-    error: Option<checks::Error>,
+    error: Option<openchecks::Error>,
 }
 
 fuzz_target!(|input: Input| {
     let items = input.items.clone();
     let error = input.error.clone();
-    let result = checks::CheckResult::new(
+    let result = openchecks::CheckResult::new(
         input.status,
         &input.message,
         items,
@@ -49,7 +49,7 @@ fuzz_target!(|input: Input| {
     assert_eq!(result.items(), &input.items);
     assert_eq!(result.error(), &input.error);
 
-    if input.status == checks::Status::SystemError {
+    if input.status == openchecks::Status::SystemError {
         assert!(!result.can_fix());
         assert!(!result.can_skip());
     } else {
