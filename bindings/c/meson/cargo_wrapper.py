@@ -31,12 +31,12 @@ def _build(
     compiled_target_dir = cargo_target_dir / release_mode.value
 
     args = [
-        cargo_path.resolve().as_posix(),
+        cargo_path.as_posix(),
         "build",
         "--manifest-path",
-        manifest_path.resolve().as_posix(),
+        manifest_path.as_posix(),
         "--target-dir",
-        cargo_target_dir.resolve().as_posix(),
+        cargo_target_dir.as_posix(),
     ]
 
     if release_mode == ReleaseMode.RELEASE:
