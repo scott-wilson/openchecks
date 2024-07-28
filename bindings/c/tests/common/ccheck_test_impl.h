@@ -47,7 +47,7 @@ OpenChecksAutoFixResult test_check_auto_fix_fn(OpenChecksBaseCheck *check) {
   return openchecks_check_auto_fix_ok();
 }
 
-TestCheck create_test_check() {
+TestCheck create_test_check(void) {
   TestCheck check;
   check.header.title_fn = test_check_title_fn;
   check.header.description_fn = test_check_description_fn;
@@ -87,7 +87,7 @@ always_pass_check_run_fn(const OpenChecksBaseCheck *check) {
   return openchecks_check_result_passed("test", NULL, false, false);
 }
 
-AlwaysPassCheck create_always_pass_check() {
+AlwaysPassCheck create_always_pass_check(void) {
   AlwaysPassCheck check;
   check.header.title_fn = always_pass_check_title_fn;
   check.header.description_fn = always_pass_check_description_fn;
@@ -127,7 +127,7 @@ always_fail_check_run_fn(const OpenChecksBaseCheck *check) {
   return openchecks_check_result_failed("test", NULL, false, false);
 }
 
-AlwaysFailCheck create_always_fail_check() {
+AlwaysFailCheck create_always_fail_check(void) {
   AlwaysFailCheck check;
   check.header.title_fn = always_fail_check_title_fn;
   check.header.description_fn = always_fail_check_description_fn;
@@ -173,7 +173,7 @@ OpenChecksAutoFixResult pass_on_fix_auto_fix_fn(OpenChecksBaseCheck *check) {
   return openchecks_check_auto_fix_ok();
 }
 
-PassOnFixCheck create_pass_on_fix() {
+PassOnFixCheck create_pass_on_fix(void) {
   PassOnFixCheck check;
   check.header.title_fn = pass_on_fix_title_fn;
   check.header.description_fn = pass_on_fix_description_fn;
@@ -221,7 +221,7 @@ OpenChecksAutoFixResult fail_on_fix_auto_fix_fn(OpenChecksBaseCheck *check) {
   return openchecks_check_auto_fix_ok();
 }
 
-FailOnFixCheck create_fail_on_fix() {
+FailOnFixCheck create_fail_on_fix(void) {
   FailOnFixCheck check;
   check.header.title_fn = fail_on_fix_title_fn;
   check.header.description_fn = fail_on_fix_description_fn;
@@ -263,7 +263,7 @@ no_auto_fix_flag_check_run_fn(const OpenChecksBaseCheck *check) {
   return openchecks_check_result_failed("test", NULL, false, false);
 }
 
-NoAutoFixFlagCheck create_no_auto_fix_flag_check() {
+NoAutoFixFlagCheck create_no_auto_fix_flag_check(void) {
   NoAutoFixFlagCheck check;
   check.header.title_fn = no_auto_fix_flag_check_title_fn;
   check.header.description_fn = no_auto_fix_flag_check_description_fn;
