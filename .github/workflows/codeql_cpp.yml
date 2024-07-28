@@ -86,6 +86,20 @@ jobs:
         run: |
           python -m venv .venv
           source .venv/bin/activate
+      - name: Install ninja
+        run: |
+          python -m venv .venv
+
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get install ninja-build
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+            choco install ninja
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install ninja
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
+          fi
       - name: Install meson
         run: python -m pip install .[build]
       - name: Meson Setup
