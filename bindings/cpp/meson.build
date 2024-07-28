@@ -2,7 +2,7 @@ project(
   'cppopenchecks',
   'cpp',
   version: '0.1.0',
-  default_options: ['warning_level=3'],
+  default_options: ['warning_level=3', 'cpp_std=c++17'],
 )
 
 cargo_toml = meson.project_source_root() / '../c/Cargo.toml'
