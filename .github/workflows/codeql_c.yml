@@ -45,6 +45,7 @@ jobs:
     defaults:
       run:
         working-directory: bindings/c
+        shell: bash
     runs-on: ubuntu-latest
     permissions:
       actions: read

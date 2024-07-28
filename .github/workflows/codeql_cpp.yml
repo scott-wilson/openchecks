@@ -45,6 +45,7 @@ jobs:
     defaults:
       run:
         working-directory: bindings/cpp
+        shell: bash
     runs-on: ubuntu-latest
     permissions:
       actions: read

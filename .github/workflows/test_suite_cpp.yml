@@ -30,6 +30,7 @@ jobs:
     defaults:
       run:
         working-directory: bindings/cpp
+        shell: bash
     strategy:
       matrix:
         os:
