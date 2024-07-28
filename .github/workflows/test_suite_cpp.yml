@@ -89,11 +89,11 @@ jobs:
       - name: Meson Setup
         run: meson setup build -Dtests=true -Db_coverage=true
       - name: Meson Compile
-        working-directory: bindings/c/build
+        working-directory: bindings/cpp/build
         run: |
           meson compile
       - name: Meson Test
-        working-directory: bindings/c/build
+        working-directory: bindings/cpp/build
         run: |
           meson test
       - name: Run Valgrind
