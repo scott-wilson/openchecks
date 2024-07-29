@@ -95,7 +95,12 @@ jobs:
       - name: Install meson
         run: python -m pip install .[build]
       - name: Meson Setup
-        run: meson setup build -Dtests=true -Db_coverage=true
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            CC=msvc CXX=msvc meson setup build -Dtests=true -Db_coverage=true
+          else
+            meson setup build -Dtests=true -Db_coverage=true
+          fi
       - name: Meson Compile
         working-directory: bindings/c/build
         run: |
