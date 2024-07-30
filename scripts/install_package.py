@@ -10,9 +10,7 @@ def main(package: str):
 
     if sys.platform == "linux":
         subprocess.run(
-            ["sudo", "-s", "apt-get", "install", package],
-            shell=True,
-            check=True,
+            ["sudo", "bash", "-c", "apt-get", "install", package], check=True
         )
     elif sys.platform == "win32":
         subprocess.run(["choco", "install", package], shell=True, check=True)
