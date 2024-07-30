@@ -10,7 +10,7 @@ def main(package: str):
 
     if sys.platform == "linux":
         subprocess.run(
-            ["sudo", "bash", "-c", "apt-get", "install", package],
+            ["sudo", "-s", "apt-get", "install", package],
             shell=True,
             check=True,
         )
