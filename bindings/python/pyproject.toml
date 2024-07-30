@@ -3,7 +3,7 @@ requires = ["maturin>=1.4,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "checks"
+name = "openchecks"
 description = "A simple checks framework"
 authors = [{ name = "Scott Wilson", email = "scott@propersquid.com" }]
 license = { text = "MIT OR Apache-2.0" }
@@ -32,7 +32,7 @@ test = [
     "ruff ~= 0.2",
 ]
 docs = ["myst-parser ~= 3.0", "sphinx ~= 7.2", "sphinx-rtd-theme ~= 2.0"]
-fuzz = ["checks[test]", "atheris ~= 2.3"]
+fuzz = ["openchecks[test]", "atheris ~= 2.3"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]

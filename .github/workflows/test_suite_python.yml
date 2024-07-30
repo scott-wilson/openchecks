@@ -84,10 +84,11 @@ jobs:
       - name: Build Rust
         uses: PyO3/maturin-action@2c5c1560848aaa364c3545136054932db5fa27b7 # v1.44.0
         with:
-          command: develop
           sccache: 'true'
           manylinux: auto
           working-directory: bindings/python
       - name: Run tests
+        shell: bash
         run: |
+          python -m pip install openchecks --find-links target/wheels
           python -m pytest --hypothesis-profile default -n=auto tests/
