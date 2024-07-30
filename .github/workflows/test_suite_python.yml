@@ -88,7 +88,6 @@ jobs:
           manylinux: auto
           working-directory: bindings/python
       - name: Run tests
-        shell: bash
         run: |
           python -m pip install openchecks --find-links target/wheels
           python -m pytest --hypothesis-profile default -n=auto tests/
