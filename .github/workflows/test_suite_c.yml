@@ -95,6 +95,7 @@ jobs:
         working-directory: 'scripts'
         run: python install_package.py lcov
       - name: Run LCov
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         working-directory: bindings/c/build
         run: lcov -c -d . -o coverage.info
       - uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
