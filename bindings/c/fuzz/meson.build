@@ -12,7 +12,7 @@ fuzz_targets = [
 
 add_languages('cpp', required: true)
 
-foreach fuzz_target : fuzz_targets
+foreach fuzz_target: fuzz_targets
   if is_msvc_style
     executable(
       fuzz_target,

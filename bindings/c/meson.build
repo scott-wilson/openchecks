@@ -69,8 +69,9 @@ cmake.configure_package_config_file(
 )
 
 copenchecks_dep = declare_dependency(
-  include_directories : include_directories('include'),
-  link_with : rust_c_artifacts.to_list(),
+  include_directories: include_directories('include'),
+  link_with: rust_c_artifacts[0],
+  link_whole: rust_c_artifacts[1],
   version: meson.project_version(),
 )
 

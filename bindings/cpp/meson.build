@@ -53,6 +53,7 @@ copenchecks_include_dirs = include_directories('../c/include')
 copenchecks_dep = declare_dependency(
   include_directories: copenchecks_include_dirs,
   link_with: rust_c_artifacts[0],
+  link_whole: rust_c_artifacts[1],
   version: meson.project_version(),
 )
 
@@ -86,8 +87,8 @@ cmake.configure_package_config_file(
 )
 
 cppopenchecks_dep = declare_dependency(
-  include_directories : include_directories('include'),
-  link_with : cppopenchecks_lib
+  include_directories: include_directories('include'),
+  link_with: cppopenchecks_lib
 )
 
 if build_tests
