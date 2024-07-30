@@ -90,7 +90,7 @@ jobs:
       - name: Meson Setup
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            CC=msvc CXX=msvc meson setup build -Dtests=true -Db_coverage=true
+            CC=cl CXX=cl meson setup build -Dtests=true -Db_coverage=true
           else
             meson setup build -Dtests=true -Db_coverage=true
           fi
