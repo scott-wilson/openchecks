@@ -16,7 +16,6 @@ foreach test_target : test_targets
     '@0@.cpp'.format(test_target),
     dependencies: [cppopenchecks_dep, copenchecks_dep, gtest_dep, gtest_main_dep],
     include_directories: ['.', copenchecks_include_dirs],
-    link_with: [rust_c_artifacts[0]],
   )
   test(test_target, test_exec)
 endforeach

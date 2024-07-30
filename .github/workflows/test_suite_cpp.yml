@@ -88,7 +88,7 @@ jobs:
         run: python install_package.py lcov
       - name: Run LCov
         working-directory: bindings/cpp/build
-        run: lcov -c -d . -o coverage.info
+        run: lcov -c -d . -o coverage.info --ignore-errors inconsistent
       - uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
         with:
           flags: lang-cpp
