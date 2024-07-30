@@ -9,7 +9,11 @@ def main(package: str):
     package = _PACKAGE_NAME_OVERRIDE.get(package, {}).get(sys.platform, package)
 
     if sys.platform == "linux":
-        subprocess.run(["sudo", "apt-get", "install", package], shell=True, check=True)
+        subprocess.run(
+            ["sudo", "bash", "-c", "apt-get", "install", package],
+            shell=True,
+            check=True,
+        )
     elif sys.platform == "win32":
         subprocess.run(["choco", "install", package], shell=True, check=True)
     elif sys.platform == "darwin":
