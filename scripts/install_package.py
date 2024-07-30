@@ -1,5 +1,6 @@
 import argparse
 import subprocess
+import shlex
 import sys
 
 _PACKAGE_NAME_OVERRIDE = {"ninja": {"linux": "ninja-build"}}
@@ -9,9 +10,8 @@ def main(package: str):
     package = _PACKAGE_NAME_OVERRIDE.get(package, {}).get(sys.platform, package)
 
     if sys.platform == "linux":
-        subprocess.run(
-            ["sudo", "bash", "-c", "apt-get", "install", package], check=True
-        )
+        cmd = ["apt-get", "install", package]
+        subprocess.run(["sudo", "bash", "-c", shlex.join(cmd)], check=True)
     elif sys.platform == "win32":
         subprocess.run(["choco", "install", package], shell=True, check=True)
     elif sys.platform == "darwin":
