@@ -15,7 +15,7 @@ def main(package: str):
     elif sys.platform == "win32":
         subprocess.run(["choco", "install", package], shell=True, check=True)
     elif sys.platform == "darwin":
-        subprocess.run(["brew", "install", package], shell=True, check=True)
+        subprocess.run(shlex.join(["brew", "install", package]), shell=True, check=True)
     else:
         raise NotImplementedError(f"{sys.platform!r} is not supported")
 
