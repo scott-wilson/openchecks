@@ -90,7 +90,7 @@ jobs:
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_runner
           valgrind -v --leak-check=full --show-leak-kinds=all tests/test_status
       - name: Install LCov
-        working-directory: '.'
+        working-directory: 'scripts'
         run: python install_package.py lcov
       - name: Run LCov
         working-directory: bindings/c/build
