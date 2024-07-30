@@ -52,7 +52,7 @@ pkg = import('pkgconfig')
 pkg.generate(
   name: meson.project_name(),
   description: 'A simple checks framework',
-  libraries: [rust_c_artifacts[0]]
+  libraries: rust_c_artifacts.to_list()
 )
 
 cmake = import('cmake')
@@ -70,7 +70,7 @@ cmake.configure_package_config_file(
 
 copenchecks_dep = declare_dependency(
   include_directories : include_directories('include'),
-  link_with : rust_c_artifacts[0],
+  link_with : rust_c_artifacts.to_list(),
   version: meson.project_version(),
 )
 
