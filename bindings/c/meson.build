@@ -29,30 +29,57 @@ else
   static_ext = 'a'
 endif
 
-rust_c_artifacts = custom_target(
-  meson.project_name(),
-  build_by_default: true,
-  output: ['@0@copenchecks.@1@'.format(lib_prefix, dynamic_ext), '@0@copenchecks.@1@'.format(lib_prefix, static_ext)],
-  console: true,
-  install: true,
-  install_dir: get_option('libdir'),
-  command: [
-    cargo_wrapper,
-    'build',
-    cargo,
-    '--release-mode', release_mode,
-    '--manifest-path', cargo_toml,
-    '--project-build-root', meson.project_build_root(),
-    '--current-build-dir', meson.current_build_dir(),
-  ]
-)
+if is_msvc_style
+  rust_c_artifacts = custom_target(
+    meson.project_name(),
+    build_by_default: true,
+    output: [
+      '@0@copenchecks.@1@'.format(lib_prefix, dynamic_ext),
+      '@0@copenchecks.@1@'.format(lib_prefix, static_ext),
+      '@0@copenchecks.dll.lib'.format(lib_prefix, static_ext),
+    ],
+    console: true,
+    install: true,
+    install_dir: get_option('libdir'),
+    command: [
+      cargo_wrapper,
+      'build',
+      cargo,
+      '--release-mode', release_mode,
+      '--manifest-path', cargo_toml,
+      '--project-build-root', meson.project_build_root(),
+      '--current-build-dir', meson.current_build_dir(),
+    ],
+  )
+else
+  rust_c_artifacts = custom_target(
+    meson.project_name(),
+    build_by_default: true,
+    output: [
+      '@0@copenchecks.@1@'.format(lib_prefix, dynamic_ext),
+      '@0@copenchecks.@1@'.format(lib_prefix, static_ext),
+    ],
+    console: true,
+    install: true,
+    install_dir: get_option('libdir'),
+    command: [
+      cargo_wrapper,
+      'build',
+      cargo,
+      '--release-mode', release_mode,
+      '--manifest-path', cargo_toml,
+      '--project-build-root', meson.project_build_root(),
+      '--current-build-dir', meson.current_build_dir(),
+    ],
+  )
+endif
 install_headers('include/openchecks.h')
 
 pkg = import('pkgconfig')
 pkg.generate(
   name: meson.project_name(),
   description: 'A simple checks framework',
-  libraries: rust_c_artifacts.to_list()
+  libraries: rust_c_artifacts.to_list(),
 )
 
 cmake = import('cmake')
@@ -61,7 +88,10 @@ cmake.write_basic_package_version_file(
   version: meson.project_version(),
 )
 conf = configuration_data()
-conf.set_quoted('PACKAGE_INCLUDE_INSTALL_DIR', '${PACKAGE_PREFIX_DIR}' / get_option('includedir'))
+conf.set_quoted(
+  'PACKAGE_INCLUDE_INSTALL_DIR',
+  '${PACKAGE_PREFIX_DIR}' / get_option('includedir'),
+)
 cmake.configure_package_config_file(
   name: meson.project_name(),
   input: 'cmake/copenchecks.cmake.in',
@@ -69,8 +99,8 @@ cmake.configure_package_config_file(
 )
 
 copenchecks_dep = declare_dependency(
-  include_directories: include_directories('include'),
-  link_with: rust_c_artifacts[1],
+  include_directories: ['include'],
+  link_with: rust_c_artifacts.to_list(),
   version: meson.project_version(),
 )
 
