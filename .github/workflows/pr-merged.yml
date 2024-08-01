@@ -122,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
-          path: python-dist
+          path: bindings/python/python-dist
 
   build-source-python:
     runs-on: ubuntu-latest
@@ -151,7 +151,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-sdist
-          path: python-dist
+          path: bindings/python/python-dist
 
   # C: TODO
   # C++: TODO
