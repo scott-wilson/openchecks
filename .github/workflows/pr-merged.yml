@@ -87,40 +87,27 @@ jobs:
             python-target: arm64
             manylinux: auto
             name: macos
-        python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-        exclude:
-          # Skip Python 3.7 on mac aarch64 due to no support.
-          - platform:
-              runner: macos-14
-              cargo-target: aarch64
-            python-version: "3.7"
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3"
           architecture: ${{ matrix.platform.python-target }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.cargo-target }}
-          args: --release --out python-dist-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}-${{ matrix.python-version }} --find-interpreter
+          args: --release --out python-dist-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }} --find-interpreter
           sccache: 'true'
           manylinux: ${{ matrix.platform.manylinux }}
           working-directory: bindings/python
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}-${{ matrix.python-version }}
-          path: bindings/python/python-dist-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}-${{ matrix.python-version }}
+          name: wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
+          path: bindings/python/python-dist-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
 
   build-source-python:
     runs-on: ubuntu-latest
@@ -201,7 +188,8 @@ jobs:
         draft: true
         body: ${{ steps.query-release-info.outputs.release-notes }}
         artifacts: |
-          dist/*.zip
+          *.whl
+          *.tar.gz
 
     - name: Display Instructions
       run: |
