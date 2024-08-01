@@ -188,8 +188,8 @@ jobs:
         draft: true
         body: ${{ steps.query-release-info.outputs.release-notes }}
         artifacts: |
-          *.whl
-          *.tar.gz
+          wheels-*/*.whl
+          wheels-*/*.tar.gz
 
     - name: Display Instructions
       run: |
