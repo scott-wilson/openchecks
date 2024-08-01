@@ -117,6 +117,7 @@ jobs:
           args: --release --out python-dist --find-interpreter
           sccache: 'true'
           manylinux: ${{ matrix.platform.manylinux }}
+          working-directory: bindings/python
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -145,6 +146,7 @@ jobs:
         with:
           command: sdist
           args: --out python-dist
+          working-directory: bindings/python
       - name: Upload sdist
         uses: actions/upload-artifact@v4
         with:

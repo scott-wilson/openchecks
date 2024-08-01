@@ -9,7 +9,7 @@ if TYPE_CHECKING:  # pragma: no cover
     pass
 
 _CARGO_PATH = (
-    pathlib.Path(__file__).parent.parent / "bindings" / "python" / "Cargo.toml"
+    pathlib.Path(__file__).parent.parent.parent / "bindings" / "python" / "Cargo.toml"
 )
 
 
