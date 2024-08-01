@@ -44,7 +44,6 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3'
-        cache: 'pip'
     - name: 'Prepare Package Release'
       run: 'python scripts/prepare.py ${{ steps.update-changelog.outputs.version }}'
 
