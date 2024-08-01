@@ -13,10 +13,7 @@ _CARGO_PATH = (
 )
 
 
-def main() -> None:
-    result = subprocess.run(["git", "rev-parse", "HEAD"], shell=True, check=True)
-    git_commit_id = result.stdout.decode().strip()
-
+def main(git_commit_id: str) -> None:
     with _CARGO_PATH.open(mode="r") as f_in:
         data = f_in.read()
 
@@ -32,6 +29,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("git_commit_id")
     args = parser.parse_args()
 
-    main()
+    main(args.git_commit_id)
