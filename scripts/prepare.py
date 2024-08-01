@@ -18,9 +18,9 @@ def main(version: str) -> None:
         project_dir / "bindings" / "python" / "Cargo.toml",
         project_dir / "Cargo.toml",
     ]
-    cmake_files = [
-        project_dir / "bindings" / "c" / "CMakeLists.txt",
-        project_dir / "bindings" / "cpp" / "CMakeLists.txt",
+    meson_files = [
+        project_dir / "bindings" / "c" / "meson.build",
+        project_dir / "bindings" / "cpp" / "meson.build",
     ]
     pyproject_files = [
         project_dir / "bindings" / "c" / "pyproject.toml",
@@ -29,8 +29,8 @@ def main(version: str) -> None:
     for cargo_file in cargo_files:
         _prepare_cargo_file(version_obj, cargo_file)
 
-    for cmake_file in cmake_files:
-        _prepare_cmake_file(version_obj, cmake_file)
+    for meson_file in meson_files:
+        _prepare_meson_file(version_obj, meson_file)
 
     for pyproject_file in pyproject_files:
         _prepare_pyproject_file(version_obj, pyproject_file)
@@ -114,36 +114,13 @@ def _prepare_cargo_file(version: Version, cargo_path: pathlib.Path) -> None:
         f_out.write(data)
 
 
-def _prepare_cmake_file(version: Version, cmake_path: pathlib.Path) -> None:
-    with cmake_path.open(mode="r") as f_in:
+def _prepare_meson_file(version: Version, meson_path: pathlib.Path) -> None:
+    with meson_path.open(mode="r") as f_in:
         data = f_in.read()
 
-    data = re.sub(
-        r"set\((\w+_VERSION_MAJOR) \"\d+\"\)",
-        f'set(\\g<1> "{version.major}")',
-        data,
-        count=1,
-    )
-    data = re.sub(
-        r"set\((\w+_VERSION_MINOR) \"\d+\"\)",
-        f'set(\\g<1> "{version.minor}")',
-        data,
-        count=1,
-    )
-    data = re.sub(
-        r"set\((\w+_VERSION_PATCH) \"\d+\"\)",
-        f'set(\\g<1> "{version.patch}")',
-        data,
-        count=1,
-    )
-    data = re.sub(
-        r"set\((\w+_VERSION_PRERELEASE) \".*\"\)",
-        f'set(\\g<1> "{version.prerelease or ''}")',
-        data,
-        count=1,
-    )
+    data = re.sub(r"version: '.*',", f"version: '{version}',", data, count=1)
 
-    with cmake_path.open(mode="w") as f_out:
+    with meson_path.open(mode="w") as f_out:
         f_out.write(data)
 
 
