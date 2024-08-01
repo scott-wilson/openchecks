@@ -1,0 +1,14 @@
+option(
+    'tests',
+    type: 'boolean',
+    value: false,
+    yield: true,
+    description: 'Build the test suite'
+)
+option(
+    'fuzz',
+    type: 'boolean',
+    value: false,
+    yield: true,
+    description: 'Build the fuzzing suite'
+)

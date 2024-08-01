@@ -1,8 +1,6 @@
-Untitled Checks Framework
-=========================
+# Open Checks Framework
 
-Overview
---------
+## Overview
 
 This framework is designed to provide a system to write checks for studio work.
 This includes validating assets (rigs, geometry, surfacing, etc), shots
@@ -12,38 +10,19 @@ information to let a user know why a check failed and what they need to do to
 fix it. It also supports fixing issues if the issue can be fixed by the
 computer.
 
-Features
---------
+## Features
 
-- A Rust, C, and Python 3 API
+- A Rust, C, C++, and Python 3 API
 - Automatically fixing issues
 - Marking checks with whether they are skippable or not.
 - Exposing the result of checks in a user interface.
 
-Requirements
-------------
+## Requirements
 
-- Make
-- CMake: 3.15 or later
 - Rust: 1.66 or later (This is not the guaranteed minimum supported Rust
   version)
-- Doxygen (optional, for documentation)
-- Python (optional, for documentation): 3.7 or later
-- Poetry (optional, for documentation)
 
-Install
--------
-
-# For development
-
-```bash
-cd /path/to/checks/bindings/c
-
-make build
-```
-
-Design
-------
+## Design
 
 ### Status
 
@@ -54,8 +33,8 @@ The status is a machine readable part of the result.
 - `Skipped`: The check has been skipped due to previous checks that this one
   depends on failing.
 - `Passed`: The test has passed.
-- `Warning`: The test has found things that might be an issue. However, this
-  can still be treated the same as `Passed`.
+- `Warning`: The test has found things that might be an issue. However, this can
+  still be treated the same as `Passed`.
 - `Failed`: The test has found an issue with the object. This can be treated as
   `Passed` if the result allows skipping this test.
 - `SystemError`: An issue with the test has happened. Either functionality it
@@ -109,41 +88,77 @@ not), and producing timing information about the check for diagnostics.
 
 #### Auto-Fix Runner
 
-The auto-fix runner is similar to the check runner, but it will run the
-auto-fix method for the check. The auto-fix runner should be run after the check
-runner, and only if the check runner's result says that the result supports
-fixing. After it has attempted fixing the issue, it will run the check again and
-return a result to validate that the fix actually fixed the issue or not.
+The auto-fix runner is similar to the check runner, but it will run the auto-fix
+method for the check. The auto-fix runner should be run after the check runner,
+and only if the check runner's result says that the result supports fixing.
+After it has attempted fixing the issue, it will run the check again and return
+a result to validate that the fix actually fixed the issue or not.
 
-Wishlist
---------
+## Install
+
+### Rust
+
+```bash
+cd /to/your/project
+cargo add --git https://github.com/scott-wilson/openchecks.git
+```
+
+### Python
+
+#### For development
+
+```bash
+cd /path/to/checks/bindings/python
+
+make build
+```
+
+### C
+
+```bash
+cd /path/to/checks/bindings/c
+
+make build
+```
+
+### C++
+
+#### For development
+
+```bash
+cd /path/to/checks/bindings/cpp
+
+make build
+```
+
+## Wishlist
 
 - [ ] A unique name for the package
-  [Issue](https://github.com/scott-wilson/checks/issues/5)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/5)
 - [ ] To have the Python package named the same as the Rust package. (Currently,
-  the Python package is called `pycheck`.)
-  [Issue](https://github.com/scott-wilson/checks/issues/6)
+      the Python package is called `pycheck`.)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/6)
 - [ ] A C++ API (using the C API as a base)
-  [Issue](https://github.com/scott-wilson/checks/issues/9)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/9)
 - [ ] A scheduler to manage running the checks and returning results. This could
-  also include having checks depend on other checks.
-  [Issue](https://github.com/scott-wilson/checks/issues/7)
+      also include having checks depend on other checks.
+      [Issue](https://github.com/scott-wilson/openchecks/issues/7)
 - [ ] Test discovery for situations where a context is given (a character rig
-  for project XYZ or animating the shot ABC_010), and a list of checks are
-  produced, ready to be ran.
-  [Issue](https://github.com/scott-wilson/checks/issues/8)
-- [ ] A Qt GUI [Issue](https://github.com/scott-wilson/checks/issues/10)
+      for project XYZ or animating the shot ABC_010), and a list of checks are
+      produced, ready to be ran.
+      [Issue](https://github.com/scott-wilson/openchecks/issues/8)
+- [ ] A Qt GUI [Issue](https://github.com/scott-wilson/openchecks/issues/10)
 - [ ] Blender integration
-  [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Gaffer integration
-  [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Natron integration
-  [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Houdini integration
-  [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Katana integration
-  [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Maya integration
-  [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)
 - [ ] Nuke integration
-  [Issue](https://github.com/scott-wilson/checks/issues/11)
+      [Issue](https://github.com/scott-wilson/openchecks/issues/11)

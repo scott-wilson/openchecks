@@ -1,18 +1,18 @@
-#include <cppchecks/core.h>
-#include <cppchecks/item.h>
-#include <cppchecks/items.h>
-#include <cppchecks/result.h>
-#include <cppchecks/status.h>
 #include <gtest/gtest.h>
+#include <openchecks/core.h>
+#include <openchecks/item.h>
+#include <openchecks/items.h>
+#include <openchecks/result.h>
+#include <openchecks/status.h>
 #include <tuple>
 #include <vector>
 
 #include "item_impl.h"
 #include "items_impl.h"
 
-using IntResult = CPPCHECKS_NAMESPACE::CheckResult<int>;
+using IntResult = OPENCHECKS_NAMESPACE::CheckResult<int>;
 
-void validate_result(IntResult &result, CPPCHECKS_NAMESPACE::Status &status,
+void validate_result(IntResult &result, OPENCHECKS_NAMESPACE::Status &status,
                      std::string &message, std::vector<IntItem> &items,
                      bool can_fix, bool can_skip,
                      std::optional<std::string> &error) {
@@ -33,7 +33,7 @@ void validate_result(IntResult &result, CPPCHECKS_NAMESPACE::Status &status,
 
   EXPECT_EQ(index, items.size());
 
-  if (status == CPPCHECKS_NAMESPACE::Status::SystemError) {
+  if (status == OPENCHECKS_NAMESPACE::Status::SystemError) {
     EXPECT_FALSE(result.can_fix());
     EXPECT_FALSE(result.can_skip());
   } else {
@@ -46,11 +46,11 @@ void validate_result(IntResult &result, CPPCHECKS_NAMESPACE::Status &status,
 
 class ResultParameterizedTestFixture
     : public ::testing::TestWithParam<std::tuple<
-          CPPCHECKS_NAMESPACE::Status, std::string, std::vector<IntItem>, bool,
+          OPENCHECKS_NAMESPACE::Status, std::string, std::vector<IntItem>, bool,
           bool, std::optional<std::string>>> {};
 
 TEST_P(ResultParameterizedTestFixture, ResultSuccess) {
-  CPPCHECKS_NAMESPACE::Status status = std::get<0>(GetParam());
+  OPENCHECKS_NAMESPACE::Status status = std::get<0>(GetParam());
   std::string message = std::get<1>(GetParam());
   std::vector<IntItem> items = std::get<2>(GetParam());
   bool can_fix = std::get<3>(GetParam());
@@ -65,13 +65,13 @@ TEST_P(ResultParameterizedTestFixture, ResultSuccess) {
 INSTANTIATE_TEST_SUITE_P(
     CheckResult, ResultParameterizedTestFixture,
     ::testing::Combine(
-        ::testing::Values(CPPCHECKS_NAMESPACE::Status::Pending,
-                          CPPCHECKS_NAMESPACE::Status::Skipped,
-                          CPPCHECKS_NAMESPACE::Status::Passed,
-                          CPPCHECKS_NAMESPACE::Status::Warning,
-                          CPPCHECKS_NAMESPACE::Status::Failed,
-                          CPPCHECKS_NAMESPACE::Status::SystemError), // status
-        ::testing::Values(std::string("message")),                   // message
+        ::testing::Values(OPENCHECKS_NAMESPACE::Status::Pending,
+                          OPENCHECKS_NAMESPACE::Status::Skipped,
+                          OPENCHECKS_NAMESPACE::Status::Passed,
+                          OPENCHECKS_NAMESPACE::Status::Warning,
+                          OPENCHECKS_NAMESPACE::Status::Failed,
+                          OPENCHECKS_NAMESPACE::Status::SystemError), // status
+        ::testing::Values(std::string("message")),                    // message
         ::testing::Values(std::vector<IntItem>{IntItem(0, ""), IntItem(1, ""),
                                                IntItem(2, "")}), // items
         ::testing::Bool(),                                       // can_fix
@@ -85,7 +85,7 @@ class PassedResultParameterizedTestFixture
           std::tuple<std::string, std::vector<IntItem>, bool, bool>> {};
 
 TEST_P(PassedResultParameterizedTestFixture, ResultPassedSuccess) {
-  CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Passed;
+  OPENCHECKS_NAMESPACE::Status status = OPENCHECKS_NAMESPACE::Status::Passed;
   std::string message = std::get<0>(GetParam());
   std::vector<IntItem> items = std::get<1>(GetParam());
   bool can_fix = std::get<2>(GetParam());
@@ -112,7 +112,7 @@ class SkippedResultParameterizedTestFixture
           std::tuple<std::string, std::vector<IntItem>, bool, bool>> {};
 
 TEST_P(SkippedResultParameterizedTestFixture, ResultSkippedSuccess) {
-  CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Skipped;
+  OPENCHECKS_NAMESPACE::Status status = OPENCHECKS_NAMESPACE::Status::Skipped;
   std::string message = std::get<0>(GetParam());
   std::vector<IntItem> items = std::get<1>(GetParam());
   bool can_fix = std::get<2>(GetParam());
@@ -139,7 +139,7 @@ class WarningResultParameterizedTestFixture
           std::tuple<std::string, std::vector<IntItem>, bool, bool>> {};
 
 TEST_P(WarningResultParameterizedTestFixture, ResultWarningSuccess) {
-  CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Warning;
+  OPENCHECKS_NAMESPACE::Status status = OPENCHECKS_NAMESPACE::Status::Warning;
   std::string message = std::get<0>(GetParam());
   std::vector<IntItem> items = std::get<1>(GetParam());
   bool can_fix = std::get<2>(GetParam());
@@ -166,7 +166,7 @@ class FailedResultParameterizedTestFixture
           std::tuple<std::string, std::vector<IntItem>, bool, bool>> {};
 
 TEST_P(FailedResultParameterizedTestFixture, ResultFailedSuccess) {
-  CPPCHECKS_NAMESPACE::Status status = CPPCHECKS_NAMESPACE::Status::Failed;
+  OPENCHECKS_NAMESPACE::Status status = OPENCHECKS_NAMESPACE::Status::Failed;
   std::string message = std::get<0>(GetParam());
   std::vector<IntItem> items = std::get<1>(GetParam());
   bool can_fix = std::get<2>(GetParam());

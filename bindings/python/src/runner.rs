@@ -17,7 +17,7 @@ pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
     }
 
     let check = CheckWrapper::new(check);
-    let result = checks::run(&check);
+    let result = base_openchecks::run(&check);
 
     Ok(result.into())
 }
@@ -36,7 +36,7 @@ pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult>
         );
     }
     let mut check = CheckWrapper::new(check);
-    let result = checks::auto_fix(&mut check);
+    let result = base_openchecks::auto_fix(&mut check);
 
     Ok(result.into())
 }
@@ -69,7 +69,7 @@ pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
 
         let check = AsyncCheckWrapper::new(check);
 
-        let result: CheckResult = checks::async_run(&check).await.into();
+        let result: CheckResult = base_openchecks::async_run(&check).await.into();
 
         Ok(result)
     })
@@ -103,7 +103,7 @@ pub(crate) fn async_auto_fix(py: Python<'_>, check: PyObject) -> PyResult<&PyAny
 
         let mut check = AsyncCheckWrapper::new(check);
 
-        let result: CheckResult = checks::async_auto_fix(&mut check).await.into();
+        let result: CheckResult = base_openchecks::async_auto_fix(&mut check).await.into();
 
         Ok(result)
     })

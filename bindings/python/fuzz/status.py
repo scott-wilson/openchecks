@@ -4,32 +4,32 @@ from __future__ import annotations
 
 import atheris
 import hypothesis
-import pychecks
+import openchecks
 from hypothesis import strategies
 
 
 @hypothesis.given(
     status=strategies.sampled_from(
         [
-            pychecks.Status.Pending,
-            pychecks.Status.Skipped,
-            pychecks.Status.Passed,
-            pychecks.Status.Warning,
-            pychecks.Status.Failed,
-            pychecks.Status.SystemError,
+            openchecks.Status.Pending,
+            openchecks.Status.Skipped,
+            openchecks.Status.Passed,
+            openchecks.Status.Warning,
+            openchecks.Status.Failed,
+            openchecks.Status.SystemError,
         ]
     ),
 )
 @atheris.instrument_func
 def fuzz(
-    status: pychecks.Status,
+    status: openchecks.Status,
 ) -> None:
-    assert status.is_pending() == (status == pychecks.Status.Pending)
+    assert status.is_pending() == (status == openchecks.Status.Pending)
     assert status.has_passed() == (
-        status in [pychecks.Status.Passed, pychecks.Status.Warning]
+        status in [openchecks.Status.Passed, openchecks.Status.Warning]
     )
     assert status.has_failed() == (
-        status in [pychecks.Status.Failed, pychecks.Status.SystemError]
+        status in [openchecks.Status.Failed, openchecks.Status.SystemError]
     )
 
 

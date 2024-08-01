@@ -1,7 +1,7 @@
-#include <cppchecks/core.h>
-#include <cppchecks/item.h>
-#include <cppchecks/items.h>
 #include <gtest/gtest.h>
+#include <openchecks/core.h>
+#include <openchecks/item.h>
+#include <openchecks/items.h>
 #include <vector>
 
 #include "item_impl.h"

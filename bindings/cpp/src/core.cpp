@@ -1,11 +1,11 @@
 extern "C" {
-#include <cchecks.h>
+#include <openchecks.h>
 }
 
-#include "cppchecks/check.h"
-#include "cppchecks/core.h"
-#include "cppchecks/item.h"
-#include "cppchecks/items.h"
-#include "cppchecks/result.h"
-#include "cppchecks/runner.h"
-#include "cppchecks/status.h"
+#include "openchecks/check.h"
+#include "openchecks/core.h"
+#include "openchecks/item.h"
+#include "openchecks/items.h"
+#include "openchecks/result.h"
+#include "openchecks/runner.h"
+#include "openchecks/status.h"

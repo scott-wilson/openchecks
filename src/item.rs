@@ -9,7 +9,7 @@
 ///
 /// # Examples
 /// ```rust
-/// # use checks::Item;
+/// # use openchecks::Item;
 /// #
 /// # #[derive(Debug)]
 /// # struct SceneNode {

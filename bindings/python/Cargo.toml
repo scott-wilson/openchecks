@@ -1,17 +1,18 @@
 [package]
-name = "pychecks"
+name = "pyopenchecks"
 version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "pychecks"
+name = "openchecks"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.20.3" }
-checks = { path = "../../" }
+# base_openchecks = { git = "https://github.com/scott-wilson/openchecks.git", rev = "b57d12aec35feebdf5220ae8544a2782539ce6da", package = "openchecks" }
+base_openchecks = { path = "../../", package = "openchecks" }
 pyo3-asyncio = { version = "0.20.0", features = [
     "attributes",
     "tokio-runtime",

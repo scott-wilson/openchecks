@@ -30,7 +30,6 @@ jobs:
     defaults:
       run:
         working-directory: bindings/python
-        shell: bash
     strategy:
       matrix:
         os:
@@ -74,20 +73,6 @@ jobs:
         with:
           python-version: ${{matrix.python-version}}
           cache: 'pip'
-      - name: Cache virtualenv
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
-        with:
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version}}-${{ hashFiles('pyproject.toml') }}
-          path: .venv
-      - name: Setup virtual environment
-        run: |
-          python -m venv .venv
-
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            source .venv/Scripts/activate
-          else
-            source .venv/bin/activate
-          fi
       - name: Install dependencies
         run: python -m pip install .[test]
       - name: Lint with Ruff
@@ -99,10 +84,10 @@ jobs:
       - name: Build Rust
         uses: PyO3/maturin-action@2c5c1560848aaa364c3545136054932db5fa27b7 # v1.44.0
         with:
-          command: develop
           sccache: 'true'
           manylinux: auto
           working-directory: bindings/python
       - name: Run tests
         run: |
+          python -m pip install openchecks --find-links target/wheels
           python -m pytest --hypothesis-profile default -n=auto tests/

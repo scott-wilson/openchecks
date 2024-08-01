@@ -14,7 +14,7 @@ impl std::fmt::Display for Item {
     }
 }
 
-impl checks::Item for Item {
+impl openchecks::Item for Item {
     type Value = u32;
 
     fn value(&self) -> Self::Value {
@@ -33,9 +33,9 @@ struct Input {
 fuzz_target!(|input: Input| {
     let items = input.items.clone();
     let result =
-        checks::CheckResult::new_passed(&input.message, items, input.can_fix, input.can_skip);
+        openchecks::CheckResult::new_passed(&input.message, items, input.can_fix, input.can_skip);
 
-    assert_eq!(result.status(), &checks::Status::Passed);
+    assert_eq!(result.status(), &openchecks::Status::Passed);
     assert_eq!(result.message(), &input.message);
     assert_eq!(result.items(), &input.items);
     assert_eq!(result.can_fix(), input.can_fix);

@@ -11,19 +11,19 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include <cppchecks/core.h>
-#include <cppchecks/item.h>
-#include <cppchecks/items.h>
-#include <cppchecks/result.h>
-#include <cppchecks/status.h>
+#include <openchecks/core.h>
+#include <openchecks/item.h>
+#include <openchecks/items.h>
+#include <openchecks/result.h>
+#include <openchecks/status.h>
 
 const std::string_view PRINTABLE_CHARS =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&\'()*"
     "+,-./:;<=>?@[\\]^_`{|}~ \t\n\r";
 
-using IntItem = CPPCHECKS_NAMESPACE::Item<int>;
-using IntItems = CPPCHECKS_NAMESPACE::Items<int>;
-using IntResult = CPPCHECKS_NAMESPACE::CheckResult<int>;
+using IntItem = OPENCHECKS_NAMESPACE::Item<int>;
+using IntItems = OPENCHECKS_NAMESPACE::Items<int>;
+using IntResult = OPENCHECKS_NAMESPACE::CheckResult<int>;
 
 IntItem create_int_item(FuzzedDataProvider &provider) {
   return IntItem{

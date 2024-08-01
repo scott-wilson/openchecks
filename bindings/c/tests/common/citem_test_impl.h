@@ -1,5 +1,5 @@
-#ifndef cchecks_tests_citem
-#define cchecks_tests_citem
+#ifndef openchecks_tests_citem
+#define openchecks_tests_citem
 
 #include <setjmp.h>
 #include <stdarg.h>
@@ -8,20 +8,21 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cchecks.h"
+#include "openchecks.h"
 
-void destroy_string_ptr(CChecksString *);
+void destroy_string_ptr(OpenChecksString *);
 
 /* ----------------------------------------------------------------------------
   Int Item
 */
 typedef struct IntItem {
-  CChecksItem header;
+  OpenChecksItem header;
   char *type_hint;
   int value;
 } IntItem;
 
-CChecksItem *int_item_clone_in_place(const IntItem *item, IntItem *new_item) {
+OpenChecksItem *int_item_clone_in_place(const IntItem *item,
+                                        IntItem *new_item) {
   new_item->header.type_hint_fn = item->header.type_hint_fn;
   new_item->header.value_fn = item->header.value_fn;
   new_item->header.clone_fn = item->header.clone_fn;
@@ -42,53 +43,55 @@ CChecksItem *int_item_clone_in_place(const IntItem *item, IntItem *new_item) {
 
   new_item->value = item->value;
 
-  return (CChecksItem *)new_item;
+  return (OpenChecksItem *)new_item;
 }
 
-const char *int_item_type_hint_fn(const CChecksItem *item) {
+const char *int_item_type_hint_fn(const OpenChecksItem *item) {
   return ((IntItem *)item)->type_hint;
 }
 
-const void *int_item_value_fn(const CChecksItem *item) {
+const void *int_item_value_fn(const OpenChecksItem *item) {
   return (void *)(&((IntItem *)item)->value);
 }
 
-CChecksItem *int_item_clone_fn(const CChecksItem *item) {
+OpenChecksItem *int_item_clone_fn(const OpenChecksItem *item) {
   IntItem *old_item = (IntItem *)item;
   IntItem *new_int_item = malloc(sizeof(IntItem));
   int_item_clone_in_place(old_item, new_int_item);
 
-  return (CChecksItem *)new_int_item;
+  return (OpenChecksItem *)new_int_item;
 }
 
-void int_item_destroy_fn(CChecksItem *item) {
+void int_item_destroy_fn(OpenChecksItem *item) {
   if (((IntItem *)item)->type_hint) {
     free(((IntItem *)item)->type_hint);
   }
 }
 
-CChecksString int_item_debug_fn(const CChecksItem *item) {
+OpenChecksString int_item_debug_fn(const OpenChecksItem *item) {
   return item->display_fn(item);
 }
 
-CChecksString int_item_display_fn(const CChecksItem *item) {
+OpenChecksString int_item_display_fn(const OpenChecksItem *item) {
   int value = ((IntItem *)item)->value;
   size_t length = snprintf(NULL, 0, "%d", value);
   char *display_string = (char *)malloc(length + 1);
   sprintf(display_string, "%d", value);
 
-  CChecksString result;
+  OpenChecksString result;
   result.string = display_string;
   result.destroy_fn = destroy_string_ptr;
 
   return result;
 }
 
-bool int_item_lt_fn(const CChecksItem *item, const CChecksItem *other_item) {
+bool int_item_lt_fn(const OpenChecksItem *item,
+                    const OpenChecksItem *other_item) {
   return ((IntItem *)item)->value < ((IntItem *)other_item)->value;
 }
 
-bool int_item_eq_fn(const CChecksItem *item, const CChecksItem *other_item) {
+bool int_item_eq_fn(const OpenChecksItem *item,
+                    const OpenChecksItem *other_item) {
   return ((IntItem *)item)->value == ((IntItem *)other_item)->value;
 }
 
@@ -123,20 +126,20 @@ IntItem create_int_item(int value, const char *type_hint) {
   String Item
 */
 typedef struct StringItem {
-  CChecksItem header;
+  OpenChecksItem header;
   char *type_hint;
   char *value;
 } StringItem;
 
-const char *string_item_type_hint_fn(const CChecksItem *item) {
+const char *string_item_type_hint_fn(const OpenChecksItem *item) {
   return ((StringItem *)item)->type_hint;
 }
 
-const void *string_item_value_fn(const CChecksItem *item) {
+const void *string_item_value_fn(const OpenChecksItem *item) {
   return (void *)(((StringItem *)item)->value);
 }
 
-CChecksItem *string_item_clone_fn(const CChecksItem *item) {
+OpenChecksItem *string_item_clone_fn(const OpenChecksItem *item) {
   StringItem *old_item = (StringItem *)item;
   StringItem *new_str_item = malloc(sizeof(StringItem));
   new_str_item->header.type_hint_fn = item->type_hint_fn;
@@ -165,10 +168,10 @@ CChecksItem *string_item_clone_fn(const CChecksItem *item) {
     new_str_item->value = new_value;
   }
 
-  return (CChecksItem *)new_str_item;
+  return (OpenChecksItem *)new_str_item;
 }
 
-void string_item_destroy_fn(CChecksItem *item) {
+void string_item_destroy_fn(OpenChecksItem *item) {
   if (((StringItem *)item)->type_hint) {
     free(((StringItem *)item)->type_hint);
   }
@@ -177,17 +180,17 @@ void string_item_destroy_fn(CChecksItem *item) {
   }
 }
 
-CChecksString string_item_debug_fn(const CChecksItem *item) {
+OpenChecksString string_item_debug_fn(const OpenChecksItem *item) {
   return item->display_fn(item);
 }
 
-CChecksString string_item_display_fn(const CChecksItem *item) {
+OpenChecksString string_item_display_fn(const OpenChecksItem *item) {
   char *value = ((StringItem *)item)->value;
   size_t display_str_len = strlen(value);
   char *display_str = (char *)malloc(display_str_len + 1);
   strcpy(display_str, value);
 
-  CChecksString result;
+  OpenChecksString result;
   result.string = display_str;
   result.destroy_fn = destroy_string_ptr;
 
@@ -202,7 +205,8 @@ size_t size_min(size_t a, size_t b) {
   }
 }
 
-bool string_item_lt_fn(const CChecksItem *item, const CChecksItem *other_item) {
+bool string_item_lt_fn(const OpenChecksItem *item,
+                       const OpenChecksItem *other_item) {
   const char *a_value = ((StringItem *)item)->value;
   const char *b_value = ((StringItem *)other_item)->value;
 
@@ -217,7 +221,8 @@ bool string_item_lt_fn(const CChecksItem *item, const CChecksItem *other_item) {
   return false;
 }
 
-bool string_item_eq_fn(const CChecksItem *item, const CChecksItem *other_item) {
+bool string_item_eq_fn(const OpenChecksItem *item,
+                       const OpenChecksItem *other_item) {
   const char *a_value = ((StringItem *)item)->value;
   const char *b_value = ((StringItem *)other_item)->value;
 
@@ -271,16 +276,16 @@ StringItem create_string_item(const char *value, const char *type_hint) {
 }
 
 void destroy_string_item(StringItem *item) {
-  cchecks_item_destroy((CChecksItem *)item);
+  openchecks_item_destroy((OpenChecksItem *)item);
 }
 
 /* ----------------------------------------------------------------------------
   Utils
 */
-void destroy_string_ptr(CChecksString *string) {
+void destroy_string_ptr(OpenChecksString *string) {
   if (string->string != NULL) {
     free((void *)string->string);
   }
 }
 
-#endif // cchecks_tests_citem
+#endif // openchecks_tests_citem

@@ -1,4 +1,4 @@
-use checks::{CheckResult, Item, Status};
+use openchecks::{CheckResult, Item, Status};
 
 #[derive(Debug, PartialEq, PartialOrd)]
 struct TestItem {

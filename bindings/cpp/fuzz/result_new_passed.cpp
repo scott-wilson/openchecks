@@ -9,7 +9,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include <cppchecks/result.h>
+#include <openchecks/result.h>
 
 #include "common.h"
 
@@ -22,7 +22,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
   IntResult result = IntResult::passed(message, int_items, can_fix, can_skip);
 
-  assert(result.status() == CPPCHECKS_NAMESPACE::Status::Passed);
+  assert(result.status() == OPENCHECKS_NAMESPACE::Status::Passed);
   assert(result.message() == message);
   assert(result.can_fix() == can_fix);
   assert(result.can_skip() == can_skip);

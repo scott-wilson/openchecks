@@ -4,7 +4,7 @@ use std::{
     ptr::null_mut,
 };
 
-use crate::cchecks_items_destroy;
+use crate::openchecks_items_destroy;
 
 /// A check result contains all of the information needed to know the status of
 /// a check.
@@ -28,18 +28,18 @@ use crate::cchecks_items_destroy;
 ///   failed to go forward with, for example, publishing an asset. Sometimes a
 ///   studio might decide that the error isn't critical enough to always fail if
 ///   a supervisor approves the fail to pass through.
-/// - Error: If the status is CChecksStatusSystemError, then it may also contain
-///   the error that caused the result. Other statuses shouldn't contain an
-///   error.
+/// - Error: If the status is OpenChecksStatusSystemError, then it may also
+///   contain the error that caused the result. Other statuses shouldn't contain
+///   an error.
 /// - Check duration: A diagnostic tool that could be exposed in a user
 ///   interface to let the user know how long it took to run the check.
 /// - Fix duration: A diagnostic tool that could be exposed in a user
 ///   interface to let the user know how long it took to run the auto-fix.
 #[repr(C)]
-pub struct CChecksCheckResult {
-    pub status: crate::CChecksStatus,
+pub struct OpenChecksCheckResult {
+    pub status: crate::OpenChecksStatus,
     pub message: *mut c_char,
-    pub items: *mut crate::CChecksItems,
+    pub items: *mut crate::OpenChecksItems,
     pub can_fix: bool,
     pub can_skip: bool,
     pub error: *mut c_char,
@@ -47,13 +47,18 @@ pub struct CChecksCheckResult {
     pub fix_duration: f64,
 }
 
-impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::items::CChecksItemsWrapper>>
-    for CChecksCheckResult
+impl
+    From<
+        base_openchecks::CheckResult<
+            crate::item::ChecksItemWrapper,
+            crate::items::OpenChecksItemsWrapper,
+        >,
+    > for OpenChecksCheckResult
 {
     fn from(
-        value: checks::CheckResult<
+        value: base_openchecks::CheckResult<
             crate::item::ChecksItemWrapper,
-            crate::items::CChecksItemsWrapper,
+            crate::items::OpenChecksItemsWrapper,
         >,
     ) -> Self {
         let status = (*value.status()).into();
@@ -65,7 +70,7 @@ impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::items::CChe
                 .into_raw(),
         };
         let items = match value.items() {
-            Some(items) => unsafe { crate::cchecks_items_clone(items.ptr) },
+            Some(items) => unsafe { crate::openchecks_items_clone(items.ptr) },
             None => null_mut(),
         };
         let can_fix = value.can_fix();
@@ -96,10 +101,13 @@ impl From<checks::CheckResult<crate::item::ChecksItemWrapper, crate::items::CChe
     }
 }
 
-impl From<CChecksCheckResult>
-    for checks::CheckResult<crate::item::ChecksItemWrapper, crate::items::CChecksItemsWrapper>
+impl From<OpenChecksCheckResult>
+    for base_openchecks::CheckResult<
+        crate::item::ChecksItemWrapper,
+        crate::items::OpenChecksItemsWrapper,
+    >
 {
-    fn from(value: CChecksCheckResult) -> Self {
+    fn from(value: OpenChecksCheckResult) -> Self {
         let mut value = value;
         let status = value.status.into();
         let message = unsafe {
@@ -115,7 +123,7 @@ impl From<CChecksCheckResult>
             let items = value.items;
             value.items = null_mut();
 
-            Some(crate::items::CChecksItemsWrapper { ptr: items })
+            Some(crate::items::OpenChecksItemsWrapper { ptr: items })
         };
         let can_fix = value.can_fix;
         let can_skip = value.can_skip;
@@ -126,14 +134,14 @@ impl From<CChecksCheckResult>
                 .to_str()
                 .unwrap_or("");
 
-            Some(checks::Error::new(msg))
+            Some(base_openchecks::Error::new(msg))
         };
 
-        checks::CheckResult::new(status, message, items, can_fix, can_skip, error)
+        base_openchecks::CheckResult::new(status, message, items, can_fix, can_skip, error)
     }
 }
 
-impl Drop for CChecksCheckResult {
+impl Drop for OpenChecksCheckResult {
     fn drop(&mut self) {
         if !self.message.is_null() {
             unsafe {
@@ -144,7 +152,7 @@ impl Drop for CChecksCheckResult {
         }
         if !self.items.is_null() {
             unsafe {
-                cchecks_items_destroy(self.items);
+                openchecks_items_destroy(self.items);
                 self.items = null_mut();
             }
         }
@@ -158,11 +166,11 @@ impl Drop for CChecksCheckResult {
     }
 }
 
-impl CChecksCheckResult {
+impl OpenChecksCheckResult {
     pub(crate) fn new(
-        status: crate::CChecksStatus,
+        status: crate::OpenChecksStatus,
         message: *const c_char,
-        items: *mut crate::CChecksItems,
+        items: *mut crate::OpenChecksItems,
         can_fix: bool,
         can_skip: bool,
         error: *const c_char,
@@ -200,8 +208,8 @@ impl CChecksCheckResult {
 
 /// Create a new result.
 ///
-/// It is suggested to use one of the other `cchecks_check_result_*` methods
-/// such as cchecks_check_result_passed` for convenience.
+/// It is suggested to use one of the other `openchecks_check_result_*` methods
+/// such as `openchecks_check_result_passed` for convenience.
 ///
 /// # Safety
 ///
@@ -215,15 +223,15 @@ impl CChecksCheckResult {
 /// Error can be a null pointer. It is also copied, so the caller may be able to
 /// free the memory once the method is called.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_new(
-    status: crate::CChecksStatus,
+pub unsafe extern "C" fn openchecks_check_result_new(
+    status: crate::OpenChecksStatus,
     message: *const c_char,
-    items: *mut crate::CChecksItems,
+    items: *mut crate::OpenChecksItems,
     can_fix: bool,
     can_skip: bool,
     error: *const c_char,
-) -> CChecksCheckResult {
-    CChecksCheckResult::new(status, message, items, can_fix, can_skip, error)
+) -> OpenChecksCheckResult {
+    OpenChecksCheckResult::new(status, message, items, can_fix, can_skip, error)
 }
 
 /// Create a new result that passed a check.
@@ -237,14 +245,14 @@ pub unsafe extern "C" fn cchecks_check_result_new(
 /// ownership of the pointer and be responsible for cleaning it once the result
 /// is destroyed.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_passed(
+pub unsafe extern "C" fn openchecks_check_result_passed(
     message: *const c_char,
-    items: *mut crate::CChecksItems,
+    items: *mut crate::OpenChecksItems,
     can_fix: bool,
     can_skip: bool,
-) -> CChecksCheckResult {
-    CChecksCheckResult::new(
-        crate::CChecksStatus::CChecksStatusPassed,
+) -> OpenChecksCheckResult {
+    OpenChecksCheckResult::new(
+        crate::OpenChecksStatus::OpenChecksStatusPassed,
         message,
         items,
         can_fix,
@@ -264,14 +272,14 @@ pub unsafe extern "C" fn cchecks_check_result_passed(
 /// ownership of the pointer and be responsible for cleaning it once the result
 /// is destroyed.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_skipped(
+pub unsafe extern "C" fn openchecks_check_result_skipped(
     message: *const c_char,
-    items: *mut crate::CChecksItems,
+    items: *mut crate::OpenChecksItems,
     can_fix: bool,
     can_skip: bool,
-) -> CChecksCheckResult {
-    CChecksCheckResult::new(
-        crate::CChecksStatus::CChecksStatusSkipped,
+) -> OpenChecksCheckResult {
+    OpenChecksCheckResult::new(
+        crate::OpenChecksStatus::OpenChecksStatusSkipped,
         message,
         items,
         can_fix,
@@ -295,14 +303,14 @@ pub unsafe extern "C" fn cchecks_check_result_skipped(
 /// ownership of the pointer and be responsible for cleaning it once the result
 /// is destroyed.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_warning(
+pub unsafe extern "C" fn openchecks_check_result_warning(
     message: *const c_char,
-    items: *mut crate::CChecksItems,
+    items: *mut crate::OpenChecksItems,
     can_fix: bool,
     can_skip: bool,
-) -> CChecksCheckResult {
-    CChecksCheckResult::new(
-        crate::CChecksStatus::CChecksStatusWarning,
+) -> OpenChecksCheckResult {
+    OpenChecksCheckResult::new(
+        crate::OpenChecksStatus::OpenChecksStatusWarning,
         message,
         items,
         can_fix,
@@ -326,14 +334,14 @@ pub unsafe extern "C" fn cchecks_check_result_warning(
 /// ownership of the pointer and be responsible for cleaning it once the result
 /// is destroyed.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_failed(
+pub unsafe extern "C" fn openchecks_check_result_failed(
     message: *const c_char,
-    items: *mut crate::CChecksItems,
+    items: *mut crate::OpenChecksItems,
     can_fix: bool,
     can_skip: bool,
-) -> CChecksCheckResult {
-    CChecksCheckResult::new(
-        crate::CChecksStatus::CChecksStatusFailed,
+) -> OpenChecksCheckResult {
+    OpenChecksCheckResult::new(
+        crate::OpenChecksStatus::OpenChecksStatusFailed,
         message,
         items,
         can_fix,
@@ -348,7 +356,7 @@ pub unsafe extern "C" fn cchecks_check_result_failed(
 ///
 /// The result pointer must be not null, and must not be already destroyed.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_destroy(result: *mut CChecksCheckResult) {
+pub unsafe extern "C" fn openchecks_check_result_destroy(result: *mut OpenChecksCheckResult) {
     unsafe { result.drop_in_place() }
 }
 
@@ -358,9 +366,9 @@ pub unsafe extern "C" fn cchecks_check_result_destroy(result: *mut CChecksCheckR
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_status(
-    result: *const CChecksCheckResult,
-) -> crate::CChecksStatus {
+pub unsafe extern "C" fn openchecks_check_result_status(
+    result: *const OpenChecksCheckResult,
+) -> crate::OpenChecksStatus {
     (*result).status
 }
 
@@ -373,10 +381,10 @@ pub unsafe extern "C" fn cchecks_check_result_status(
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_message(
-    result: *const CChecksCheckResult,
-) -> crate::CChecksStringView {
-    crate::CChecksStringView::from_ptr((*result).message)
+pub unsafe extern "C" fn openchecks_check_result_message(
+    result: *const OpenChecksCheckResult,
+) -> crate::OpenChecksStringView {
+    crate::OpenChecksStringView::from_ptr((*result).message)
 }
 
 /// The items that caused the result.
@@ -385,24 +393,26 @@ pub unsafe extern "C" fn cchecks_check_result_message(
 ///
 /// A null result pointer represents that there are no items.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_items(
-    result: &CChecksCheckResult,
-) -> *const crate::CChecksItems {
+pub unsafe extern "C" fn openchecks_check_result_items(
+    result: &OpenChecksCheckResult,
+) -> *const crate::OpenChecksItems {
     result.items
 }
 
 /// Whether the result can be fixed or not.
 ///
-/// If the status is `CChecksStatusSystemError`, then the check can **never** be
-/// fixed without fixing the issue with the validation system.
+/// If the status is `OpenChecksStatusSystemError`, then the check can **never**
+/// be fixed without fixing the issue with the validation system.
 ///
 /// # Safety
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_can_fix(result: *const CChecksCheckResult) -> bool {
+pub unsafe extern "C" fn openchecks_check_result_can_fix(
+    result: *const OpenChecksCheckResult,
+) -> bool {
     match (*result).status {
-        crate::CChecksStatus::CChecksStatusSystemError => false,
+        crate::OpenChecksStatus::OpenChecksStatusSystemError => false,
         _ => (*result).can_fix,
     }
 }
@@ -414,23 +424,25 @@ pub unsafe extern "C" fn cchecks_check_result_can_fix(result: *const CChecksChec
 /// Also, it is recommended that check results are not skipped unless a
 /// supervisor overrides the skip.
 ///
-/// If the status is `CChecksStatusSystemError`, then the check can **never** be
-/// skipped without fixing the issue with the validation system.
+/// If the status is `OpenChecksStatusSystemError`, then the check can **never**
+/// be skipped without fixing the issue with the validation system.
 ///
 /// # Safety
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_can_skip(result: *const CChecksCheckResult) -> bool {
+pub unsafe extern "C" fn openchecks_check_result_can_skip(
+    result: *const OpenChecksCheckResult,
+) -> bool {
     match (*result).status {
-        crate::CChecksStatus::CChecksStatusSystemError => false,
+        crate::OpenChecksStatus::OpenChecksStatusSystemError => false,
         _ => (*result).can_skip,
     }
 }
 
 /// The error that caused the result.
 ///
-/// This only really applies to the `CChecksStatusSystemError` status. Other
+/// This only really applies to the `OpenChecksStatusSystemError` status. Other
 /// results should not include the error object.
 ///
 /// # Safety
@@ -438,8 +450,8 @@ pub unsafe extern "C" fn cchecks_check_result_can_skip(result: *const CChecksChe
 /// The result pointer is null if there are no errors. Otherwise it will point
 /// to a valid message.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_error(
-    result: *const CChecksCheckResult,
+pub unsafe extern "C" fn openchecks_check_result_error(
+    result: *const OpenChecksCheckResult,
 ) -> *const std::ffi::c_char {
     (*result).error
 }
@@ -454,8 +466,8 @@ pub unsafe extern "C" fn cchecks_check_result_error(
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_check_duration(
-    result: *const CChecksCheckResult,
+pub unsafe extern "C" fn openchecks_check_result_check_duration(
+    result: *const OpenChecksCheckResult,
 ) -> f64 {
     (*result).check_duration
 }
@@ -470,8 +482,8 @@ pub unsafe extern "C" fn cchecks_check_result_check_duration(
 ///
 /// The result pointer must not be null.
 #[no_mangle]
-pub unsafe extern "C" fn cchecks_check_result_fix_duration(
-    result: *const CChecksCheckResult,
+pub unsafe extern "C" fn openchecks_check_result_fix_duration(
+    result: *const OpenChecksCheckResult,
 ) -> f64 {
     (*result).fix_duration
 }

@@ -1,5 +1,5 @@
-cchecks package
-===============
+openchecks package
+==================
 
 String Wrapper
 --------------
@@ -7,15 +7,15 @@ String Wrapper
 Owned String Wrapper
 ~~~~~~~~~~~~~~~~~~~~
 
-.. doxygenstruct:: CChecksString
+.. doxygenstruct:: OpenChecksString
     :members:
 
-.. doxygenfunction:: cchecks_string_destroy
+.. doxygenfunction:: openchecks_string_destroy
 
 Borrowed String Wrapper
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. doxygenstruct:: CChecksStringView
+.. doxygenstruct:: OpenChecksStringView
     :members:
 
 Check
@@ -24,45 +24,45 @@ Check
 Check Hint
 ~~~~~~~~~~
 
-.. doxygentypedef:: CChecksCheckHint
-.. doxygendefine:: CCHECKS_CHECK_HINT_AUTO_FIX
-.. doxygendefine:: CCHECKS_CHECK_HINT_NONE
+.. doxygentypedef:: OpenChecksCheckHint
+.. doxygendefine:: OPENCHECKS_CHECK_HINT_AUTO_FIX
+.. doxygendefine:: OPENCHECKS_CHECK_HINT_NONE
 
 Base Check
 ~~~~~~~~~~
 
-.. doxygenstruct:: CChecksBaseCheck
+.. doxygenstruct:: OpenChecksBaseCheck
     :members:
 
-.. doxygenfunction:: cchecks_check_title
-.. doxygenfunction:: cchecks_check_description
-.. doxygenfunction:: cchecks_check_hint
+.. doxygenfunction:: openchecks_check_title
+.. doxygenfunction:: openchecks_check_description
+.. doxygenfunction:: openchecks_check_hint
 
 Check Auto Fix Result
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. doxygenenum:: CChecksAutoFixStatus
+.. doxygenenum:: OpenChecksAutoFixStatus
 
-.. doxygenstruct:: CChecksAutoFixResult
+.. doxygenstruct:: OpenChecksAutoFixResult
     :members:
 
-.. doxygenfunction:: cchecks_check_auto_fix_ok
-.. doxygenfunction:: cchecks_check_auto_fix_error
+.. doxygenfunction:: openchecks_check_auto_fix_ok
+.. doxygenfunction:: openchecks_check_auto_fix_error
 
 Item
 ----
 
-.. doxygenstruct:: CChecksItem
+.. doxygenstruct:: OpenChecksItem
     :members:
 
-.. doxygenfunction:: cchecks_item_type_hint
-.. doxygenfunction:: cchecks_item_value
-.. doxygenfunction:: cchecks_item_clone
-.. doxygenfunction:: cchecks_item_destroy
-.. doxygenfunction:: cchecks_item_debug
-.. doxygenfunction:: cchecks_item_display
-.. doxygenfunction:: cchecks_item_lt
-.. doxygenfunction:: cchecks_item_eq
+.. doxygenfunction:: openchecks_item_type_hint
+.. doxygenfunction:: openchecks_item_value
+.. doxygenfunction:: openchecks_item_clone
+.. doxygenfunction:: openchecks_item_destroy
+.. doxygenfunction:: openchecks_item_debug
+.. doxygenfunction:: openchecks_item_display
+.. doxygenfunction:: openchecks_item_lt
+.. doxygenfunction:: openchecks_item_eq
 
 Items
 -----
@@ -70,53 +70,53 @@ Items
 Items Container
 ~~~~~~~~~~~~~~~
 
-.. doxygenstruct:: CChecksItems
+.. doxygenstruct:: OpenChecksItems
     :members:
 
-.. doxygenfunction:: cchecks_items_new
+.. doxygenfunction:: openchecks_items_new
 
 Items Iterator
 ~~~~~~~~~~~~~~
 
-.. doxygenstruct:: CChecksItemsIterator
+.. doxygenstruct:: OpenChecksItemsIterator
     :members:
 
-.. doxygenfunction:: cchecks_items_iterator_new
-.. doxygenfunction:: cchecks_item_iterator_next
-.. doxygenfunction:: cchecks_item_iterator_item
-.. doxygenfunction:: cchecks_item_iterator_is_done
+.. doxygenfunction:: openchecks_items_iterator_new
+.. doxygenfunction:: openchecks_item_iterator_next
+.. doxygenfunction:: openchecks_item_iterator_item
+.. doxygenfunction:: openchecks_item_iterator_is_done
 
 Result
 ------
 
-.. doxygenstruct:: CChecksCheckResult
+.. doxygenstruct:: OpenChecksCheckResult
     :members:
 
-.. doxygenfunction:: cchecks_check_result_new
-.. doxygenfunction:: cchecks_check_result_passed
-.. doxygenfunction:: cchecks_check_result_skipped
-.. doxygenfunction:: cchecks_check_result_warning
-.. doxygenfunction:: cchecks_check_result_failed
-.. doxygenfunction:: cchecks_check_result_status
-.. doxygenfunction:: cchecks_check_result_message
-.. doxygenfunction:: cchecks_check_result_items
-.. doxygenfunction:: cchecks_check_result_can_fix
-.. doxygenfunction:: cchecks_check_result_can_skip
-.. doxygenfunction:: cchecks_check_result_error
-.. doxygenfunction:: cchecks_check_result_check_duration
-.. doxygenfunction:: cchecks_check_result_fix_duration
+.. doxygenfunction:: openchecks_check_result_new
+.. doxygenfunction:: openchecks_check_result_passed
+.. doxygenfunction:: openchecks_check_result_skipped
+.. doxygenfunction:: openchecks_check_result_warning
+.. doxygenfunction:: openchecks_check_result_failed
+.. doxygenfunction:: openchecks_check_result_status
+.. doxygenfunction:: openchecks_check_result_message
+.. doxygenfunction:: openchecks_check_result_items
+.. doxygenfunction:: openchecks_check_result_can_fix
+.. doxygenfunction:: openchecks_check_result_can_skip
+.. doxygenfunction:: openchecks_check_result_error
+.. doxygenfunction:: openchecks_check_result_check_duration
+.. doxygenfunction:: openchecks_check_result_fix_duration
 
 Runners
 -------
 
-.. doxygenfunction:: cchecks_run
-.. doxygenfunction:: cchecks_auto_fix
+.. doxygenfunction:: openchecks_run
+.. doxygenfunction:: openchecks_auto_fix
 
 Status
 ------
 
-.. doxygenenum:: CChecksStatus
+.. doxygenenum:: OpenChecksStatus
 
-.. doxygenfunction:: cchecks_status_is_pending
-.. doxygenfunction:: cchecks_status_has_passed
-.. doxygenfunction:: cchecks_status_has_failed
+.. doxygenfunction:: openchecks_status_is_pending
+.. doxygenfunction:: openchecks_status_has_passed
+.. doxygenfunction:: openchecks_status_has_failed

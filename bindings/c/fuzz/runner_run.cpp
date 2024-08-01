@@ -10,18 +10,18 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 extern "C" {
-#include <cchecks.h>
+#include <openchecks.h>
 }
 
 #include "common.h"
 
 typedef struct Check {
-  CChecksBaseCheck header;
+  OpenChecksBaseCheck header;
   std::string title;
   std::string description;
-  CChecksCheckHint hint;
-  CChecksStatus status;
-  CChecksStatus fix_status;
+  OpenChecksCheckHint hint;
+  OpenChecksStatus status;
+  OpenChecksStatus fix_status;
   std::string message;
   bool has_items;
   IntItems *items;
@@ -31,28 +31,28 @@ typedef struct Check {
   std::string error;
 } Check;
 
-const char *check_title_fn(const CChecksBaseCheck *check) {
+const char *check_title_fn(const OpenChecksBaseCheck *check) {
   return ((Check *)check)->title.c_str();
 }
 
-const char *check_description_fn(const CChecksBaseCheck *check) {
+const char *check_description_fn(const OpenChecksBaseCheck *check) {
   return ((Check *)check)->description.c_str();
 }
 
-CChecksCheckHint check_hint_fn(const CChecksBaseCheck *check) {
+OpenChecksCheckHint check_hint_fn(const OpenChecksBaseCheck *check) {
   return ((Check *)check)->hint;
 }
 
-CChecksCheckResult check_run_fn(const CChecksBaseCheck *check) {
-  CChecksStatus status = ((Check *)check)->status;
+OpenChecksCheckResult check_run_fn(const OpenChecksBaseCheck *check) {
+  OpenChecksStatus status = ((Check *)check)->status;
   const char *message = ((Check *)check)->message.c_str();
-  CChecksItems *items;
+  OpenChecksItems *items;
   bool can_fix = ((Check *)check)->can_fix;
   bool can_skip = ((Check *)check)->can_skip;
   const char *error;
 
   if (((Check *)check)->has_items) {
-    items = (CChecksItems *)((Check *)check)->items;
+    items = (OpenChecksItems *)((Check *)check)->items;
   } else {
     items = nullptr;
   }
@@ -63,24 +63,24 @@ CChecksCheckResult check_run_fn(const CChecksBaseCheck *check) {
     error = nullptr;
   }
 
-  return cchecks_check_result_new(status, message, items, can_fix, can_skip,
-                                  error);
+  return openchecks_check_result_new(status, message, items, can_fix, can_skip,
+                                     error);
 }
 
-CChecksAutoFixResult check_auto_fix_fn(CChecksBaseCheck *check) {
+OpenChecksAutoFixResult check_auto_fix_fn(OpenChecksBaseCheck *check) {
   if (((Check *)check)->has_error) {
-    return cchecks_check_auto_fix_error(((Check *)check)->error.c_str());
+    return openchecks_check_auto_fix_error(((Check *)check)->error.c_str());
   } else {
     ((Check *)check)->status = ((Check *)check)->fix_status;
-    return cchecks_check_auto_fix_ok();
+    return openchecks_check_auto_fix_ok();
   }
 }
 
-CChecksCheckHint get_hint(FuzzedDataProvider &provider) {
-  CChecksCheckHint hint = CCHECKS_CHECK_HINT_NONE;
+OpenChecksCheckHint get_hint(FuzzedDataProvider &provider) {
+  OpenChecksCheckHint hint = OPENCHECKS_CHECK_HINT_NONE;
 
   if (provider.ConsumeBool()) {
-    hint |= CCHECKS_CHECK_HINT_AUTO_FIX;
+    hint |= OPENCHECKS_CHECK_HINT_AUTO_FIX;
   }
 
   return hint;
@@ -97,10 +97,10 @@ Check create_check(FuzzedDataProvider &provider) {
   check.title = get_message(provider);
   check.description = get_message(provider);
   check.hint = get_hint(provider);
-  check.status = (CChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
-      (uint8_t)CChecksStatusPending, (uint8_t)CChecksStatusSystemError);
-  check.fix_status = (CChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
-      (uint8_t)CChecksStatusPending, (uint8_t)CChecksStatusSystemError);
+  check.status = (OpenChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
+      (uint8_t)OpenChecksStatusPending, (uint8_t)OpenChecksStatusSystemError);
+  check.fix_status = (OpenChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
+      (uint8_t)OpenChecksStatusPending, (uint8_t)OpenChecksStatusSystemError);
   check.message = get_message(provider);
   check.has_items = provider.ConsumeBool();
   check.can_fix = provider.ConsumeBool();
@@ -125,23 +125,23 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   Check check = create_check(provider);
 
   assert(std::string_view(
-             cchecks_check_title(((CChecksBaseCheck *)&check)).string) ==
+             openchecks_check_title(((OpenChecksBaseCheck *)&check)).string) ==
          check.title);
   assert(std::string_view(
-             cchecks_check_description(((CChecksBaseCheck *)&check)).string) ==
-         check.description);
-  assert(cchecks_check_hint((CChecksBaseCheck *)&check) == check.hint);
+             openchecks_check_description(((OpenChecksBaseCheck *)&check))
+                 .string) == check.description);
+  assert(openchecks_check_hint((OpenChecksBaseCheck *)&check) == check.hint);
 
-  CChecksCheckResult result = cchecks_run((CChecksBaseCheck *)&check);
+  OpenChecksCheckResult result = openchecks_run((OpenChecksBaseCheck *)&check);
 
-  CChecksStatus result_status = cchecks_check_result_status(&result);
+  OpenChecksStatus result_status = openchecks_check_result_status(&result);
   std::string_view result_message =
-      std::string_view(cchecks_check_result_message(&result).string);
-  const CChecksItems *result_items = cchecks_check_result_items(&result);
-  const char *result_error = cchecks_check_result_error(&result);
+      std::string_view(openchecks_check_result_message(&result).string);
+  const OpenChecksItems *result_items = openchecks_check_result_items(&result);
+  const char *result_error = openchecks_check_result_error(&result);
 
   assert(result_message == check.message);
-  assert(cchecks_items_eq(result_items, ((CChecksItems *)check.items)));
+  assert(openchecks_items_eq(result_items, ((OpenChecksItems *)check.items)));
 
   if (check.has_error) {
     assert(result_error != nullptr);
@@ -150,36 +150,38 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     assert(result_error == nullptr);
   }
 
-  if (result_status == CChecksStatusSystemError) {
-    assert(cchecks_check_result_can_fix(&result) == false);
-    assert(cchecks_check_result_can_skip(&result) == false);
+  if (result_status == OpenChecksStatusSystemError) {
+    assert(openchecks_check_result_can_fix(&result) == false);
+    assert(openchecks_check_result_can_skip(&result) == false);
   } else {
-    assert(cchecks_check_result_can_fix(&result) == check.can_fix);
-    assert(cchecks_check_result_can_skip(&result) == check.can_skip);
+    assert(openchecks_check_result_can_fix(&result) == check.can_fix);
+    assert(openchecks_check_result_can_skip(&result) == check.can_skip);
   }
 
-  if (cchecks_status_has_failed(&result_status) &&
-      cchecks_check_result_can_fix(&result)) {
-    CChecksCheckResult fix_result =
-        cchecks_auto_fix((CChecksBaseCheck *)&check);
+  if (openchecks_status_has_failed(&result_status) &&
+      openchecks_check_result_can_fix(&result)) {
+    OpenChecksCheckResult fix_result =
+        openchecks_auto_fix((OpenChecksBaseCheck *)&check);
 
-    CChecksStatus fix_result_status = cchecks_check_result_status(&fix_result);
+    OpenChecksStatus fix_result_status =
+        openchecks_check_result_status(&fix_result);
     std::string_view fix_result_message =
-        std::string_view(cchecks_check_result_message(&fix_result).string);
-    const CChecksItems *fix_result_items =
-        cchecks_check_result_items(&fix_result);
-    const char *fix_result_error = cchecks_check_result_error(&fix_result);
+        std::string_view(openchecks_check_result_message(&fix_result).string);
+    const OpenChecksItems *fix_result_items =
+        openchecks_check_result_items(&fix_result);
+    const char *fix_result_error = openchecks_check_result_error(&fix_result);
 
-    CChecksCheckHint fix_hint = cchecks_check_hint((CChecksBaseCheck *)&check);
+    OpenChecksCheckHint fix_hint =
+        openchecks_check_hint((OpenChecksBaseCheck *)&check);
 
-    if ((fix_hint & CCHECKS_CHECK_HINT_AUTO_FIX) !=
-        CCHECKS_CHECK_HINT_AUTO_FIX) {
-      assert(fix_result_status == CChecksStatusSystemError);
+    if ((fix_hint & OPENCHECKS_CHECK_HINT_AUTO_FIX) !=
+        OPENCHECKS_CHECK_HINT_AUTO_FIX) {
+      assert(fix_result_status == OpenChecksStatusSystemError);
       assert(fix_result_message == "Check does not implement auto fix.");
       assert(fix_result_items == nullptr);
       assert(fix_result_error == nullptr);
     } else if (fix_result_error != nullptr) {
-      assert(fix_result_status == CChecksStatusSystemError);
+      assert(fix_result_status == OpenChecksStatusSystemError);
       assert(fix_result_message == "Error in auto fix.");
       assert(fix_result_items == nullptr);
       assert(std::string_view(fix_result_error) == check.error);
@@ -192,27 +194,27 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
       } else {
         assert(fix_result_items != nullptr);
 
-        cchecks_items_eq(fix_result_items, ((CChecksItems *)check.items));
+        openchecks_items_eq(fix_result_items, ((OpenChecksItems *)check.items));
       }
 
       assert(fix_result_error == nullptr);
     }
 
-    if (fix_result_status == CChecksStatusSystemError) {
-      assert(cchecks_check_result_can_fix(&fix_result) == false);
-      assert(cchecks_check_result_can_skip(&fix_result) == false);
+    if (fix_result_status == OpenChecksStatusSystemError) {
+      assert(openchecks_check_result_can_fix(&fix_result) == false);
+      assert(openchecks_check_result_can_skip(&fix_result) == false);
     } else {
-      assert(cchecks_check_result_can_fix(&fix_result) == check.can_fix);
-      assert(cchecks_check_result_can_skip(&fix_result) == check.can_skip);
+      assert(openchecks_check_result_can_fix(&fix_result) == check.can_fix);
+      assert(openchecks_check_result_can_skip(&fix_result) == check.can_skip);
     }
 
-    cchecks_check_result_destroy(&fix_result);
+    openchecks_check_result_destroy(&fix_result);
   }
 
-  cchecks_check_result_destroy(&result);
+  openchecks_check_result_destroy(&result);
 
-  if ((CChecksItems *)check.items != nullptr) {
-    cchecks_items_destroy((CChecksItems *)check.items);
+  if ((OpenChecksItems *)check.items != nullptr) {
+    openchecks_items_destroy((OpenChecksItems *)check.items);
   }
   return 0;
 }

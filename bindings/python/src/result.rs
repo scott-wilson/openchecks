@@ -47,11 +47,11 @@ use pyo3::prelude::*;
 #[pyclass]
 #[derive(Debug)]
 pub(crate) struct CheckResult {
-    inner: checks::CheckResult<ItemWrapper, Vec<ItemWrapper>>,
+    inner: base_openchecks::CheckResult<ItemWrapper, Vec<ItemWrapper>>,
 }
 
-impl From<checks::CheckResult<ItemWrapper, Vec<ItemWrapper>>> for CheckResult {
-    fn from(result: checks::CheckResult<ItemWrapper, Vec<ItemWrapper>>) -> Self {
+impl From<base_openchecks::CheckResult<ItemWrapper, Vec<ItemWrapper>>> for CheckResult {
+    fn from(result: base_openchecks::CheckResult<ItemWrapper, Vec<ItemWrapper>>) -> Self {
         Self { inner: result }
     }
 }
@@ -75,10 +75,16 @@ impl CheckResult {
                 .map(|item| ItemWrapper::new(item.into_py(py)))
                 .collect()
         });
-        let error = error.map(|err| checks::Error::new(&err.to_string()));
+        let error = error.map(|err| base_openchecks::Error::new(&err.to_string()));
 
-        let inner =
-            checks::CheckResult::new(status.into(), message, items, can_fix, can_skip, error);
+        let inner = base_openchecks::CheckResult::new(
+            status.into(),
+            message,
+            items,
+            can_fix,
+            can_skip,
+            error,
+        );
         Ok(Self { inner })
     }
 
@@ -109,7 +115,7 @@ impl CheckResult {
                 .map(|item| ItemWrapper::new(item.into_py(py)))
                 .collect()
         });
-        let inner = checks::CheckResult::new_passed(message, items, can_fix, can_skip);
+        let inner = base_openchecks::CheckResult::new_passed(message, items, can_fix, can_skip);
 
         Self { inner }
     }
@@ -141,7 +147,7 @@ impl CheckResult {
                 .map(|item| ItemWrapper::new(item.into_py(py)))
                 .collect()
         });
-        let inner = checks::CheckResult::new_skipped(message, items, can_fix, can_skip);
+        let inner = base_openchecks::CheckResult::new_skipped(message, items, can_fix, can_skip);
 
         Self { inner }
     }
@@ -178,7 +184,7 @@ impl CheckResult {
                 .map(|item| ItemWrapper::new(item.into_py(py)))
                 .collect()
         });
-        let inner = checks::CheckResult::new_warning(message, items, can_fix, can_skip);
+        let inner = base_openchecks::CheckResult::new_warning(message, items, can_fix, can_skip);
 
         Self { inner }
     }
@@ -214,7 +220,7 @@ impl CheckResult {
                 .map(|item| ItemWrapper::new(item.into_py(py)))
                 .collect()
         });
-        let inner = checks::CheckResult::new_failed(message, items, can_fix, can_skip);
+        let inner = base_openchecks::CheckResult::new_failed(message, items, can_fix, can_skip);
 
         Self { inner }
     }

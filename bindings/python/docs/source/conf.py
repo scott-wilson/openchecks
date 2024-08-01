@@ -12,7 +12,7 @@
 
 # sys.path.append(str(pathlib.Path(__file__).parent.parent.parent))
 
-# import pychecks
+# import checks
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information

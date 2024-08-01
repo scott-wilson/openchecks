@@ -3,6 +3,6 @@
 #include <optional>
 #include <string>
 
-#include <cppchecks/result.h>
+#include <openchecks/result.h>
 
-using IntResult = CPPCHECKS_NAMESPACE::CheckResult<int>;
+using IntResult = OPENCHECKS_NAMESPACE::CheckResult<int>;

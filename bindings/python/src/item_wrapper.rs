@@ -44,7 +44,7 @@ impl std::cmp::PartialOrd for ItemWrapper {
     }
 }
 
-impl checks::Item for ItemWrapper {
+impl base_openchecks::Item for ItemWrapper {
     type Value = PyResult<PyObject>;
 
     fn value(&self) -> Self::Value {

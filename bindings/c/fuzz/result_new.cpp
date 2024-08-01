@@ -10,16 +10,17 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 extern "C" {
-#include <cchecks.h>
+#include <openchecks.h>
 }
 
 #include "common.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   FuzzedDataProvider provider(data, size);
-  CChecksStatus status =
-      (CChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
-          (uint8_t)CChecksStatusPending, (uint8_t)CChecksStatusSystemError);
+  OpenChecksStatus status =
+      (OpenChecksStatus)provider.ConsumeIntegralInRange<uint8_t>(
+          (uint8_t)OpenChecksStatusPending,
+          (uint8_t)OpenChecksStatusSystemError);
   std::string message = get_message(provider);
   const char *message_cstr = message.c_str();
   bool has_error = provider.ConsumeBool();
@@ -35,26 +36,26 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     error_ptr = nullptr;
   }
 
-  CChecksCheckResult result =
-      cchecks_check_result_new(status, message_cstr, (CChecksItems *)int_items,
-                               can_fix, can_skip, error_ptr);
+  OpenChecksCheckResult result = openchecks_check_result_new(
+      status, message_cstr, (OpenChecksItems *)int_items, can_fix, can_skip,
+      error_ptr);
 
-  CChecksStatus result_status = cchecks_check_result_status(&result);
+  OpenChecksStatus result_status = openchecks_check_result_status(&result);
   std::string_view result_message =
-      std::string_view(cchecks_check_result_message(&result).string);
-  const CChecksItems *result_items = cchecks_check_result_items(&result);
-  const char *result_error = cchecks_check_result_error(&result);
+      std::string_view(openchecks_check_result_message(&result).string);
+  const OpenChecksItems *result_items = openchecks_check_result_items(&result);
+  const char *result_error = openchecks_check_result_error(&result);
 
   assert(result_status == status);
   assert(message == result_message);
-  assert(cchecks_items_eq((CChecksItems *)int_items, result_items));
+  assert(openchecks_items_eq((OpenChecksItems *)int_items, result_items));
 
-  if (status == CChecksStatusSystemError) {
-    assert(cchecks_check_result_can_fix(&result) == false);
-    assert(cchecks_check_result_can_skip(&result) == false);
+  if (status == OpenChecksStatusSystemError) {
+    assert(openchecks_check_result_can_fix(&result) == false);
+    assert(openchecks_check_result_can_skip(&result) == false);
   } else {
-    assert(cchecks_check_result_can_fix(&result) == can_fix);
-    assert(cchecks_check_result_can_skip(&result) == can_skip);
+    assert(openchecks_check_result_can_fix(&result) == can_fix);
+    assert(openchecks_check_result_can_skip(&result) == can_skip);
   }
 
   if (has_error) {
@@ -63,6 +64,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     assert(result_error == nullptr);
   }
 
-  cchecks_check_result_destroy(&result);
+  openchecks_check_result_destroy(&result);
   return 0;
 }

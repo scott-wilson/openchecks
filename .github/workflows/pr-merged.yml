@@ -1,0 +1,201 @@
+on:
+  pull_request:
+    branches:
+    - main
+    types: [closed]
+
+name: '[autorelease] PR merged'
+
+jobs:
+  # Python
+  build-compiled-python:
+    runs-on: ${{ matrix.platform.runner }}
+    defaults:
+      run:
+        working-directory: bindings/python
+        shell: bash
+    strategy:
+      matrix:
+        platform:
+          - runner: ubuntu-latest
+            cargo-target: x86_64
+            python-target: x64
+            manylinux: auto
+            name: linux
+          - runner: ubuntu-latest
+            cargo-target: x86
+            python-target: x64
+            manylinux: auto
+            name: linux
+          - runner: ubuntu-latest
+            cargo-target: aarch64
+            python-target: x64
+            manylinux: auto
+            name: linux
+          - runner: ubuntu-latest
+            cargo-target: armv7
+            python-target: x64
+            manylinux: auto
+            name: linux
+          - runner: ubuntu-latest
+            cargo-target: s390x
+            python-target: x64
+            manylinux: auto
+            name: linux
+          - runner: ubuntu-latest
+            cargo-target: ppc64le
+            python-target: x64
+            manylinux: auto
+            name: linux
+          - runner: ubuntu-latest
+            cargo-target: x86_64
+            python-target: x64
+            manylinux: musllinux_1_2
+            name: musllinux
+          - runner: ubuntu-latest
+            cargo-target: x86
+            python-target: x64
+            manylinux: musllinux_1_2
+            name: musllinux
+          - runner: ubuntu-latest
+            cargo-target: aarch64
+            python-target: x64
+            manylinux: musllinux_1_2
+            name: musllinux
+          - runner: ubuntu-latest
+            cargo-target: armv7
+            python-target: x64
+            manylinux: musllinux_1_2
+            name: musllinux
+          - runner: windows-latest
+            cargo-target: x64
+            python-target: x64
+            manylinux: auto
+            name: windows
+          - runner: windows-latest
+            cargo-target: x86
+            python-target: x86
+            manylinux: auto
+            name: windows
+          - runner: macos-12
+            cargo-target: x86_64
+            python-target: x64
+            manylinux: auto
+            name: macos
+          - runner: macos-14
+            cargo-target: aarch64
+            python-target: arm64
+            manylinux: auto
+            name: macos
+        python-version:
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
+        exclude:
+          # Skip Python 3.7 on mac aarch64 due to no support.
+          - platform:
+              runner: macos-14
+              cargo-target: aarch64
+            python-version: "3.7"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.platform.python-target }}
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.platform.cargo-target }}
+          args: --release --out python-dist --find-interpreter
+          sccache: 'true'
+          manylinux: ${{ matrix.platform.manylinux }}
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
+          path: python-dist
+
+  build-source-python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bindings/python
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out python-dist
+      - name: Upload sdist
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-sdist
+          path: python-dist
+
+  # C: TODO
+  # C++: TODO
+
+  merge:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get release version
+      id: get-release-version
+      run: |
+        # Head branch should be named autorelease/<version>
+        if ! [[ "${{ github.event.pull_request.head.ref }}" =~ ^autorelease\/[A-Za-z0-9.+-]+$ ]]; then
+          echo "Invalid branch"
+          exit 1
+        fi
+        VERSION=$(echo "${{ github.event.pull_request.head.ref }}" | awk -F/ '{print $2}')
+        echo "VERSION=$VERSION"
+        echo "name=release-version::$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Get release notes
+      id: query-release-info
+      uses: release-flow/keep-a-changelog-action@v2
+      with:
+        command: query
+        version: latest
+
+    - name: Display release notes
+      run: |
+        echo "${{ steps.query-release-info.outputs.release-notes }}"
+
+    - name: Display release version
+      run: |
+        echo "GIT=${{ steps.get-release-version.outputs.release-version }}"
+        echo "CHANGELOG=${{ steps.query-release-info.outputs.version }}"
+
+    - uses: actions/download-artifact@v4
+
+    - name: Create Draft Release
+      id: create_release
+      uses: ncipollo/release-action@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag: 'v${{ steps.query-release-info.outputs.version }}'
+        name: 'Release ${{ steps.query-release-info.outputs.version }}'
+        draft: true
+        body: ${{ steps.query-release-info.outputs.release-notes }}
+        artifacts: |
+          dist/*.zip
+
+    - name: Display Instructions
+      run: |
+        echo "::notice title=Draft Release Prepared::A draft release has been prepared for you to approve: ${{ steps.create_release.outputs.html_url }}"

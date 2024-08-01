@@ -2,8 +2,8 @@
 
 use libfuzzer_sys::fuzz_target;
 
-fuzz_target!(|status: checks::Status| {
-    if status == checks::Status::Pending {
+fuzz_target!(|status: openchecks::Status| {
+    if status == openchecks::Status::Pending {
         assert!(status.is_pending());
     } else {
         assert!(!status.is_pending());

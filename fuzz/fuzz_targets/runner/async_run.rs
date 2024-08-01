@@ -1,8 +1,8 @@
 #![no_main]
 
-use checks::CheckMetadata;
 use libfuzzer_sys::arbitrary::Arbitrary;
 use libfuzzer_sys::fuzz_target;
+use openchecks::CheckMetadata;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Arbitrary)]
 struct Item {
@@ -15,7 +15,7 @@ impl std::fmt::Display for Item {
     }
 }
 
-impl checks::Item for Item {
+impl openchecks::Item for Item {
     type Value = u32;
 
     fn value(&self) -> Self::Value {
@@ -27,17 +27,17 @@ impl checks::Item for Item {
 struct Check {
     pub title: String,
     pub description: String,
-    pub hint: checks::CheckHint,
-    pub status: checks::Status,
-    pub fix_status: checks::Status,
+    pub hint: openchecks::CheckHint,
+    pub status: openchecks::Status,
+    pub fix_status: openchecks::Status,
     pub message: String,
     pub items: Option<Vec<Item>>,
     pub can_fix: bool,
     pub can_skip: bool,
-    pub error: Option<checks::Error>,
+    pub error: Option<openchecks::Error>,
 }
 
-impl checks::CheckMetadata for Check {
+impl openchecks::CheckMetadata for Check {
     fn title(&self) -> std::borrow::Cow<str> {
         std::borrow::Cow::Borrowed(&self.title)
     }
@@ -46,18 +46,18 @@ impl checks::CheckMetadata for Check {
         std::borrow::Cow::Borrowed(&self.description)
     }
 
-    fn hint(&self) -> checks::CheckHint {
+    fn hint(&self) -> openchecks::CheckHint {
         self.hint
     }
 }
 
 #[async_trait::async_trait]
-impl checks::AsyncCheck for Check {
+impl openchecks::AsyncCheck for Check {
     type Item = Item;
     type Items = Vec<Item>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
-        checks::CheckResult::new(
+    async fn async_check(&self) -> openchecks::CheckResult<Self::Item, Self::Items> {
+        openchecks::CheckResult::new(
             self.status,
             &self.message,
             self.items.clone(),
@@ -67,7 +67,7 @@ impl checks::AsyncCheck for Check {
         )
     }
 
-    async fn async_auto_fix(&mut self) -> Result<(), checks::Error> {
+    async fn async_auto_fix(&mut self) -> Result<(), openchecks::Error> {
         match &self.error {
             Some(error) => Err(error.clone()),
             None => {
@@ -88,14 +88,14 @@ fuzz_target!(|check: Check| {
         .build()
         .unwrap();
 
-    let result = rt.block_on(async { checks::async_run(&check).await });
+    let result = rt.block_on(async { openchecks::async_run(&check).await });
 
     assert_eq!(result.status(), &check.status);
     assert_eq!(result.message(), &check.message);
     assert_eq!(result.items(), &check.items);
     assert_eq!(result.error(), &check.error);
 
-    if result.status() == &checks::Status::SystemError {
+    if result.status() == &openchecks::Status::SystemError {
         assert!(!result.can_fix());
         assert!(!result.can_skip());
     } else {
@@ -104,15 +104,15 @@ fuzz_target!(|check: Check| {
     }
 
     if result.status().has_failed() && result.can_fix() {
-        let fix_result = rt.block_on(async { checks::async_auto_fix(&mut check).await });
+        let fix_result = rt.block_on(async { openchecks::async_auto_fix(&mut check).await });
 
-        if !check.hint().contains(checks::CheckHint::AUTO_FIX) {
-            assert_eq!(fix_result.status(), &checks::Status::SystemError);
+        if !check.hint().contains(openchecks::CheckHint::AUTO_FIX) {
+            assert_eq!(fix_result.status(), &openchecks::Status::SystemError);
             assert_eq!(fix_result.message(), "Check does not implement auto fix.");
             assert_eq!(fix_result.items(), &None);
             assert_eq!(fix_result.error(), &None);
         } else if fix_result.error().is_some() {
-            assert_eq!(fix_result.status(), &checks::Status::SystemError);
+            assert_eq!(fix_result.status(), &openchecks::Status::SystemError);
             assert_eq!(fix_result.message(), "Error in auto fix.");
             assert_eq!(fix_result.items(), &None);
             assert_eq!(fix_result.error(), &check.error);
@@ -123,7 +123,7 @@ fuzz_target!(|check: Check| {
             assert_eq!(fix_result.error(), &check.error);
         }
 
-        if fix_result.status() == &checks::Status::SystemError {
+        if fix_result.status() == &openchecks::Status::SystemError {
             assert!(!fix_result.can_fix());
             assert!(!fix_result.can_skip());
         } else {

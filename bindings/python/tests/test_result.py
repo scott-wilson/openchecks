@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import hypothesis
-import pychecks
+import openchecks
 from hypothesis import strategies
 
 if TYPE_CHECKING:
@@ -15,32 +15,32 @@ if TYPE_CHECKING:
 @hypothesis.given(
     status=strategies.sampled_from(
         [
-            pychecks.Status.Pending,
-            pychecks.Status.Skipped,
-            pychecks.Status.Passed,
-            pychecks.Status.Warning,
-            pychecks.Status.Failed,
-            pychecks.Status.SystemError,
+            openchecks.Status.Pending,
+            openchecks.Status.Skipped,
+            openchecks.Status.Passed,
+            openchecks.Status.Warning,
+            openchecks.Status.Failed,
+            openchecks.Status.SystemError,
         ]
     ),
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(pychecks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
     error=strategies.one_of(strategies.none(), strategies.builds(Exception)),
 )
 def test_check_result_success(
-    status: pychecks.Status,
+    status: openchecks.Status,
     message: str,
-    items: Optional[List[pychecks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
     error: Optional[BaseException],
 ) -> None:
-    result = pychecks.CheckResult(status, message, items, can_fix, can_skip, error)
+    result = openchecks.CheckResult(status, message, items, can_fix, can_skip, error)
 
     assert result.status() == status
     assert result.message() == message
@@ -52,12 +52,12 @@ def test_check_result_success(
 
         assert result_items == items
 
-    if status == pychecks.Status.SystemError:
+    if status == openchecks.Status.SystemError:
         assert result.can_fix() is False
     else:
         assert result.can_fix() == can_fix
 
-    if status == pychecks.Status.SystemError:
+    if status == openchecks.Status.SystemError:
         assert result.can_skip() is False
     else:
         assert result.can_skip() == can_skip
@@ -67,7 +67,7 @@ def test_check_result_success(
     if error is None:
         assert error_result is None
     else:
-        assert isinstance(error_result, pychecks.CheckError)
+        assert isinstance(error_result, openchecks.CheckError)
         assert str(error_result) == str(error)
 
 
@@ -75,19 +75,19 @@ def test_check_result_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(pychecks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_skipped_success(
     message: str,
-    items: Optional[List[pychecks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = pychecks.Status.Skipped
-    result = pychecks.CheckResult.skipped(message, items, can_fix, can_skip)
+    status = openchecks.Status.Skipped
+    result = openchecks.CheckResult.skipped(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message
@@ -108,19 +108,19 @@ def test_check_result_skipped_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(pychecks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_passed_success(
     message: str,
-    items: Optional[List[pychecks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = pychecks.Status.Passed
-    result = pychecks.CheckResult.passed(message, items, can_fix, can_skip)
+    status = openchecks.Status.Passed
+    result = openchecks.CheckResult.passed(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message
@@ -141,19 +141,19 @@ def test_check_result_passed_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(pychecks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_warning_success(
     message: str,
-    items: Optional[List[pychecks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = pychecks.Status.Warning
-    result = pychecks.CheckResult.warning(message, items, can_fix, can_skip)
+    status = openchecks.Status.Warning
+    result = openchecks.CheckResult.warning(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message
@@ -174,19 +174,19 @@ def test_check_result_warning_success(
     message=strategies.text(),
     items=strategies.one_of(
         strategies.none(),
-        strategies.lists(strategies.builds(pychecks.Item, strategies.integers())),
+        strategies.lists(strategies.builds(openchecks.Item, strategies.integers())),
     ),
     can_fix=strategies.booleans(),
     can_skip=strategies.booleans(),
 )
 def test_check_result_failed_success(
     message: str,
-    items: Optional[List[pychecks.Item[int]]],
+    items: Optional[List[openchecks.Item[int]]],
     can_fix: bool,
     can_skip: bool,
 ) -> None:
-    status = pychecks.Status.Failed
-    result = pychecks.CheckResult.failed(message, items, can_fix, can_skip)
+    status = openchecks.Status.Failed
+    result = openchecks.CheckResult.failed(message, items, can_fix, can_skip)
 
     assert result.status() == status
     assert result.message() == message

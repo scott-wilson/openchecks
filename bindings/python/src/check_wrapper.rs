@@ -1,4 +1,4 @@
-use checks::{AsyncCheck, Check, CheckMetadata};
+use base_openchecks::{AsyncCheck, Check, CheckMetadata};
 use pyo3::{intern, prelude::*};
 
 use crate::item_wrapper::ItemWrapper;
@@ -30,7 +30,7 @@ impl CheckMetadata for CheckWrapper {
         })
     }
 
-    fn hint(&self) -> checks::CheckHint {
+    fn hint(&self) -> base_openchecks::CheckHint {
         Python::with_gil(|py| {
             self.check
                 .call_method0(py, intern!(py, "hint"))
@@ -47,7 +47,7 @@ impl Check for CheckWrapper {
 
     type Items = Vec<ItemWrapper>;
 
-    fn check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    fn check(&self) -> base_openchecks::CheckResult<Self::Item, Self::Items> {
         let result = Python::with_gil(|py| {
             let result = self.check.call_method0(py, intern!(py, "check"))?;
 
@@ -73,29 +73,29 @@ impl Check for CheckWrapper {
                 .call_method0(py, intern!(py, "can_skip"))?
                 .extract::<bool>(py)?;
 
-            Ok::<checks::CheckResult<ItemWrapper, Vec<ItemWrapper>>, PyErr>(
-                checks::CheckResult::new(status, message, items, can_fix, can_skip, None),
+            Ok::<base_openchecks::CheckResult<ItemWrapper, Vec<ItemWrapper>>, PyErr>(
+                base_openchecks::CheckResult::new(status, message, items, can_fix, can_skip, None),
             )
         });
         match result {
             Ok(result) => result,
-            Err(err) => checks::CheckResult::new(
-                checks::Status::SystemError,
+            Err(err) => base_openchecks::CheckResult::new(
+                base_openchecks::Status::SystemError,
                 err.to_string(),
                 None,
                 false,
                 false,
-                Some(checks::Error::new(&err.to_string())),
+                Some(base_openchecks::Error::new(&err.to_string())),
             ),
         }
     }
 
-    fn auto_fix(&mut self) -> Result<(), checks::Error> {
+    fn auto_fix(&mut self) -> Result<(), base_openchecks::Error> {
         Python::with_gil(|py| {
             self.check.call_method0(py, intern!(py, "auto_fix"))?;
             Ok(())
         })
-        .map_err(|err: PyErr| checks::Error::new(&err.to_string()))
+        .map_err(|err: PyErr| base_openchecks::Error::new(&err.to_string()))
     }
 }
 
@@ -132,7 +132,7 @@ impl CheckMetadata for AsyncCheckWrapper {
         })
     }
 
-    fn hint(&self) -> checks::CheckHint {
+    fn hint(&self) -> base_openchecks::CheckHint {
         Python::with_gil(|py| {
             self.check
                 .call_method0(py, intern!(py, "hint"))
@@ -150,7 +150,7 @@ impl AsyncCheck for AsyncCheckWrapper {
 
     type Items = Vec<ItemWrapper>;
 
-    async fn async_check(&self) -> checks::CheckResult<Self::Item, Self::Items> {
+    async fn async_check(&self) -> base_openchecks::CheckResult<Self::Item, Self::Items> {
         let result = match Python::with_gil(|py| {
             pyo3_asyncio::tokio::into_future(
                 self.check
@@ -160,13 +160,13 @@ impl AsyncCheck for AsyncCheckWrapper {
         }) {
             Ok(result) => result.await,
             Err(err) => {
-                return checks::CheckResult::new(
-                    checks::Status::SystemError,
+                return base_openchecks::CheckResult::new(
+                    base_openchecks::Status::SystemError,
                     err.to_string(),
                     None,
                     false,
                     false,
-                    Some(checks::Error::new(&err.to_string())),
+                    Some(base_openchecks::Error::new(&err.to_string())),
                 )
             }
         };
@@ -196,24 +196,24 @@ impl AsyncCheck for AsyncCheckWrapper {
                 .call_method0(py, intern!(py, "can_skip"))?
                 .extract::<bool>(py)?;
 
-            Ok::<checks::CheckResult<ItemWrapper, Vec<ItemWrapper>>, PyErr>(
-                checks::CheckResult::new(status, message, items, can_fix, can_skip, None),
+            Ok::<base_openchecks::CheckResult<ItemWrapper, Vec<ItemWrapper>>, PyErr>(
+                base_openchecks::CheckResult::new(status, message, items, can_fix, can_skip, None),
             )
         });
         match result {
             Ok(result) => result,
-            Err(err) => checks::CheckResult::new(
-                checks::Status::SystemError,
+            Err(err) => base_openchecks::CheckResult::new(
+                base_openchecks::Status::SystemError,
                 err.to_string(),
                 None,
                 false,
                 false,
-                Some(checks::Error::new(&err.to_string())),
+                Some(base_openchecks::Error::new(&err.to_string())),
             ),
         }
     }
 
-    async fn async_auto_fix(&mut self) -> Result<(), checks::Error> {
+    async fn async_auto_fix(&mut self) -> Result<(), base_openchecks::Error> {
         Python::with_gil(|py| {
             pyo3_asyncio::tokio::into_future(
                 self.check
@@ -221,9 +221,9 @@ impl AsyncCheck for AsyncCheckWrapper {
                     .as_ref(py),
             )
         })
-        .map_err(|err: PyErr| checks::Error::new(&err.to_string()))?
+        .map_err(|err: PyErr| base_openchecks::Error::new(&err.to_string()))?
         .await
-        .map_err(|err: PyErr| checks::Error::new(&err.to_string()))?;
+        .map_err(|err: PyErr| base_openchecks::Error::new(&err.to_string()))?;
 
         Ok(())
     }
