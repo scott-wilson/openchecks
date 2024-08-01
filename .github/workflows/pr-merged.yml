@@ -135,7 +135,7 @@ jobs:
         with:
           python-version: "3"
       - name: Prepare Python sdist
-        run: 'python bindings/python/scripts/prepare_python_sdist.py'
+        run: 'python scripts/prepare_python_sdist.py'
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
