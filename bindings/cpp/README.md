@@ -100,7 +100,7 @@ a result to validate that the fix actually fixed the issue or not.
 
 ```bash
 cd /to/your/project
-cargo add --git https://github.com/scott-wilson/openchecks.git
+cargo add openchecks
 ```
 
 ### Python
@@ -108,17 +108,20 @@ cargo add --git https://github.com/scott-wilson/openchecks.git
 #### For development
 
 ```bash
-cd /path/to/checks/bindings/python
+cd /path/to/openchecks/bindings/python
 
-make build
+python -m pip install ".[build]"
+python -m maturin develop
 ```
 
 ### C
 
 ```bash
-cd /path/to/checks/bindings/c
+cd /path/to/openchecks/bindings/c
 
-make build
+maturin setup build
+cd build
+setup compile
 ```
 
 ### C++
@@ -126,9 +129,11 @@ make build
 #### For development
 
 ```bash
-cd /path/to/checks/bindings/cpp
+cd /path/to/openchecks/bindings/cpp
 
-make build
+maturin setup build
+cd build
+setup compile
 ```
 
 ## Wishlist

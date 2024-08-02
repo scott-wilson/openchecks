@@ -16,6 +16,10 @@ classifiers = [
 ]
 dynamic = ["version"]
 
+[project.urls]
+documentation = "https://openchecks.readthedocs.io/"
+repository = "https://github.com/scott-wilson/openchecks/"
+
 [project.optional-dependencies]
 build = [
     "maturin ~= 1.4; platform_system != \"Linux\"",

@@ -3,6 +3,7 @@ name = "openchecks-fuzz"
 version = "0.0.0"
 publish = false
 edition = "2021"
+repository = "https://github.com/scott-wilson/openchecks"
 
 [package.metadata]
 cargo-fuzz = true
