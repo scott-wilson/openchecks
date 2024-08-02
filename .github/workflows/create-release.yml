@@ -4,7 +4,7 @@ on:
     - main
     types: [closed]
 
-name: '[autorelease] PR merged'
+name: '[autorelease] Create release'
 
 jobs:
   # Python
@@ -14,6 +14,8 @@ jobs:
       run:
         working-directory: bindings/python
         shell: bash
+    permissions:
+      id-token: write
     strategy:
       matrix:
         platform:
@@ -103,6 +105,12 @@ jobs:
           sccache: 'true'
           manylinux: ${{ matrix.platform.manylinux }}
           working-directory: bindings/python
+      - name: Sign the dists with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v2.1.1
+        with:
+          inputs: |
+            bindings/python/wheels-*/*.whl
+            bindings/python/wheels-*/*.tar.gz
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -114,6 +122,8 @@ jobs:
     defaults:
       run:
         shell: bash
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -129,6 +139,12 @@ jobs:
           command: sdist
           args: --out python-dist-source
           working-directory: bindings/python
+      - name: Sign the dists with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v2.1.1
+        with:
+          inputs: |
+            bindings/python/wheels-*/*.whl
+            bindings/python/wheels-*/*.tar.gz
       - name: Upload sdist
         uses: actions/upload-artifact@v4
         with:
@@ -138,7 +154,7 @@ jobs:
   # C: TODO
   # C++: TODO
 
-  merge:
+  github-release:
     needs: [build-compiled-python, build-source-python]
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
@@ -176,6 +192,8 @@ jobs:
         echo "CHANGELOG=${{ steps.query-release-info.outputs.version }}"
 
     - uses: actions/download-artifact@v4
+    - name: Create Python Archive
+      run: tar -czf python-wheels.tar.gz wheels-*/*.whl wheels-*/*.tar.gz wheels-*/*.whl.sigstore wheels-*/*.tar.gz.sigstore
 
     - name: Create Draft Release
       id: create_release
@@ -188,9 +206,34 @@ jobs:
         draft: true
         body: ${{ steps.query-release-info.outputs.release-notes }}
         artifacts: |
-          wheels-*/*.whl
-          wheels-*/*.tar.gz
+          python-wheels.tar.gz
 
     - name: Display Instructions
       run: |
         echo "::notice title=Draft Release Prepared::A draft release has been prepared for you to approve: ${{ steps.create_release.outputs.html_url }}"
+
+  # pypi-release:
+  #   needs: github-release
+  #   runs-on: ubuntu-latest
+  #   if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
+  #   environment: release
+  #   permissions:
+  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #     - name: Publish to PyPI
+  #       uses: PyO3/maturin-action@v1
+  #       with:
+  #         command: upload
+  #         args: --repository pypi --non-interactive --skip-existing wheels-*/*
+
+  # cargo-release:
+  #   needs: github-release
+  #   runs-on: ubuntu-latest
+  #   if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
+  #   environment: release
+  #   steps:
+  #     - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
+  #     - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+  #     - name: Publish to Crates.io
+  #       run: cargo publish

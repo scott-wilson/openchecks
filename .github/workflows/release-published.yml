@@ -56,6 +56,3 @@ jobs:
         git tag -fa ${{ steps.get-release-version.outputs.major-ref }} -m "Update ${{ steps.get-release-version.outputs.major-ref }} tag"
         git push origin ${{ steps.get-release-version.outputs.major-ref }} --force
         echo "::notice::Updated ref ${{ steps.get-release-version.outputs.major-ref }}"
-
-    # TODO: Deploy Rust crate to crates.io
-    # TODO: Deploy Python wheel to pypi.org
