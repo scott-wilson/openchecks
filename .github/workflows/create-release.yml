@@ -213,28 +213,28 @@ jobs:
       run: |
         echo "::notice title=Draft Release Prepared::A draft release has been prepared for you to approve: ${{ steps.create_release.outputs.html_url }}"
 
-  # pypi-release:
-  #   needs: github-release
-  #   runs-on: ubuntu-latest
-  #   if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
-  #   environment: release
-  #   permissions:
-  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #     - name: Publish to PyPI
-  #       uses: PyO3/maturin-action@v1
-  #       with:
-  #         command: upload
-  #         args: --repository pypi --non-interactive --skip-existing wheels-*/*
+  python-pypi-release:
+    needs: github-release
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
+    environment: release
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Publish to PyPI
+        uses: PyO3/maturin-action@v1
+        with:
+          command: upload
+          args: --repository pypi --non-interactive --skip-existing wheels-*/*
 
-  # cargo-release:
-  #   needs: github-release
-  #   runs-on: ubuntu-latest
-  #   if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
-  #   environment: release
-  #   steps:
-  #     - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
-  #     - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
-  #     - name: Publish to Crates.io
-  #       run: cargo publish
+  rust-crates-release:
+    needs: github-release
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
+    environment: release
+    steps:
+      - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
+      - name: Publish to Crates.io
+        run: cargo publish
