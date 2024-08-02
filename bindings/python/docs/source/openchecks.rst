@@ -1,10 +1,10 @@
-checks package
-==============
+openchecks package
+==================
 
 Module contents
 ---------------
 
-.. automodule:: checks
+.. automodule:: openchecks
    :members:
    :undoc-members:
    :show-inheritance:
