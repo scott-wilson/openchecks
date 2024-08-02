@@ -110,7 +110,6 @@ jobs:
         with:
           inputs: |
             bindings/python/wheels-*/*.whl
-            bindings/python/wheels-*/*.tar.gz
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -143,7 +142,6 @@ jobs:
         uses: sigstore/gh-action-sigstore-python@v2.1.1
         with:
           inputs: |
-            bindings/python/wheels-*/*.whl
             bindings/python/wheels-*/*.tar.gz
       - name: Upload sdist
         uses: actions/upload-artifact@v4
