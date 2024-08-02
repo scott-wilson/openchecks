@@ -226,7 +226,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           command: upload
-          args: --repository pypi --non-interactive --skip-existing wheels-*/*
+          args: --non-interactive --skip-existing wheels-*/*
 
   rust-crates-release:
     needs: github-release
@@ -234,6 +234,7 @@ jobs:
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
     environment: release
     steps:
+      - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
       - name: Publish to Crates.io
