@@ -105,6 +105,9 @@ jobs:
           sccache: 'true'
           manylinux: ${{ matrix.platform.manylinux }}
           working-directory: bindings/python
+      - name: Fix permissions
+        if: ${{ matrix.platform.runner == 'ubuntu-latest' }}
+        run: sudo chown --recursive $(id -u):$(id -g) bindings/python/wheels-* && sudo chmod --recursive u+rw bindings/python/wheels-*
       - name: Sign the dists with Sigstore
         uses: sigstore/gh-action-sigstore-python@v2.1.1
         with:
