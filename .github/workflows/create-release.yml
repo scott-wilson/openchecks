@@ -10,9 +10,15 @@ permissions:
   contents: read
 
 jobs:
+  can-run:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
+    steps:
+      - run: echo 'Running create release!'
   # Python
   build-compiled-python:
     runs-on: ${{ matrix.platform.runner }}
+    needs: can-run
     defaults:
       run:
         working-directory: bindings/python
@@ -129,6 +135,7 @@ jobs:
 
   build-source-python:
     runs-on: ubuntu-latest
+    needs: can-run
     defaults:
       run:
         shell: bash
@@ -166,7 +173,6 @@ jobs:
   github-release:
     needs: [build-compiled-python, build-source-python]
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
     permissions:
       contents: write
     steps:
