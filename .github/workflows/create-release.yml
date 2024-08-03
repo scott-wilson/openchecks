@@ -6,6 +6,9 @@ on:
 
 name: '[autorelease] Create release'
 
+permissions:
+  contents: read
+
 jobs:
   # Python
   build-compiled-python:
@@ -90,15 +93,20 @@ jobs:
             manylinux: auto
             name: macos
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           submodules: recursive
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # 5.1.1
         with:
           python-version: "3"
           architecture: ${{ matrix.platform.python-target }}
       - name: Build wheels
-        uses: PyO3/maturin-action@v1
+        uses: PyO3/maturin-action@2c5c1560848aaa364c3545136054932db5fa27b7 # v1.44.0
         with:
           target: ${{ matrix.platform.cargo-target }}
           args: --release --out wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }} --find-interpreter
@@ -109,12 +117,12 @@ jobs:
         if: ${{ matrix.platform.runner == 'ubuntu-latest' }}
         run: sudo chown --recursive $(id -u):$(id -g) wheels-* && sudo chmod --recursive u+rw wheels-*
       - name: Sign the dists with Sigstore
-        uses: sigstore/gh-action-sigstore-python@v2.1.1
+        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46 # v3.0.0
         with:
           inputs: |
             bindings/python/wheels-*/*.whl
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
         with:
           name: wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
           path: bindings/python/wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
@@ -127,27 +135,27 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           submodules: recursive
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
         with:
           python-version: "3"
       - name: Prepare Python sdist
         run: 'python scripts/prepare_python_sdist.py $GITHUB_SHA'
       - name: Build sdist
-        uses: PyO3/maturin-action@v1
+        uses: PyO3/maturin-action@2c5c1560848aaa364c3545136054932db5fa27b7 # v1.44.0
         with:
           command: sdist
           args: --out wheels-source
           working-directory: bindings/python
       - name: Sign the dists with Sigstore
-        uses: sigstore/gh-action-sigstore-python@v2.1.1
+        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46 # v3.0.0
         with:
           inputs: |
             bindings/python/wheels-*/*.tar.gz
       - name: Upload sdist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b # v4.3.4
         with:
           name: wheels-sdist
           path: bindings/python/wheels-source
@@ -162,7 +170,7 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
     - name: Get release version
       id: get-release-version
@@ -178,7 +186,7 @@ jobs:
 
     - name: Get release notes
       id: query-release-info
-      uses: release-flow/keep-a-changelog-action@v2
+      uses: release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0
       with:
         command: query
         version: latest
@@ -192,26 +200,34 @@ jobs:
         echo "GIT=${{ steps.get-release-version.outputs.release-version }}"
         echo "CHANGELOG=${{ steps.query-release-info.outputs.version }}"
 
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
     - name: Create Python Archive
       run: tar -czf python-wheels.tar.gz wheels-*/*.whl wheels-*/*.tar.gz wheels-*/*.whl.sigstore wheels-*/*.tar.gz.sigstore
 
-    - name: Create Draft Release
-      id: create_release
-      uses: ncipollo/release-action@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag: 'v${{ steps.query-release-info.outputs.version }}'
-        name: 'Release ${{ steps.query-release-info.outputs.version }}'
-        draft: true
-        body: ${{ steps.query-release-info.outputs.release-notes }}
-        artifacts: |
-          python-wheels.tar.gz
-
-    - name: Display Instructions
+    - name: Create Tag
       run: |
-        echo "::notice title=Draft Release Prepared::A draft release has been prepared for you to approve: ${{ steps.create_release.outputs.html_url }}"
+        next_version=v${{ steps.query-release-info.outputs.version }}
+        git tag -a '${next_version}' -m 'Preparing release: ${next_version}'
+        git push --follow-tags
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create
+        'v${{ steps.query-release-info.outputs.version }}'
+        --repo '${{ github.repository }}'
+        --title 'Release ${{ steps.query-release-info.outputs.version }}'
+        --notes ${{ steps.query-release-info.outputs.release-notes }}
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        'v${{ steps.query-release-info.outputs.version }}' python-wheels.tar.gz
+        --repo '${{ github.repository }}'
 
   python-pypi-release:
     needs: github-release
@@ -221,9 +237,9 @@ jobs:
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
       - name: Publish to PyPI
-        uses: PyO3/maturin-action@v1
+        uses: PyO3/maturin-action@2c5c1560848aaa364c3545136054932db5fa27b7 # v1.44.0
         with:
           command: upload
           args: --non-interactive --skip-existing wheels-*/*.whl wheels-*/*.tar.gz
@@ -234,7 +250,7 @@ jobs:
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
     environment: release
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
       - name: Publish to Crates.io
