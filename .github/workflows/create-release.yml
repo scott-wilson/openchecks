@@ -180,13 +180,15 @@ jobs:
 
     - name: Get release version
       id: get-release-version
+      env:
+        PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
       run: |
         # Head branch should be named autorelease/<version>
-        if ! [[ "${{ github.event.pull_request.head.ref }}" =~ ^autorelease\/[A-Za-z0-9.+-]+$ ]]; then
+        if ! [[ "${PULL_REQUEST_HEAD_REF}" =~ ^autorelease\/[A-Za-z0-9.+-]+$ ]]; then
           echo "Invalid branch"
           exit 1
         fi
-        VERSION=$(echo "${{ github.event.pull_request.head.ref }}" | awk -F/ '{print $2}')
+        VERSION=$(echo "${PULL_REQUEST_HEAD_REF}" | awk -F/ '{print $2}')
         echo "VERSION=$VERSION"
         echo "name=release-version::$VERSION" >> $GITHUB_OUTPUT
 
