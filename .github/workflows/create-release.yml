@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+        with:
+          egress-policy: audit
       - run: echo 'Running create release!'
   # Python
   build-compiled-python:
@@ -142,6 +146,10 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           submodules: recursive
@@ -176,66 +184,71 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - name: Harden Runner
+        uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+        with:
+          egress-policy: audit
 
-    - name: Get release version
-      id: get-release-version
-      env:
-        PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
-      run: |
-        # Head branch should be named autorelease/<version>
-        if ! [[ "${PULL_REQUEST_HEAD_REF}" =~ ^autorelease\/[A-Za-z0-9.+-]+$ ]]; then
-          echo "Invalid branch"
-          exit 1
-        fi
-        VERSION=$(echo "${PULL_REQUEST_HEAD_REF}" | awk -F/ '{print $2}')
-        echo "VERSION=$VERSION"
-        echo "name=release-version::$VERSION" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-    - name: Get release notes
-      id: query-release-info
-      uses: release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0
-      with:
-        command: query
-        version: latest
+      - name: Get release version
+        id: get-release-version
+        env:
+          PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          # Head branch should be named autorelease/<version>
+          if ! [[ "${PULL_REQUEST_HEAD_REF}" =~ ^autorelease\/[A-Za-z0-9.+-]+$ ]]; then
+            echo "Invalid branch"
+            exit 1
+          fi
+          VERSION=$(echo "${PULL_REQUEST_HEAD_REF}" | awk -F/ '{print $2}')
+          echo "VERSION=$VERSION"
+          echo "name=release-version::$VERSION" >> $GITHUB_OUTPUT
 
-    - name: Display release notes
-      run: |
-        echo "${{ steps.query-release-info.outputs.release-notes }}"
+      - name: Get release notes
+        id: query-release-info
+        uses: release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0
+        with:
+          command: query
+          version: latest
 
-    - name: Display release version
-      run: |
-        echo "GIT=${{ steps.get-release-version.outputs.release-version }}"
-        echo "CHANGELOG=${{ steps.query-release-info.outputs.version }}"
+      - name: Display release notes
+        run: |
+          echo "${{ steps.query-release-info.outputs.release-notes }}"
 
-    - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-    - name: Create Python Archive
-      run: tar -czf python-wheels.tar.gz wheels-*/*.whl wheels-*/*.tar.gz wheels-*/*.whl.sigstore wheels-*/*.tar.gz.sigstore
+      - name: Display release version
+        run: |
+          echo "GIT=${{ steps.get-release-version.outputs.release-version }}"
+          echo "CHANGELOG=${{ steps.query-release-info.outputs.version }}"
 
-    - name: Create Tag
-      run: |
-        next_version=v${{ steps.query-release-info.outputs.version }}
-        git tag -a '${next_version}' -m 'Preparing release: ${next_version}'
-        git push --follow-tags
-    - name: Create GitHub Release
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      run: >-
-        gh release create
-        'v${{ steps.query-release-info.outputs.version }}'
-        --repo '${{ github.repository }}'
-        --title 'Release ${{ steps.query-release-info.outputs.version }}'
-        --notes ${{ steps.query-release-info.outputs.release-notes }}
-    - name: Upload artifact signatures to GitHub Release
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      # Upload to GitHub Release using the `gh` CLI.
-      # `dist/` contains the built packages, and the
-      # sigstore-produced signatures and certificates.
-      run: >-
-        gh release upload
-        'v${{ steps.query-release-info.outputs.version }}' python-wheels.tar.gz
-        --repo '${{ github.repository }}'
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+      - name: Create Python Archive
+        run: tar -czf python-wheels.tar.gz wheels-*/*.whl wheels-*/*.tar.gz wheels-*/*.whl.sigstore wheels-*/*.tar.gz.sigstore
+
+      - name: Create Tag
+        run: |
+          next_version=v${{ steps.query-release-info.outputs.version }}
+          git tag -a '${next_version}' -m 'Preparing release: ${next_version}'
+          git push --follow-tags
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create
+          'v${{ steps.query-release-info.outputs.version }}'
+          --repo '${{ github.repository }}'
+          --title 'Release ${{ steps.query-release-info.outputs.version }}'
+          --notes ${{ steps.query-release-info.outputs.release-notes }}
+      - name: Upload artifact signatures to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        # Upload to GitHub Release using the `gh` CLI.
+        # `dist/` contains the built packages, and the
+        # sigstore-produced signatures and certificates.
+        run: >-
+          gh release upload
+          'v${{ steps.query-release-info.outputs.version }}' python-wheels.tar.gz
+          --repo '${{ github.repository }}'
 
   python-pypi-release:
     needs: github-release
@@ -245,6 +258,10 @@ jobs:
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+        with:
+          egress-policy: audit
       - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
       - name: Publish to PyPI
         uses: PyO3/maturin-action@2c5c1560848aaa364c3545136054932db5fa27b7 # v1.44.0
@@ -258,6 +275,10 @@ jobs:
     if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'autorelease')
     environment: release
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: dtolnay/rust-toolchain@d0592fe69e35bc8f12e3dbaf9ad2694d976cb8e3 # stable
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 # v2.7.3
