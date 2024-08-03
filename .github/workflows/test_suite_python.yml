@@ -91,3 +91,9 @@ jobs:
         run: |
           python -m pip install openchecks --find-links target/wheels
           python -m pytest --hypothesis-profile default -n=auto tests/
+      - name: Run examples
+        run: |
+          python examples/async_auto_fix.py
+          python examples/async_check.py
+          python examples/auto_fix.py
+          python examples/check.py
