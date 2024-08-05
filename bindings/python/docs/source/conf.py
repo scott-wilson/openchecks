@@ -17,8 +17,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Untitled Checks Framework"
-copyright = "2022, Scott Wilson"
+project = "Open Checks Framework"
+copyright = "2024, Scott Wilson"
 author = "Scott Wilson"
 release = "0.1.0"
 
