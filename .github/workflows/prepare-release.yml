@@ -20,6 +20,9 @@ on:
 
 name: '[autorelease] Prepare release PR'
 
+permissions:
+  contents: read
+
 jobs:
   changelog:
     name: Update changelog and create PR
@@ -28,20 +31,25 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-    - uses: actions/checkout@v3
+    - name: Harden Runner
+      uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       with:
         ref: ${{ github.head_ref }}
 
     - name: Update changelog
       id: update-changelog
-      uses: release-flow/keep-a-changelog-action@v2
+      uses: release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0
       with:
         command: bump
         version: ${{ github.event.inputs.release-type }}
         preid: ${{ github.event.inputs.prerelease-identifier }}
 
     - name: 'Setup Python'
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f # v5.1.1
       with:
         python-version: '3'
     - name: 'Prepare Package Release'
@@ -61,7 +69,7 @@ jobs:
 
     - name: Create Pull Request
       id: create-release-pr
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
       with:
         commit-message: 'chore: Update project files release ${{ steps.update-changelog.outputs.version }}'
         committer: 'releasebot <noreply@github.com>'
