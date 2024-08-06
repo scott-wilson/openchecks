@@ -93,6 +93,12 @@ jobs:
       - name: Run tests
         run: |
           python -m pytest --hypothesis-profile default -n=auto tests/
+      - name: Run examples
+        run: |
+          python examples/async_auto_fix.py
+          python examples/async_check.py
+          python examples/auto_fix.py
+          python examples/check.py
       - name: Run doc tests
         run: |
           python -m sphinx -b=doctest docs/source docs/build
