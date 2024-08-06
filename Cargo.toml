@@ -24,7 +24,12 @@ async-trait = "0.1.81"
 bitflags = "2.6.0"
 
 [dev-dependencies]
-tokio = { version = "1.38.1", features = ["time", "rt", "macros"] }
+tokio = { version = "1.38.1", features = [
+    "time",
+    "rt",
+    "rt-multi-thread",
+    "macros",
+] }
 
 [features]
 arbitrary = ["dep:arbitrary", "bitflags/arbitrary"]
