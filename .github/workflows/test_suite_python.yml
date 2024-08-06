@@ -95,4 +95,4 @@ jobs:
           python -m pytest --hypothesis-profile default -n=auto tests/
       - name: Run doc tests
         run: |
-          python -m sphinx --builder=doctest docs/source docs/build
+          python -m sphinx -b=doctest docs/source docs/build
