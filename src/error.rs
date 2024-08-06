@@ -1,3 +1,4 @@
+/// A simple error type.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
 pub struct Error {
@@ -13,6 +14,7 @@ impl std::fmt::Display for Error {
 impl std::error::Error for Error {}
 
 impl Error {
+    /// Create a new error.
     pub fn new(message: &str) -> Self {
         Self {
             message: message.to_string(),
