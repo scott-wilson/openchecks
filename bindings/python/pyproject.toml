@@ -39,7 +39,7 @@ docs = [
     "myst-parser ~= 1.0; python_version == \"3.7\"",
     "myst-parser ~= 3.0; python_version > \"3.7\"",
     "sphinx ~= 5.3; python_version == \"3.7\"",
-    "sphinx ~= 6.2; python_version >= \"3.8\", < \"3.9\"",
+    "sphinx ~= 6.2; python_version >= \"3.8\" and < \"3.9\"",
     "sphinx ~= 7.2; python_version > \"3.8\"",
     "sphinx-rtd-theme ~= 2.0",
 ]
