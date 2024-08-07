@@ -1,5 +1,13 @@
 #![forbid(unsafe_code)]
 #![doc = include_str!("../README.md")]
+#![deny(clippy::empty_docs)]
+#![deny(clippy::empty_line_after_doc_comments)]
+#![deny(clippy::missing_errors_doc)]
+#![deny(clippy::missing_panics_doc)]
+#![deny(clippy::missing_safety_doc)]
+#![deny(clippy::undocumented_unsafe_blocks)]
+#![deny(clippy::unnecessary_safety_doc)]
+#![deny(missing_docs)]
 
 mod check;
 mod error;

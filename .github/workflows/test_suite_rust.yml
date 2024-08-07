@@ -52,6 +52,14 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Generate coverage report from Rust tests
         run: cargo llvm-cov --all-features --lcov --output-path lcov.info
+      - name: Run examples
+        run: |
+          cargo run --example async_auto_fix
+          cargo run --example async_check
+          cargo run --example auto_fix
+          cargo run --example check
+      - name: Run doc tests
+        run: cargo test --doc
       - uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
         with:
           files: lcov.info

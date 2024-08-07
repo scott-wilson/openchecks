@@ -26,6 +26,10 @@ impl From<CheckHint> for base_openchecks::CheckHint {
 
 #[pymethods]
 impl CheckHint {
+    /// The check supports no extra features.
+    ///
+    /// This should be considered the most conservative check *feature*. For
+    /// example, no auto-fix, check cannot be skipped before running, etc.
     #[classattr]
     #[allow(non_snake_case)]
     pub(crate) fn NONE() -> Self {
@@ -143,6 +147,21 @@ impl CheckHintIterator {
     }
 }
 
+/// CheckMetadata()
+///
+/// The check metadata.
+///
+/// This stores the information about the check that is either useful for humans
+/// (the :code:`title`) and :code:`description`) or useful for systems that uses
+/// the check (:code:`hint`). For example, a user interface could use the title
+/// and description to render information for an artist to inform them about
+/// what the check will validate and how it will fix issues (if supported). The
+/// hint then could be used to render other useful information such as whether
+/// the check supports automatic fixes in general, whether it could be
+/// overridden by a supervisor, etc.
+///
+/// This should not be inherited directly. Use :code:`BaseCheck` or
+/// :code:`AsyncBaseCheck` instead.
 #[pyclass(subclass)]
 pub(crate) struct CheckMetadata {}
 
@@ -196,9 +215,86 @@ impl CheckMetadata {
     }
 }
 
-/// BaseCheck
+/// BaseCheck()
 ///
-/// The base check to subclass.
+/// The base check class to be inherited from.
+///
+/// This is responsible for validating the input data and returning a result
+/// such as pass or fail. It can also provide extra data such as what caused the
+/// status (for example, the scene nodes that are named incorrectly).
+///
+/// If the check supports it, then the data being validated can be automatically
+/// fixed.
+///
+/// Example:
+///
+///     Simple Check
+///     ------------
+///
+///     .. testsetup::
+///
+///         from openchecks import CheckResult, Item, BaseCheck, Status, run
+///
+///     .. testcode::
+///
+///         class IsEvenCheck(BaseCheck):
+///             def __init__(self, value: int) -> None:
+///                 self.__value = value
+///                 super().__init__()
+///
+///             def title(self) -> str:
+///                 return "Is Even Check"
+///
+///             def description(self) -> str:
+///                 return "Check if the number is even."
+///
+///             def check(self) -> CheckResult:
+///                 if self.__value % 2 == 0:
+///                     return CheckResult.passed("Number is even.")
+///                 else:
+///                     return CheckResult.failed("Number is not even.")
+///
+///         check = IsEvenCheck(2)
+///         result = run(check)
+///         assert result.status() == Status.Passed
+///
+///     Check with Automatic Fix
+///     ------------------------
+///
+///     .. testsetup::
+///
+///         from openchecks import CheckResult, Item, BaseCheck, Status, auto_fix, run
+///
+///     .. testcode::
+///
+///         class IsZeroCheck(BaseCheck):
+///             def __init__(self, value: int) -> None:
+///                 self.__value = value
+///                 super().__init__()
+///
+///             def title(self) -> str:
+///                 return "Is Zero Check"
+///
+///             def description(self) -> str:
+///                 return "Check if the number is zero."
+///
+///             def check(self) -> CheckResult:
+///                 if self.__value == 0:
+///                     return CheckResult.passed("Number is zero.")
+///                 else:
+///                     return CheckResult.failed("Number is not zero.", can_fix=True)
+///
+///             def auto_fix(self) -> None:
+///                 self.__value = 0
+///
+///         check = IsZeroCheck(1)
+///         result = run(check)
+///         assert result.status() == Status.Failed
+///
+///         if result.can_fix():
+///             result = auto_fix(check)
+///             assert result.status() == Status.Passed
+///
 #[pyclass(extends = CheckMetadata, subclass)]
 #[derive(Debug)]
 pub(crate) struct BaseCheck {}
@@ -216,6 +312,9 @@ impl BaseCheck {
     /// Run a validation on the input data and output the result of the
     /// validation.
     ///
+    /// Raises:
+    ///     NotImplementedError: The check has not been implemented.
+    ///
     /// Returns:
     ///     CheckResult[T]: The result of the check.
     pub(crate) fn check(&self) -> PyResult<CheckResult> {
@@ -225,14 +324,102 @@ impl BaseCheck {
     /// auto_fix(self)
     ///
     /// Automatically fix the issue detected by the :code:`Check.check` method.
+    ///
+    /// Raises:
+    ///     NotImplementedError: The automatic fix has not been implemented.
     pub(crate) fn auto_fix(&self) -> PyResult<()> {
         Err(PyNotImplementedError::new_err("auto_fix not implemented"))
     }
 }
 
-/// AsyncBaseCheck
+/// AsyncBaseCheck()
 ///
-/// The base check to subclass.
+/// The base check class to be inherited from for async code.
+///
+/// This is responsible for validating the input data and returning a result
+/// such as pass or fail. It can also provide extra data such as what caused the
+/// status (for example, the scene nodes that are named incorrectly).
+///
+/// If the check supports it, then the data being validated can be automatically
+/// fixed.
+///
+/// Example:
+///
+///     Simple Check
+///     ------------
+///
+///     .. testsetup::
+///         import asyncio
+///
+///         from openchecks import CheckResult, Item, AsyncBaseCheck, Status, async_run
+///
+///     .. testcode::
+///
+///         class IsEvenCheck(AsyncBaseCheck):
+///             def __init__(self, value: int) -> None:
+///                 self.__value = value
+///                 super().__init__()
+///
+///             def title(self) -> str:
+///                 return "Is Even Check"
+///
+///             def description(self) -> str:
+///                 return "Check if the number is even."
+///
+///             async def async_check(self) -> CheckResult:
+///                 if self.__value % 2 == 0:
+///                     return CheckResult.passed("Number is even.")
+///                 else:
+///                     return CheckResult.failed("Number is not even.")
+///
+///         async def main():
+///             check = IsEvenCheck(2)
+///             result = await async_run(check)
+///             assert result.status() == Status.Passed
+///
+///         asyncio.run(main())
+///
+///     Check with Automatic Fix
+///     ------------------------
+///
+///     .. testsetup::
+///
+///         import asyncio
+///
+///         from openchecks import CheckResult, Item, AsyncBaseCheck, Status, async_auto_fix, async_run
+///
+///     .. testcode::
+///
+///         class IsZeroCheck(AsyncBaseCheck):
+///             def __init__(self, value: int) -> None:
+///                 self.__value = value
+///                 super().__init__()
+///
+///             def title(self) -> str:
+///                 return "Is Zero Check"
+///
+///             def description(self) -> str:
+///                 return "Check if the number is zero."
+///
+///             async def async_check(self) -> CheckResult:
+///                 if self.__value == 0:
+///                     return CheckResult.passed("Number is zero.")
+///                 else:
+///                     return CheckResult.failed("Number is not zero.", can_fix=True)
+///
+///             async def async_auto_fix(self) -> None:
+///                 self.__value = 0
+///
+///         async def main():
+///             check = IsZeroCheck(1)
+///             result = await async_run(check)
+///             assert result.status() == Status.Failed
+///
+///             if result.can_fix():
+///                 result = await async_auto_fix(check)
+///                 assert result.status() == Status.Passed
+///
+///         asyncio.run(main())
 #[pyclass(extends = CheckMetadata, subclass)]
 #[derive(Debug)]
 pub(crate) struct AsyncBaseCheck {}
