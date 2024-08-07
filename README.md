@@ -2,9 +2,9 @@
 
 ## Overview
 
-This framework is designed to provide a system to write checks for studio work.
+This framework is designed to provide a system to write checks for asset work.
 This includes validating assets (rigs, geometry, surfacing, etc), shots
-(animation, lighting, simulation, etc), and whatever a studio would need to
+(animation, lighting, simulation, etc), and whatever a company would need to
 validate. It provides a simple API with a rich result type that provides all the
 information to let a user know why a check failed and what they need to do to
 fix it. It also supports fixing issues if the issue can be fixed by the

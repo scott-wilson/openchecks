@@ -264,8 +264,8 @@ typedef struct OpenChecksItems {
  *   the textures.
  * - Can skip: Usually, a validation system should not let any checks that
  *   failed to go forward with, for example, publishing an asset. Sometimes a
- *   studio might decide that the error isn't critical enough to always fail if
- *   a supervisor approves the fail to pass through.
+ *   company might decide that the error isn't critical enough to always fail
+ *   if a supervisor approves the fail to pass through.
  * - Error: If the status is OpenChecksStatusSystemError, then it may also
  *   contain the error that caused the result. Other statuses shouldn't contain
  *   an error.
@@ -459,7 +459,7 @@ bool openchecks_check_result_can_fix(const struct OpenChecksCheckResult *result)
 /**
  * Whether the result can be skipped or not.
  *
- * A result should only be skipped if the studio decides that letting the
+ * A result should only be skipped if the company decides that letting the
  * failed check pass will not cause serious issues to the next department.
  * Also, it is recommended that check results are not skipped unless a
  * supervisor overrides the skip.
