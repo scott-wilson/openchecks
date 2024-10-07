@@ -132,7 +132,7 @@ jobs:
           inputs: |
             bindings/python/wheels-*/*.whl
       - name: Upload wheels
-        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # v4.4.1
         with:
           name: wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
           path: bindings/python/wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }}
@@ -170,7 +170,7 @@ jobs:
           inputs: |
             bindings/python/wheels-*/*.tar.gz
       - name: Upload sdist
-        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # v4.4.1
         with:
           name: wheels-sdist
           path: bindings/python/wheels-source
