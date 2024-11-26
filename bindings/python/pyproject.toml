@@ -26,7 +26,9 @@ build = [
     "maturin[patchelf] ~= 1.4; platform_system == \"Linux\"",
 ]
 test = [
-    "hypothesis ~= 6.119",
+    "hypothesis ~= 6.79; python_version == \"3.7\"",
+    "hypothesis ~= 6.113; python_version >= \"3.8\" and python_version < \"3.9\"",
+    "hypothesis ~= 6.119; python_version > \"3.8\"",
     "pytest ~= 7.4; python_version == \"3.7\"",
     "pytest ~= 8.3; python_version > \"3.7\"",
     "pytest-asyncio ~= 0.24",
