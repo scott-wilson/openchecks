@@ -26,22 +26,22 @@ build = [
     "maturin[patchelf] ~= 1.4; platform_system == \"Linux\"",
 ]
 test = [
-    "hypothesis ~= 6.79",
+    "hypothesis ~= 6.119",
     "pytest ~= 7.4; python_version == \"3.7\"",
-    "pytest ~= 8.2; python_version > \"3.7\"",
-    "pytest-asyncio ~= 0.21",
+    "pytest ~= 8.3; python_version > \"3.7\"",
+    "pytest-asyncio ~= 0.24",
     "pytest-cov ~= 4.1; python_version == \"3.7\"",
-    "pytest-cov ~= 5.0; python_version > \"3.7\"",
-    "pytest-xdist ~= 3.5",
-    "ruff ~= 0.2",
+    "pytest-cov ~= 6.0; python_version > \"3.7\"",
+    "pytest-xdist ~= 3.6",
+    "ruff ~= 0.8",
 ]
 docs = [
     "myst-parser ~= 1.0; python_version == \"3.7\"",
-    "myst-parser ~= 3.0; python_version > \"3.7\"",
+    "myst-parser ~= 4.0; python_version > \"3.7\"",
     "sphinx ~= 5.3; python_version == \"3.7\"",
     "sphinx ~= 6.2; python_version >= \"3.8\" and python_version < \"3.9\"",
-    "sphinx ~= 7.2; python_version >= \"3.9\"",
-    "sphinx-rtd-theme ~= 2.0",
+    "sphinx ~= 8.1; python_version >= \"3.9\"",
+    "sphinx-rtd-theme ~= 3.0",
 ]
 fuzz = ["openchecks[test]", "atheris ~= 2.3"]
 
@@ -55,6 +55,9 @@ lint.ignore = ["ANN101", "ANN102"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.mypy]
 # Start off with these

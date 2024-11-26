@@ -1,6 +1,7 @@
 use crate::error::CheckError;
 use crate::item_wrapper::ItemWrapper;
 use crate::{Item, Status};
+use pyo3::exceptions::PyBaseException;
 use pyo3::prelude::*;
 
 /// CheckResult(status: Status, message: str, items: Optional[List[Item[T]]] = None, can_fix: bool = False, can_skip: bool = False, error: Optional[BaseException] = None)
@@ -67,14 +68,21 @@ impl CheckResult {
         items: Option<Vec<Item>>,
         can_fix: bool,
         can_skip: bool,
-        error: Option<PyObject>,
+        error: Option<Bound<'_, PyBaseException>>,
     ) -> PyResult<Self> {
-        let items = items.map(|items| {
-            items
-                .into_iter()
-                .map(|item| ItemWrapper::new(item.into_py(py)))
-                .collect()
-        });
+        let items = match items {
+            Some(items) => {
+                let mut new_items = Vec::with_capacity(items.len());
+
+                for item in items {
+                    new_items.push(ItemWrapper::new(item.into_pyobject(py)?.into_any().into()));
+                }
+
+                Some(new_items)
+            }
+            None => None,
+        };
+
         let error = error.map(|err| base_openchecks::Error::new(&err.to_string()));
 
         let inner = base_openchecks::CheckResult::new(
@@ -108,16 +116,23 @@ impl CheckResult {
         items: Option<Vec<Item>>,
         can_fix: bool,
         can_skip: bool,
-    ) -> Self {
-        let items = items.map(|items| {
-            items
-                .into_iter()
-                .map(|item| ItemWrapper::new(item.into_py(py)))
-                .collect()
-        });
+    ) -> PyResult<Self> {
+        let items = match items {
+            Some(items) => {
+                let mut new_items = Vec::with_capacity(items.len());
+
+                for item in items {
+                    new_items.push(ItemWrapper::new(item.into_pyobject(py)?.into_any().into()));
+                }
+
+                Some(new_items)
+            }
+            None => None,
+        };
+
         let inner = base_openchecks::CheckResult::new_passed(message, items, can_fix, can_skip);
 
-        Self { inner }
+        Ok(Self { inner })
     }
 
     /// skipped(message: str, items: Optional[List[Item[T]]], can_fix: bool, can_skip: bool) -> CheckResult
@@ -140,16 +155,23 @@ impl CheckResult {
         items: Option<Vec<Item>>,
         can_fix: bool,
         can_skip: bool,
-    ) -> Self {
-        let items = items.map(|items| {
-            items
-                .into_iter()
-                .map(|item| ItemWrapper::new(item.into_py(py)))
-                .collect()
-        });
+    ) -> PyResult<Self> {
+        let items = match items {
+            Some(items) => {
+                let mut new_items = Vec::with_capacity(items.len());
+
+                for item in items {
+                    new_items.push(ItemWrapper::new(item.into_pyobject(py)?.into_any().into()));
+                }
+
+                Some(new_items)
+            }
+            None => None,
+        };
+
         let inner = base_openchecks::CheckResult::new_skipped(message, items, can_fix, can_skip);
 
-        Self { inner }
+        Ok(Self { inner })
     }
 
     /// warning(message: str, items: Optional[List[Item[T]]], can_fix: bool, can_skip: bool) -> CheckResult
@@ -177,16 +199,23 @@ impl CheckResult {
         items: Option<Vec<Item>>,
         can_fix: bool,
         can_skip: bool,
-    ) -> Self {
-        let items = items.map(|items| {
-            items
-                .into_iter()
-                .map(|item| ItemWrapper::new(item.into_py(py)))
-                .collect()
-        });
+    ) -> PyResult<Self> {
+        let items = match items {
+            Some(items) => {
+                let mut new_items = Vec::with_capacity(items.len());
+
+                for item in items {
+                    new_items.push(ItemWrapper::new(item.into_pyobject(py)?.into_any().into()));
+                }
+
+                Some(new_items)
+            }
+            None => None,
+        };
+
         let inner = base_openchecks::CheckResult::new_warning(message, items, can_fix, can_skip);
 
-        Self { inner }
+        Ok(Self { inner })
     }
 
     /// failed(message: str, items: Optional[List[Item[T]]], can_fix: bool, can_skip: bool) -> CheckResult
@@ -213,16 +242,23 @@ impl CheckResult {
         items: Option<Vec<Item>>,
         can_fix: bool,
         can_skip: bool,
-    ) -> Self {
-        let items = items.map(|items| {
-            items
-                .into_iter()
-                .map(|item| ItemWrapper::new(item.into_py(py)))
-                .collect()
-        });
+    ) -> PyResult<Self> {
+        let items = match items {
+            Some(items) => {
+                let mut new_items = Vec::with_capacity(items.len());
+
+                for item in items {
+                    new_items.push(ItemWrapper::new(item.into_pyobject(py)?.into_any().into()));
+                }
+
+                Some(new_items)
+            }
+            None => None,
+        };
+
         let inner = base_openchecks::CheckResult::new_failed(message, items, can_fix, can_skip);
 
-        Self { inner }
+        Ok(Self { inner })
     }
 
     /// status(self) -> Status
@@ -255,10 +291,12 @@ impl CheckResult {
     /// Returns:
     ///     Optional[List[Item[T]]]: The items that caused the result.
     pub(crate) fn items(&self) -> Option<Vec<PyObject>> {
-        self.inner
-            .items()
-            .as_ref()
-            .map(|items| items.iter().map(|item| item.item().clone()).collect())
+        Python::with_gil(|py| {
+            self.inner
+                .items()
+                .as_ref()
+                .map(|items| items.iter().map(|item| item.item().clone_ref(py)).collect())
+        })
     }
 
     /// can_fix(self) -> bool

@@ -1,4 +1,6 @@
-use pyo3::{intern, prelude::*, types::PyString};
+use std::sync::Arc;
+
+use pyo3::{intern, prelude::*, types::PyString, BoundObject};
 
 /// Item(value: T, type_hint: Optional[str] = None) -> None
 ///
@@ -48,7 +50,7 @@ use pyo3::{intern, prelude::*, types::PyString};
 #[pyclass(subclass)]
 #[derive(Debug, Clone)]
 pub(crate) struct Item {
-    value: PyObject,
+    value: Arc<PyObject>,
     type_hint: Option<String>,
 }
 
@@ -57,81 +59,136 @@ impl Item {
     #[new]
     #[pyo3(signature = (value, type_hint = None))]
     fn new(value: PyObject, type_hint: Option<String>) -> Self {
-        Self { value, type_hint }
+        Self {
+            value: Arc::new(value),
+            type_hint,
+        }
     }
 
-    fn __str__<'py>(&'py self, py: Python<'py>) -> PyResult<&'py PyString> {
-        self.value.as_ref(py).str()
+    fn __str__<'py>(&'py self, py: Python<'py>) -> PyResult<Bound<'py, PyString>> {
+        self.value.bind(py).str()
     }
 
     fn __repr__(&self, py: Python<'_>) -> PyResult<String> {
         Ok(format!(
             "Item({})",
-            self.value.as_ref(py).repr()?.to_string_lossy()
+            self.value.bind(py).repr()?.to_string_lossy()
         ))
     }
 
-    fn __eq__(&self, py: Python<'_>, other: &PyAny) -> PyResult<PyObject> {
+    fn __eq__<'py>(
+        &self,
+        py: Python<'py>,
+        other: &Bound<'py, PyAny>,
+    ) -> PyResult<Bound<'py, PyAny>> {
         if !other.is_instance_of::<Self>() {
-            Ok(py.NotImplemented())
+            Ok(py.NotImplemented().into_bound(py))
         } else {
-            Ok(self
+            let result = self
                 .value
-                .as_ref(py)
+                .bind(py)
                 .eq(other.call_method0(intern!(py, "value"))?)?
-                .into_py(py))
+                .into_pyobject(py)?;
+
+            Ok(result.into_any().into_bound())
         }
     }
 
-    fn __ne__(self_: PyRef<'_, Self>, py: Python<'_>, other: &PyAny) -> PyResult<PyObject> {
+    fn __ne__<'py>(
+        &self,
+        py: Python<'py>,
+        other: &Bound<'py, PyAny>,
+    ) -> PyResult<Bound<'py, PyAny>> {
         if !other.is_instance_of::<Self>() {
-            Ok(py.NotImplemented())
+            Ok(py.NotImplemented().into_bound(py))
         } else {
-            Ok((!self_.into_py(py).as_ref(py).eq(other)?).into_py(py))
-        }
-    }
-
-    fn __lt__(&self, py: Python<'_>, other: &PyAny) -> PyResult<PyObject> {
-        if !other.is_instance_of::<Self>() {
-            Ok(py.NotImplemented())
-        } else {
-            Ok(self
+            let result = self
                 .value
-                .as_ref(py)
+                .bind(py)
+                .ne(other.call_method0(intern!(py, "value"))?)?
+                .into_pyobject(py)?;
+
+            Ok(result.into_any().into_bound())
+        }
+    }
+
+    fn __lt__<'py>(
+        &self,
+        py: Python<'py>,
+        other: &Bound<'py, PyAny>,
+    ) -> PyResult<Bound<'py, PyAny>> {
+        if !other.is_instance_of::<Self>() {
+            Ok(py.NotImplemented().into_bound(py))
+        } else {
+            let result = self
+                .value
+                .bind(py)
                 .lt(other.call_method0(intern!(py, "value"))?)?
-                .into_py(py))
+                .into_pyobject(py)?;
+
+            Ok(result.into_any().into_bound())
         }
     }
 
-    fn __le__(self_: PyRef<'_, Self>, py: Python<'_>, other: &PyAny) -> PyResult<PyObject> {
+    fn __le__<'py>(
+        &self,
+        py: Python<'py>,
+        other: &Bound<'py, PyAny>,
+    ) -> PyResult<Bound<'py, PyAny>> {
         if !other.is_instance_of::<Self>() {
-            Ok(py.NotImplemented())
+            Ok(py.NotImplemented().into_bound(py))
         } else {
-            Ok((!self_.into_py(py).as_ref(py).gt(other)?).into_py(py))
+            let result = self
+                .value
+                .bind(py)
+                .le(other.call_method0(intern!(py, "value"))?)?
+                .into_pyobject(py)?;
+
+            Ok(result.into_any().into_bound())
         }
     }
 
-    fn __gt__(self_: PyRef<'_, Self>, py: Python<'_>, other: &PyAny) -> PyResult<PyObject> {
+    fn __gt__<'py>(
+        &self,
+        py: Python<'py>,
+        other: &Bound<'py, PyAny>,
+    ) -> PyResult<Bound<'py, PyAny>> {
         if !other.is_instance_of::<Self>() {
-            Ok(py.NotImplemented())
+            Ok(py.NotImplemented().into_bound(py))
         } else {
-            Ok(other.lt(self_.into_py(py))?.into_py(py))
+            let result = self
+                .value
+                .bind(py)
+                .gt(other.call_method0(intern!(py, "value"))?)?
+                .into_pyobject(py)?;
+
+            Ok(result.into_any().into_bound())
         }
     }
 
-    fn __ge__(self_: PyRef<'_, Self>, py: Python<'_>, other: &PyAny) -> PyResult<PyObject> {
+    fn __ge__<'py>(
+        &self,
+        py: Python<'py>,
+        other: &Bound<'py, PyAny>,
+    ) -> PyResult<Bound<'py, PyAny>> {
         if !other.is_instance_of::<Self>() {
-            Ok(py.NotImplemented())
+            Ok(py.NotImplemented().into_bound(py))
         } else {
-            Ok((!self_.into_py(py).as_ref(py).lt(other)?).into_py(py))
+            let result = self
+                .value
+                .bind(py)
+                .ge(other.call_method0(intern!(py, "value"))?)?
+                .into_pyobject(py)?;
+
+            Ok(result.into_any().into_bound())
         }
     }
 
     /// value(self) -> T
     ///
     /// The wrapped value
-    fn value<'py>(&'py self, py: Python<'py>) -> PyResult<&'py PyAny> {
-        Ok(self.value.as_ref(py))
+    fn value<'py>(&'py self, py: Python<'py>) -> PyResult<&Bound<'py, PyAny>> {
+        Ok(self.value.bind(py))
     }
 
     /// type_hint(self) -> Optional[str]

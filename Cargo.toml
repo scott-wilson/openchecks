@@ -19,12 +19,12 @@ include = [
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-arbitrary = { version = "1.3.2", features = ["derive"], optional = true }
-async-trait = "0.1.81"
+arbitrary = { version = "1.4.1", features = ["derive"], optional = true }
+async-trait = "0.1.83"
 bitflags = "2.6.0"
 
 [dev-dependencies]
-tokio = { version = "1.38.1", features = [
+tokio = { version = "1.41.1", features = [
     "macros",
     "rt-multi-thread",
     "rt",

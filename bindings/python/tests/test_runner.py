@@ -181,7 +181,7 @@ def test_auto_fix_failed_auto_fix_raises_error() -> None:
     assert str(err_result) == "RuntimeError: Test"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_run_passed_success() -> None:
     class MockCheck(openchecks.AsyncBaseCheck):
         async def async_check(self) -> openchecks.CheckResult[int]:
@@ -200,7 +200,7 @@ async def test_async_run_passed_success() -> None:
     assert result.message() == "passed"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_run_failed_success() -> None:
     class MockCheck(openchecks.AsyncBaseCheck):
         async def async_check(self) -> openchecks.CheckResult[int]:
@@ -219,7 +219,7 @@ async def test_async_run_failed_success() -> None:
     assert result.message() == "failed"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_run_failed_check_returns_not_result() -> None:
     class MockCheck(openchecks.AsyncBaseCheck):
         async def async_check(self) -> openchecks.CheckResult[int]:
@@ -237,7 +237,7 @@ async def test_async_run_failed_check_returns_not_result() -> None:
     assert result.status() == openchecks.Status.SystemError
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_run_failed_check_raises_error() -> None:
     exception = RuntimeError("test")
 
@@ -261,7 +261,7 @@ async def test_async_run_failed_check_raises_error() -> None:
     assert str(err_result) == "RuntimeError: test"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_run_failed_check_does_not_inherit_base_check() -> None:
     check = None
     result = await openchecks.async_run(check)  # type: ignore
@@ -269,7 +269,7 @@ async def test_async_run_failed_check_does_not_inherit_base_check() -> None:
     assert result.status() == openchecks.Status.SystemError
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_auto_fix_passed_success() -> None:
     class MockCheck(openchecks.AsyncBaseCheck):
         def __init__(self) -> None:
@@ -305,7 +305,7 @@ async def test_async_auto_fix_passed_success() -> None:
     assert result.message() == "passed"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_auto_fix_failed_check_does_not_inherit_base_check() -> None:
     check = None
     result = await openchecks.async_auto_fix(check)  # type: ignore
@@ -313,7 +313,7 @@ async def test_async_auto_fix_failed_check_does_not_inherit_base_check() -> None
     assert result.status() == openchecks.Status.SystemError
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_auto_fix_failed_check_hint_not_auto_fix() -> None:
     class MockCheck(openchecks.AsyncBaseCheck):
         async def async_check(self) -> openchecks.CheckResult[int]:
@@ -337,7 +337,7 @@ async def test_async_auto_fix_failed_check_hint_not_auto_fix() -> None:
     assert result.status() == openchecks.Status.SystemError
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_async_auto_fix_failed_auto_fix_raises_error() -> None:
     exception = RuntimeError("Test")
 

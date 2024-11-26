@@ -40,7 +40,7 @@ use crate::{check_wrapper::AsyncCheckWrapper, check_wrapper::CheckWrapper, resul
 ///
 #[pyfunction]
 pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
-    if !check.as_ref(py).is_instance_of::<crate::BaseCheck>() {
+    if !check.bind(py).is_instance_of::<crate::BaseCheck>() {
         return CheckResult::new(
             py,
             crate::Status::SystemError,
@@ -48,7 +48,10 @@ pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
             None,
             false,
             false,
-            Some(crate::CheckError::new_err("Check is not an instance of BaseCheck").to_object(py)),
+            Some(
+                crate::CheckError::new_err("Check is not an instance of BaseCheck")
+                    .into_pyobject(py)?,
+            ),
         );
     }
 
@@ -108,7 +111,7 @@ pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
 ///         assert result.status() == Status.Passed
 #[pyfunction]
 pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
-    if !check.as_ref(py).is_instance_of::<crate::BaseCheck>() {
+    if !check.bind(py).is_instance_of::<crate::BaseCheck>() {
         return CheckResult::new(
             py,
             crate::Status::SystemError,
@@ -116,7 +119,10 @@ pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult>
             None,
             false,
             false,
-            Some(crate::CheckError::new_err("Check is not an instance of BaseCheck").to_object(py)),
+            Some(
+                crate::CheckError::new_err("Check is not an instance of BaseCheck")
+                    .into_pyobject(py)?,
+            ),
         );
     }
     let mut check = CheckWrapper::new(check);
@@ -167,10 +173,10 @@ pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult>
 ///         asyncio.run(main())
 ///
 #[pyfunction]
-pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
-    pyo3_asyncio::tokio::future_into_py(py, async move {
+pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<Bound<'_, PyAny>> {
+    pyo3_async_runtimes::tokio::future_into_py(py, async move {
         let type_check_result = Python::with_gil(|py| {
-            if !check.as_ref(py).is_instance_of::<crate::AsyncBaseCheck>() {
+            if !check.bind(py).is_instance_of::<crate::AsyncBaseCheck>() {
                 Some(CheckResult::new(
                     py,
                     crate::Status::SystemError,
@@ -180,7 +186,8 @@ pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
                     false,
                     Some(
                         crate::CheckError::new_err("Check is not an instance of BaseCheck")
-                            .to_object(py),
+                            .into_pyobject(py)
+                            .unwrap(),
                     ),
                 ))
             } else {
@@ -254,10 +261,10 @@ pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
 ///
 ///     asyncio.run(main())
 #[pyfunction]
-pub(crate) fn async_auto_fix(py: Python<'_>, check: PyObject) -> PyResult<&PyAny> {
-    pyo3_asyncio::tokio::future_into_py(py, async move {
+pub(crate) fn async_auto_fix(py: Python<'_>, check: PyObject) -> PyResult<Bound<'_, PyAny>> {
+    pyo3_async_runtimes::tokio::future_into_py(py, async move {
         let type_check_result = Python::with_gil(|py| {
-            if !check.as_ref(py).is_instance_of::<crate::AsyncBaseCheck>() {
+            if !check.bind(py).is_instance_of::<crate::AsyncBaseCheck>() {
                 Some(CheckResult::new(
                     py,
                     crate::Status::SystemError,
@@ -267,7 +274,8 @@ pub(crate) fn async_auto_fix(py: Python<'_>, check: PyObject) -> PyResult<&PyAny
                     false,
                     Some(
                         crate::CheckError::new_err("Check is not an instance of BaseCheck")
-                            .to_object(py),
+                            .into_pyobject(py)
+                            .unwrap(),
                     ),
                 ))
             } else {

@@ -1,7 +1,6 @@
 use crate::CheckResult;
 use pyo3::exceptions::PyNotImplementedError;
 use pyo3::prelude::*;
-use pyo3::pyclass::CompareOp;
 
 /// The check hint flags contains useful information such as whether the check
 /// should support auto-fixing issues.
@@ -50,11 +49,8 @@ impl CheckHint {
         }
     }
 
-    fn __richcmp__(&self, py: Python<'_>, other: &Self, op: CompareOp) -> PyObject {
-        match op {
-            CompareOp::Eq => (self.inner == other.inner).to_object(py),
-            _ => py.NotImplemented(),
-        }
+    fn __eq__(&self, other: &Self) -> bool {
+        self.inner == other.inner
     }
 
     pub(crate) fn __str__(&self) -> String {
@@ -170,8 +166,8 @@ impl CheckMetadata {
     #[new]
     #[pyo3(signature = (*args, **kwargs))]
     pub(crate) fn new(
-        #[allow(unused_variables)] args: &PyAny,
-        #[allow(unused_variables)] kwargs: Option<&PyAny>,
+        #[allow(unused_variables)] args: &Bound<'_, PyAny>,
+        #[allow(unused_variables)] kwargs: Option<&Bound<'_, PyAny>>,
     ) -> Self {
         Self {}
     }
@@ -303,7 +299,10 @@ pub(crate) struct BaseCheck {}
 impl BaseCheck {
     #[new]
     #[pyo3(signature = (*args, **kwargs))]
-    pub(crate) fn new(args: &PyAny, kwargs: Option<&PyAny>) -> (Self, CheckMetadata) {
+    pub(crate) fn new(
+        args: &Bound<'_, PyAny>,
+        kwargs: Option<&Bound<'_, PyAny>>,
+    ) -> (Self, CheckMetadata) {
         (Self {}, CheckMetadata::new(args, kwargs))
     }
 
@@ -428,7 +427,10 @@ pub(crate) struct AsyncBaseCheck {}
 impl AsyncBaseCheck {
     #[new]
     #[pyo3(signature = (*args, **kwargs))]
-    pub(crate) fn new(args: &PyAny, kwargs: Option<&PyAny>) -> (Self, CheckMetadata) {
+    pub(crate) fn new(
+        args: &Bound<'_, PyAny>,
+        kwargs: Option<&Bound<'_, PyAny>>,
+    ) -> (Self, CheckMetadata) {
         (Self {}, CheckMetadata::new(args, kwargs))
     }
 
@@ -439,8 +441,8 @@ impl AsyncBaseCheck {
     ///
     /// Returns:
     ///     CheckResult[T]: The result of the check.
-    pub(crate) fn async_check<'py>(&self, py: Python<'py>) -> PyResult<&'py PyAny> {
-        pyo3_asyncio::tokio::future_into_py::<_, &PyAny>(py, async {
+    pub(crate) fn async_check<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py::<_, ()>(py, async {
             Err(PyNotImplementedError::new_err("check not implemented"))
         })
     }
@@ -448,8 +450,8 @@ impl AsyncBaseCheck {
     /// async_auto_fix(self)
     ///
     /// Automatically fix the issue detected by the :code:`AsyncCheck.async_check` method.
-    pub(crate) fn async_auto_fix<'py>(&self, py: Python<'py>) -> PyResult<&'py PyAny> {
-        pyo3_asyncio::tokio::future_into_py::<_, &PyAny>(py, async {
+    pub(crate) fn async_auto_fix<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+        pyo3_async_runtimes::tokio::future_into_py::<_, ()>(py, async {
             Err(PyNotImplementedError::new_err("check not implemented"))
         })
     }
