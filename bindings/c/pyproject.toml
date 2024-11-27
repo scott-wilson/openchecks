@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=75.6"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -16,13 +16,8 @@ documentation = "https://openchecks.readthedocs.io/"
 repository = "https://github.com/scott-wilson/openchecks/"
 
 [project.optional-dependencies]
-build = ["meson ~= 1.5"]
-docs = [
-    "myst-parser ~= 3.0",
-    "sphinx ~= 7.2",
-    "sphinx-rtd-theme ~= 2.0",
-    "breathe ~= 4.34",
-]
+build = ["meson"]
+docs = ["myst-parser", "sphinx", "sphinx-rtd-theme", "breathe"]
 
 [tool.ruff]
 lint.select = ["ANN", "BLE", "D", "E", "F", "I", "N", "PT", "S", "YTT"]

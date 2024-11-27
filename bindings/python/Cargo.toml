@@ -11,10 +11,10 @@ name = "openchecks"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20.3" }
+pyo3 = { version = "0.23.1" }
 # base_openchecks = { git = "https://github.com/scott-wilson/openchecks.git", rev = "b57d12aec35feebdf5220ae8544a2782539ce6da", package = "openchecks" }
 base_openchecks = { path = "../../", package = "openchecks" }
-pyo3-asyncio = { version = "0.20.0", features = [
+pyo3-async-runtimes = { version = "0.23.0", features = [
     "attributes",
     "tokio-runtime",
 ] }

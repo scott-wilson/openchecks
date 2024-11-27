@@ -152,10 +152,10 @@ impl AsyncCheck for AsyncCheckWrapper {
 
     async fn async_check(&self) -> base_openchecks::CheckResult<Self::Item, Self::Items> {
         let result = match Python::with_gil(|py| {
-            pyo3_asyncio::tokio::into_future(
+            pyo3_async_runtimes::tokio::into_future(
                 self.check
                     .call_method0(py, intern!(py, "async_check"))?
-                    .as_ref(py),
+                    .into_bound(py),
             )
         }) {
             Ok(result) => result.await,
@@ -215,10 +215,10 @@ impl AsyncCheck for AsyncCheckWrapper {
 
     async fn async_auto_fix(&mut self) -> Result<(), base_openchecks::Error> {
         Python::with_gil(|py| {
-            pyo3_asyncio::tokio::into_future(
+            pyo3_async_runtimes::tokio::into_future(
                 self.check
                     .call_method0(py, intern!(py, "async_auto_fix"))?
-                    .as_ref(py),
+                    .into_bound(py),
             )
         })
         .map_err(|err: PyErr| base_openchecks::Error::new(&err.to_string()))?
