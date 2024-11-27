@@ -16,13 +16,8 @@ documentation = "https://openchecks.readthedocs.io/"
 repository = "https://github.com/scott-wilson/openchecks/"
 
 [project.optional-dependencies]
-build = ["meson ~= 1.6"]
-docs = [
-    "myst-parser ~= 4.0",
-    "sphinx ~= 8.1",
-    "sphinx-rtd-theme ~= 3.0",
-    "breathe ~= 4.35",
-]
+build = ["meson"]
+docs = ["myst-parser", "sphinx", "sphinx-rtd-theme", "breathe"]
 
 [tool.ruff]
 lint.select = ["ANN", "BLE", "D", "E", "F", "I", "N", "PT", "S", "YTT"]
