@@ -10,6 +10,7 @@
 #![deny(missing_docs)]
 
 mod check;
+mod discovery_registry;
 mod error;
 mod item;
 mod result;
@@ -17,6 +18,7 @@ mod runner;
 mod status;
 
 pub use check::{AsyncCheck, Check, CheckHint, CheckMetadata};
+pub use discovery_registry::DiscoveryRegistry;
 pub use error::Error;
 pub use item::Item;
 pub use result::CheckResult;

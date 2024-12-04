@@ -77,8 +77,6 @@ impl std::convert::From<Status> for base_openchecks::Status {
 
 #[pymethods]
 impl Status {
-    /// is_pending(self) -> bool
-    ///
     /// Return if a check is waiting to be run.
     ///
     /// Returns:
@@ -88,8 +86,6 @@ impl Status {
         status.is_pending()
     }
 
-    /// has_passed(self) -> bool
-    ///
     /// Return if a check has passed.
     ///
     /// Returns:
@@ -99,8 +95,6 @@ impl Status {
         status.has_passed()
     }
 
-    /// has_failed(self) -> bool
-    ///
     /// Return if a check has failed.
     ///
     /// Returns:

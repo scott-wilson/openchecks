@@ -73,8 +73,12 @@
 /// assert_eq!(*result.status(), Status::Passed);
 /// # }
 /// ```
-pub async fn async_run<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
-    check: &impl crate::AsyncCheck<Item = Item, Items = Items>,
+pub async fn async_run<
+    Item: crate::Item,
+    Items: std::iter::IntoIterator<Item = Item>,
+    Check: crate::AsyncCheck<Item = Item, Items = Items> + ?Sized,
+>(
+    check: &Check,
 ) -> crate::CheckResult<Item, Items> {
     let now = std::time::Instant::now();
 
@@ -173,8 +177,12 @@ pub async fn async_run<Item: crate::Item, Items: std::iter::IntoIterator<Item = 
 /// }
 /// # }
 /// ```
-pub async fn async_auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
-    check: &mut (impl crate::AsyncCheck<Item = Item, Items = Items> + Send),
+pub async fn async_auto_fix<
+    Item: crate::Item,
+    Items: std::iter::IntoIterator<Item = Item>,
+    Check: crate::AsyncCheck<Item = Item, Items = Items> + Send + ?Sized,
+>(
+    check: &mut Check,
 ) -> crate::CheckResult<Item, Items> {
     let now = std::time::Instant::now();
 
@@ -284,8 +292,12 @@ pub async fn async_auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<It
 ///
 /// assert_eq!(*result.status(), Status::Passed);
 /// ```
-pub fn run<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
-    check: &impl crate::Check<Item = Item, Items = Items>,
+pub fn run<
+    Item: crate::Item,
+    Items: std::iter::IntoIterator<Item = Item>,
+    Check: crate::Check<Item = Item, Items = Items> + ?Sized,
+>(
+    check: &Check,
 ) -> crate::CheckResult<Item, Items> {
     let now = std::time::Instant::now();
 
@@ -381,8 +393,12 @@ pub fn run<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
 /// }
 ///
 /// ```
-pub fn auto_fix<Item: crate::Item, Items: std::iter::IntoIterator<Item = Item>>(
-    check: &mut impl crate::Check<Item = Item, Items = Items>,
+pub fn auto_fix<
+    Item: crate::Item,
+    Items: std::iter::IntoIterator<Item = Item>,
+    Check: crate::Check<Item = Item, Items = Items> + ?Sized,
+>(
+    check: &mut Check,
 ) -> crate::CheckResult<Item, Items> {
     let now = std::time::Instant::now();
 

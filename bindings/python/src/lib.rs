@@ -1,7 +1,9 @@
+use discovery_registry::DiscoveryRegistry;
 use pyo3::prelude::*;
 
 mod check;
 mod check_wrapper;
+mod discovery_registry;
 mod error;
 mod item;
 mod item_wrapper;
@@ -28,6 +30,7 @@ fn openchecks(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<CheckHint>()?;
     m.add_class::<CheckMetadata>()?;
     m.add_class::<CheckResult>()?;
+    m.add_class::<DiscoveryRegistry>()?;
     m.add_class::<Item>()?;
     m.add_class::<Status>()?;
     m.add("CheckError", py.get_type::<CheckError>())?;

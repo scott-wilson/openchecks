@@ -4,8 +4,6 @@ use crate::{Item, Status};
 use pyo3::exceptions::PyBaseException;
 use pyo3::prelude::*;
 
-/// CheckResult(status: Status, message: str, items: Optional[List[Item[T]]] = None, can_fix: bool = False, can_skip: bool = False, error: Optional[BaseException] = None)
-///
 /// A check result contains all of the information needed to know the status of
 /// a check.
 ///
@@ -96,8 +94,6 @@ impl CheckResult {
         Ok(Self { inner })
     }
 
-    /// passed(message: str, items: Optional[List[Item[T]]], can_fix: bool, can_skip: bool) -> CheckResult
-    ///
     /// Create a new result that passed a check.
     ///
     /// Args:
@@ -135,8 +131,6 @@ impl CheckResult {
         Ok(Self { inner })
     }
 
-    /// skipped(message: str, items: Optional[List[Item[T]]], can_fix: bool, can_skip: bool) -> CheckResult
-    ///
     /// Create a new result that skipped a check.
     ///
     /// Args:
@@ -174,8 +168,6 @@ impl CheckResult {
         Ok(Self { inner })
     }
 
-    /// warning(message: str, items: Optional[List[Item[T]]], can_fix: bool, can_skip: bool) -> CheckResult
-    ///
     /// Create a new result that passed a check, but with a warning.
     ///
     /// Warnings should be considered as passes, but with notes saying that
@@ -218,8 +210,6 @@ impl CheckResult {
         Ok(Self { inner })
     }
 
-    /// failed(message: str, items: Optional[List[Item[T]]], can_fix: bool, can_skip: bool) -> CheckResult
-    ///
     /// Create a new result that failed a check.
     ///
     /// Failed checks in a validation system should not let the following
@@ -261,8 +251,6 @@ impl CheckResult {
         Ok(Self { inner })
     }
 
-    /// status(self) -> Status
-    ///
     /// The status of the result.
     ///
     /// Returns:
@@ -271,8 +259,6 @@ impl CheckResult {
         (*self.inner.status()).into()
     }
 
-    /// message(self) -> str
-    ///
     /// A human readable message for the result.
     ///
     /// If a check has issues, then this should include information about what
@@ -284,8 +270,6 @@ impl CheckResult {
         self.inner.message()
     }
 
-    /// items(self) -> Optional[List[Item[T]]]
-    ///
     /// The items that caused the result.
     ///
     /// Returns:
@@ -299,8 +283,6 @@ impl CheckResult {
         })
     }
 
-    /// can_fix(self) -> bool
-    ///
     /// Whether the result can be fixed or not.
     ///
     /// If the status is :code:`Status.SystemError`, then the check can
@@ -312,8 +294,6 @@ impl CheckResult {
         self.inner.can_fix()
     }
 
-    /// can_skip(self) -> bool
-    ///
     /// Whether the result can be skipped or not.
     ///
     /// A result should only be skipped if the company decides that letting the
@@ -328,8 +308,6 @@ impl CheckResult {
         self.inner.can_skip()
     }
 
-    /// error(self) -> Optional[BaseException]
-    ///
     /// The error that caused the result.
     ///
     /// This only really applies to the
@@ -345,8 +323,6 @@ impl CheckResult {
             .map(|err| CheckError::new_err(err.to_string()))
     }
 
-    /// check_duration(self) -> float
-    ///
     /// The duration of a check.
     ///
     /// This is not settable outside of the check runner. It can be exposed to a
@@ -359,8 +335,6 @@ impl CheckResult {
         self.inner.check_duration().as_secs_f64()
     }
 
-    /// fix_duration(self) -> float
-    ///
     /// The duration of an auto-fix.
     ///
     /// This is not settable outside of the auto-fix runner. It can be exposed
