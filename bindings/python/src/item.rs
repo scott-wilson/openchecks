@@ -2,8 +2,6 @@ use std::sync::Arc;
 
 use pyo3::{intern, prelude::*, types::PyString, BoundObject};
 
-/// Item(value: T, type_hint: Optional[str] = None) -> None
-///
 /// The item is a wrapper to make a result item more user interface friendly.
 ///
 /// Result items represent the objects that caused a result. For example, if a
@@ -168,15 +166,11 @@ impl Item {
         }
     }
 
-    /// value(self) -> T
-    ///
     /// The wrapped value
-    fn value<'py>(&'py self, py: Python<'py>) -> PyResult<&Bound<'py, PyAny>> {
+    fn value<'py>(&'py self, py: Python<'py>) -> PyResult<&'py Bound<'py, PyAny>> {
         Ok(self.value.bind(py))
     }
 
-    /// type_hint(self) -> Optional[str]
-    ///
     /// A type hint can be used to add a hint to a system that the given type
     /// represents something else. For example, the value could be a string, but
     /// this is a scene path.

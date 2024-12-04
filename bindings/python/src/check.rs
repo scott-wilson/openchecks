@@ -102,8 +102,6 @@ impl CheckHint {
         self.inner.contains(other.inner)
     }
 
-    /// all() -> CheckHint
-    ///
     /// All of the check hint flags.
     ///
     /// Returns:
@@ -143,8 +141,6 @@ impl CheckHintIterator {
     }
 }
 
-/// CheckMetadata()
-///
 /// The check metadata.
 ///
 /// This stores the information about the check that is either useful for humans
@@ -172,8 +168,6 @@ impl CheckMetadata {
         Self {}
     }
 
-    /// title(self) -> str
-    ///
     /// The human readable title for the check.
     ///
     /// User interfaces should use the title for displaying the check.
@@ -184,8 +178,6 @@ impl CheckMetadata {
         Err(PyNotImplementedError::new_err("title not implemented"))
     }
 
-    /// description(self) -> str
-    ///
     /// The human readable description for the check.
     ///
     /// This should include information about what the check is looking for,
@@ -200,8 +192,6 @@ impl CheckMetadata {
         ))
     }
 
-    /// hint(self) -> CheckHint
-    ///
     /// The hint gives information about what features the check supports.
     ///
     /// Returns:
@@ -211,8 +201,6 @@ impl CheckMetadata {
     }
 }
 
-/// BaseCheck()
-///
 /// The base check class to be inherited from.
 ///
 /// This is responsible for validating the input data and returning a result
@@ -306,8 +294,6 @@ impl BaseCheck {
         (Self {}, CheckMetadata::new(args, kwargs))
     }
 
-    /// check(self) -> CheckResult[T]
-    ///
     /// Run a validation on the input data and output the result of the
     /// validation.
     ///
@@ -320,8 +306,6 @@ impl BaseCheck {
         Err(PyNotImplementedError::new_err("check not implemented"))
     }
 
-    /// auto_fix(self)
-    ///
     /// Automatically fix the issue detected by the :code:`Check.check` method.
     ///
     /// Raises:
@@ -331,8 +315,6 @@ impl BaseCheck {
     }
 }
 
-/// AsyncBaseCheck()
-///
 /// The base check class to be inherited from for async code.
 ///
 /// This is responsible for validating the input data and returning a result
@@ -434,8 +416,6 @@ impl AsyncBaseCheck {
         (Self {}, CheckMetadata::new(args, kwargs))
     }
 
-    /// async_check(self) -> CheckResult[T]
-    ///
     /// Run a validation on the input data and output the result of the
     /// validation.
     ///
@@ -447,8 +427,6 @@ impl AsyncBaseCheck {
         })
     }
 
-    /// async_auto_fix(self)
-    ///
     /// Automatically fix the issue detected by the :code:`AsyncCheck.async_check` method.
     pub(crate) fn async_auto_fix<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
         pyo3_async_runtimes::tokio::future_into_py::<_, ()>(py, async {
