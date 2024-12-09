@@ -67,7 +67,7 @@ jobs:
       - name: Run Cargo Fmt
         run: cargo fmt --check
       - name: Run Cargo Deny
-        uses: EmbarkStudios/cargo-deny-action@2d8c9929d8f9f42bedba73f1287cb0b479f07acb # v2.0.3
+        uses: EmbarkStudios/cargo-deny-action@e2f4ede4a4e60ea15ff31bc0647485d80c66cfba # v2.0.4
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Setup Python ${{matrix.python-version}}
         id: setup-python
