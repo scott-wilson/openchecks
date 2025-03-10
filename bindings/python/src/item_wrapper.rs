@@ -1,10 +1,16 @@
-use std::sync::Arc;
-
 use pyo3::{exceptions::PyValueError, intern, prelude::*};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub(crate) struct ItemWrapper {
-    item: Arc<PyObject>,
+    item: PyObject,
+}
+
+impl Clone for ItemWrapper {
+    fn clone(&self) -> Self {
+        Python::with_gil(|py| Self {
+            item: self.item.clone_ref(py),
+        })
+    }
 }
 
 impl std::fmt::Display for ItemWrapper {
@@ -56,9 +62,7 @@ impl base_openchecks::Item for ItemWrapper {
 
 impl ItemWrapper {
     pub(crate) fn new(item: PyObject) -> Self {
-        Self {
-            item: Arc::new(item),
-        }
+        Self { item }
     }
 
     pub(crate) fn item(&self) -> &PyObject {
