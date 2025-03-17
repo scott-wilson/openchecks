@@ -221,7 +221,7 @@ jobs:
           echo "GIT=${{ steps.get-release-version.outputs.release-version }}"
           echo "CHANGELOG=${{ steps.query-release-info.outputs.version }}"
 
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+      - uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
       - name: Create Python Archive
         run: tar -czf python-wheels.tar.gz wheels-*/*.whl wheels-*/*.tar.gz wheels-*/*.whl.sigstore wheels-*/*.tar.gz.sigstore
 
@@ -262,7 +262,7 @@ jobs:
         uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
         with:
           egress-policy: audit
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+      - uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
       - name: Publish to PyPI
         uses: PyO3/maturin-action@49453e0a6599125b2698abe070e181399fbcc9ab # v1.47.1
         with:
