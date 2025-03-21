@@ -37,21 +37,26 @@ jobs:
           - windows-latest
           - macos-latest
         python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3" # Latest version
-        exclude:
-          # Skip Python 3.7 on macos-latest due to no support.
-          - os: macos-latest
-            python-version: "3.7"
+          - version: "3.9"
+            freethreaded: false
+          - version: "3.10"
+            freethreaded: false
+          - version: "3.11"
+            freethreaded: false
+          - version: "3.12"
+            freethreaded: false
+          - version: "3.13"
+            freethreaded: false
+          - version: "3.13"
+            freethreaded: true
+          - version: "3" # Latest version
+            freethreaded: false
+          - version: "3" # Latest version
+            freethreaded: true
     runs-on: ${{matrix.os}}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
         with:
           egress-policy: audit
 
@@ -67,13 +72,14 @@ jobs:
       - name: Run Cargo Fmt
         run: cargo fmt --check
       - name: Run Cargo Deny
-        uses: EmbarkStudios/cargo-deny-action@2d8c9929d8f9f42bedba73f1287cb0b479f07acb # v2.0.3
+        uses: EmbarkStudios/cargo-deny-action@0484eedcba649433ebd03d9b7c9c002746bbc4b9 # v2.0.6
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - name: Setup Python ${{matrix.python-version}}
+      - name: Setup Python ${{matrix.python-version.version}} freethreaded=${{matrix.python-version.freethreaded}}
         id: setup-python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
-          python-version: ${{matrix.python-version}}
+          python-version: ${{matrix.python-version.version}}
+          freethreaded: ${{matrix.python-version.freethreaded}}
           cache: 'pip'
       - name: Install dependencies
         run: python -m pip install .[test,docs]
@@ -84,7 +90,7 @@ jobs:
         run: |
           python -m ruff format --check .
       - name: Build Rust
-        uses: PyO3/maturin-action@ea5bac0f1ccd0ab11c805e2b804bfcb65dac2eab # v1.45.0
+        uses: PyO3/maturin-action@49453e0a6599125b2698abe070e181399fbcc9ab # v1.47.1
         with:
           sccache: 'true'
           manylinux: auto

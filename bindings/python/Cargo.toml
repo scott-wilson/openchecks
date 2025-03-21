@@ -11,6 +11,8 @@ name = "openchecks"
 crate-type = ["cdylib"]
 
 [dependencies]
+
+async-trait = "0.1.83"
 pyo3 = { version = "0.23.3" }
 base_openchecks = { path = "../../", package = "openchecks", features = [
     "async-tokio-scheduler",
@@ -20,5 +22,4 @@ pyo3-async-runtimes = { version = "0.23.0", features = [
     "attributes",
     "tokio-runtime",
 ] }
-async-trait = "0.1.83"
 rayon = "1.10.0"

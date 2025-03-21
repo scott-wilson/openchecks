@@ -48,13 +48,22 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3" # Latest version
+          - version: "3.9"
+            freethreaded: false
+          - version: "3.10"
+            freethreaded: false
+          - version: "3.11"
+            freethreaded: false
+          - version: "3.12"
+            freethreaded: false
+          - version: "3.13"
+            freethreaded: false
+          - version: "3.13"
+            freethreaded: true
+          - version: "3" # Latest version
+            freethreaded: false
+          - version: "3" # Latest version
+            freethreaded: true
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -63,7 +72,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
         with:
           egress-policy: audit
 
@@ -74,16 +83,17 @@ jobs:
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@f09c1c0a94de965c15400f5634aa42fac8fb8f88 # v3.27.5
+        uses: github/codeql-action/init@6bb031afdd8eb862ea3fc1848194185e076637e5 # v3.28.11
         with:
           languages: python
 
       # Build Python Project
-      - name: Setup Python ${{matrix.python-version}}
+      - name: Setup Python ${{matrix.python-version.version}} freethreaded=${{matrix.python-version.freethreaded}}
         id: setup-python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
-          python-version: ${{matrix.python-version}}
+          python-version: ${{matrix.python-version.version}}
+          freethreaded: ${{matrix.python-version.freethreaded}}
           cache: 'pip'
       - name: Setup virtual environment
         run: |
@@ -94,6 +104,6 @@ jobs:
 
       # Run the analysis
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@f09c1c0a94de965c15400f5634aa42fac8fb8f88 # v3.27.5
+        uses: github/codeql-action/analyze@6bb031afdd8eb862ea3fc1848194185e076637e5 # v3.28.11
         with:
           category: "/language:python"
