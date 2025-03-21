@@ -49,9 +49,9 @@ jobs:
             freethreaded: false
           - version: "3.13"
             freethreaded: true
-          - "3" # Latest version
+          - version: "3" # Latest version
             freethreaded: false
-          - "3" # Latest version
+          - version: "3" # Latest version
             freethreaded: true
     runs-on: ${{matrix.os}}
     steps:
