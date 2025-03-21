@@ -8,7 +8,7 @@ description = "A simple checks framework"
 authors = [{ name = "Scott Wilson", email = "scott@propersquid.com" }]
 license = { text = "MIT OR Apache-2.0" }
 readme = "README.md"
-requires-python = "~=3.7"
+requires-python = "~=3.9"
 version = "0.1.0"
 
 [project.urls]

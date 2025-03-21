@@ -37,18 +37,13 @@ jobs:
           - windows-latest
           - macos-latest
         python-version:
-          - "3.7"
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
           - "3.13"
+          - "3.13t"
           - "3" # Latest version
-        exclude:
-          # Skip Python 3.7 on macos-latest due to no support.
-          - os: macos-latest
-            python-version: "3.7"
     runs-on: ${{matrix.os}}
     steps:
       - name: Harden Runner
