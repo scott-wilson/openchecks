@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import openchecks
-import pytest
 
 
 def test_run_passed_success() -> None:
