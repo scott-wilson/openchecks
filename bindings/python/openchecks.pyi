@@ -4,7 +4,7 @@ import enum
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
-    from typing import Callable, List, Optional
+    from typing import Callable, Iterable, List, Optional, Tuple
 
 T = TypeVar("T")
 
@@ -120,3 +120,21 @@ def run(check: BaseCheck[T]) -> CheckResult[T]: ...
 def auto_fix(check: BaseCheck[T]) -> CheckResult[T]: ...
 async def async_run(check: AsyncBaseCheck[T]) -> CheckResult[T]: ...
 async def async_auto_fix(check: AsyncBaseCheck[T]) -> CheckResult[T]: ...
+
+class BaseScheduler(Generic[T]):
+    def run(
+        self, checks: Iterable[BaseCheck[T]]
+    ) -> List[Tuple[BaseCheck[T], CheckResult[T]]]: ...
+    def auto_fix(
+        self, check: Iterable[BaseCheck[T]]
+    ) -> List[Tuple[BaseCheck[T], CheckResult[T]]]: ...
+
+class AsyncBaseScheduler(Generic[T]):
+    async def async_run(
+        self, checks: Iterable[AsyncBaseCheck[T]]
+    ) -> List[Tuple[BaseCheck[T], CheckResult[T]]]: ...
+    async def async_auto_fix(
+        self, check: Iterable[AsyncBaseCheck[T]]
+    ) -> List[Tuple[BaseCheck[T], CheckResult[T]]]: ...
+
+class Scheduler(BaseScheduler[T]): ...
