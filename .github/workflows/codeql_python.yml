@@ -48,13 +48,22 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-          - "3.13t"
+          - version: "3.9"
+            freethreaded: false
+          - version: "3.10"
+            freethreaded: false
+          - version: "3.11"
+            freethreaded: false
+          - version: "3.12"
+            freethreaded: false
+          - version: "3.13"
+            freethreaded: false
+          - version: "3.13"
+            freethreaded: true
           - "3" # Latest version
+            freethreaded: false
+          - "3" # Latest version
+            freethreaded: true
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -79,11 +88,12 @@ jobs:
           languages: python
 
       # Build Python Project
-      - name: Setup Python ${{matrix.python-version}}
+      - name: Setup Python ${{matrix.python-version.version}} freethreaded=${{matrix.python-version.freethreaded}}
         id: setup-python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
-          python-version: ${{matrix.python-version}}
+          python-version: ${{matrix.python-version.version}}
+          freethreaded: ${{matrix.python-version.freethreaded}}
           cache: 'pip'
       - name: Setup virtual environment
         run: |
