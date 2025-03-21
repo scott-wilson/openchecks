@@ -18,7 +18,7 @@ use result::CheckResult;
 use runner::{async_auto_fix, async_run, auto_fix, run};
 use status::Status;
 
-#[pymodule]
+#[pymodule(gil_used = false)]
 fn openchecks(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(async_auto_fix, m)?)?;
     m.add_function(wrap_pyfunction!(async_run, m)?)?;

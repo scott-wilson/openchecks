@@ -43,6 +43,7 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
           - "3" # Latest version
         exclude:
           # Skip Python 3.7 on macos-latest due to no support.
