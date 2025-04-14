@@ -116,7 +116,7 @@ jobs:
           python-version: "3"
           architecture: ${{ matrix.platform.python-target }}
       - name: Build wheels
-        uses: PyO3/maturin-action@22fe573c6ed0c03ab9b84e631cbfa49bddf6e20e # v1.47.3
+        uses: PyO3/maturin-action@aef21716ff3dcae8a1c301d23ec3e4446972a6e3 # v1.49.1
         with:
           target: ${{ matrix.platform.cargo-target }}
           args: --release --out wheels-${{ matrix.platform.name }}-${{ matrix.platform.cargo-target }} --find-interpreter
@@ -159,7 +159,7 @@ jobs:
       - name: Prepare Python sdist
         run: 'python scripts/prepare_python_sdist.py $GITHUB_SHA'
       - name: Build sdist
-        uses: PyO3/maturin-action@22fe573c6ed0c03ab9b84e631cbfa49bddf6e20e # v1.47.3
+        uses: PyO3/maturin-action@aef21716ff3dcae8a1c301d23ec3e4446972a6e3 # v1.49.1
         with:
           command: sdist
           args: --out wheels-source
@@ -264,7 +264,7 @@ jobs:
           egress-policy: audit
       - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
       - name: Publish to PyPI
-        uses: PyO3/maturin-action@22fe573c6ed0c03ab9b84e631cbfa49bddf6e20e # v1.47.3
+        uses: PyO3/maturin-action@aef21716ff3dcae8a1c301d23ec3e4446972a6e3 # v1.49.1
         with:
           command: upload
           args: --non-interactive --skip-existing wheels-*/*.whl wheels-*/*.tar.gz
