@@ -78,9 +78,12 @@ pub trait CheckMetadata {
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }
@@ -138,9 +141,12 @@ pub trait CheckMetadata {
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }
@@ -242,9 +248,12 @@ pub trait Check: CheckMetadata {
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }
@@ -306,9 +315,12 @@ pub trait Check: CheckMetadata {
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }

@@ -47,10 +47,13 @@
 ///     }
 /// }
 ///
-/// impl<'a> Item for &'a SceneItem {
-///     type Value = &'a SceneNode;
+/// impl Item for SceneItem {
+///     type Value<'a>
+///             = &'a SceneNode
+///         where
+///             Self: 'a;
 ///
-///     fn value(&self) -> Self::Value {
+///     fn value(&self) -> Self::Value<'_> {
 ///         &self.scene_node
 ///     }
 /// }
@@ -66,10 +69,12 @@ pub trait Item:
     std::cmp::PartialEq + std::cmp::PartialOrd + std::fmt::Display + std::fmt::Debug
 {
     /// The value that is wrapped.
-    type Value;
+    type Value<'a>
+    where
+        Self: 'a;
 
     /// The wrapped value.
-    fn value(&self) -> Self::Value;
+    fn value(&self) -> Self::Value<'_>;
 
     /// A type hint can be used to add a hint to a system that the given type
     /// represents something else. For example, the value could be a string, but
