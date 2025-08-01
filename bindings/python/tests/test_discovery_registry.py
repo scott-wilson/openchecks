@@ -11,7 +11,7 @@ if TYPE_CHECKING:  # pragma: no cover
     pass
 
 
-class TestCheck(openchecks.BaseCheck):
+class Check(openchecks.BaseCheck):
     def check(self) -> openchecks.CheckResult[int]:
         return openchecks.CheckResult.passed("test")
 
@@ -22,7 +22,7 @@ class TestCheck(openchecks.BaseCheck):
         return "description"
 
 
-class AsyncTestCheck(openchecks.AsyncBaseCheck):
+class AsyncCheck(openchecks.AsyncBaseCheck):
     async def async_check(self) -> openchecks.CheckResult[int]:
         return openchecks.CheckResult.passed("test")
 
@@ -35,7 +35,7 @@ class AsyncTestCheck(openchecks.AsyncBaseCheck):
 
 def test_discovery_registry_register_and_gather_success() -> None:
     registry = openchecks.DiscoveryRegistry()
-    registry.register(lambda _: True, lambda _: [TestCheck()])
+    registry.register(lambda _: True, lambda _: [Check()])
     result = registry.gather(None)
 
     assert result
@@ -51,7 +51,7 @@ def test_discovery_registry_gather_empty_plugins_success() -> None:
 
 def test_discovery_registry_query_context_gather_return_some_success() -> None:
     registry = openchecks.DiscoveryRegistry()
-    registry.register(lambda _: True, lambda _: [TestCheck()])
+    registry.register(lambda _: True, lambda _: [Check()])
     result = registry.gather(None)
 
     assert result is not None
@@ -59,7 +59,7 @@ def test_discovery_registry_query_context_gather_return_some_success() -> None:
 
 def test_discovery_registry_query_context_gather_return_none_success() -> None:
     registry = openchecks.DiscoveryRegistry()
-    registry.register(lambda _: False, lambda _: [TestCheck()])
+    registry.register(lambda _: False, lambda _: [Check()])
     result = registry.gather(None)
 
     assert result is None
@@ -68,7 +68,7 @@ def test_discovery_registry_query_context_gather_return_none_success() -> None:
 @pytest.mark.asyncio
 async def test_discovery_registry_register_and_gather_async_success() -> None:
     registry = openchecks.DiscoveryRegistry()
-    registry.register_async(lambda _: True, lambda _: [AsyncTestCheck()])
+    registry.register_async(lambda _: True, lambda _: [AsyncCheck()])
     result = registry.gather_async(None)
 
     assert result
@@ -88,7 +88,7 @@ async def test_discovery_registry_query_context_gather_async_return_some_success
     None
 ):
     registry = openchecks.DiscoveryRegistry()
-    registry.register_async(lambda _: True, lambda _: [AsyncTestCheck()])
+    registry.register_async(lambda _: True, lambda _: [AsyncCheck()])
     result = registry.gather_async(None)
 
     assert result
@@ -99,7 +99,7 @@ async def test_discovery_registry_query_context_gather_async_return_none_success
     None
 ):
     registry = openchecks.DiscoveryRegistry()
-    registry.register_async(lambda _: False, lambda _: [AsyncTestCheck()])
+    registry.register_async(lambda _: False, lambda _: [AsyncCheck()])
     result = registry.gather_async(None)
 
     assert result is None

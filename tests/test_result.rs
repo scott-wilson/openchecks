@@ -12,9 +12,12 @@ impl std::fmt::Display for TestItem {
 }
 
 impl Item for TestItem {
-    type Value = u8;
+    type Value<'a>
+        = u8
+    where
+        Self: 'a;
 
-    fn value(&self) -> Self::Value {
+    fn value(&self) -> Self::Value<'_> {
         self.value
     }
 }

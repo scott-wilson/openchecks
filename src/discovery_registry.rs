@@ -26,9 +26,12 @@ use crate::{AsyncCheck, Check};
 /// # }
 /// #
 /// # impl Item for MyItem {
-/// #     type Value = u8;
+/// #     type Value<'a>
+/// #             = u8
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.value
 /// #     }
 /// # }
