@@ -218,7 +218,7 @@ jobs:
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       - name: Create Python Archive
-        run: tar -czf python-wheels.tar.gz wheels-*/*.whl wheels-*/*.tar.gz wheels-*/*.whl.sigstore wheels-*/*.tar.gz.sigstore
+        run: tar -czf *.tar.gz *.tar.gz.sigstore.json wheels-*/*.whl wheels-*/*.tar.gz wheels-*/*.whl.sigstore.json wheels-*/*.tar.gz.sigstore.json
 
       - name: Create Tag
         run: |
@@ -242,7 +242,7 @@ jobs:
         # sigstore-produced signatures and certificates.
         run: >-
           gh release upload
-          'v${{ steps.query-release-info.outputs.version }}' python-wheels.tar.gz
+          'v${{ steps.query-release-info.outputs.version }}' openchecks-${{ steps.query-release-info.outputs.version }}.tar.gz
           --repo '${{ github.repository }}'
 
   python-pypi-release:

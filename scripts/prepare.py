@@ -4,6 +4,8 @@ import dataclasses
 import pathlib
 import argparse
 import re
+import subprocess
+import shutil
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -14,9 +16,9 @@ def main(version: str) -> None:
     version_obj = _parse_version(version)
     project_dir = pathlib.Path(__file__).parent.parent
     cargo_files = [
+        project_dir / "Cargo.toml",
         project_dir / "bindings" / "c" / "Cargo.toml",
         project_dir / "bindings" / "python" / "Cargo.toml",
-        project_dir / "Cargo.toml",
     ]
     meson_files = [
         project_dir / "bindings" / "c" / "meson.build",
@@ -112,6 +114,16 @@ def _prepare_cargo_file(version: Version, cargo_path: pathlib.Path) -> None:
 
     with cargo_path.open(mode="w") as f_out:
         f_out.write(data)
+
+    subprocess.run(
+        [
+            shutil.which("cargo"),
+            "generate-lockfile",
+            "--manifest-path",
+            cargo_path.as_posix(),
+        ],
+        check=True,
+    )
 
 
 def _prepare_meson_file(version: Version, meson_path: pathlib.Path) -> None:
