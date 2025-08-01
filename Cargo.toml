@@ -20,11 +20,11 @@ include = [
 
 [dependencies]
 arbitrary = { version = "1.4.1", features = ["derive"], optional = true }
-async-trait = "0.1.83"
-bitflags = "2.6.0"
+async-trait = "0.1.88"
+bitflags = "2.9.1"
 
 [dev-dependencies]
-tokio = { version = "1.41.1", features = [
+tokio = { version = "1.47.1", features = [
     "macros",
     "rt-multi-thread",
     "rt",

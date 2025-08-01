@@ -31,5 +31,5 @@ fn test_item_hint() {
 #[test]
 fn test_item_display() {
     let item = TestItem { value: () };
-    assert_eq!(&format!("{}", item), "test");
+    assert_eq!(&format!("{item}"), "test");
 }
