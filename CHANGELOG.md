@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Discovery registry [#329](https://github.com/scott-wilson/openchecks/pull/329)
+- Scheduler [#372](https://github.com/scott-wilson/openchecks/pull/372)
 
 ## [0.1.0] - 2024-08-02
 
