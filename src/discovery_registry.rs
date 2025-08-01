@@ -1,5 +1,11 @@
 use crate::{AsyncCheck, Check};
 
+type QueryFn<Ctx> = Box<dyn Fn(&Ctx) -> bool>;
+type GeneratorFn<Ctx, Item, Items> =
+    Box<dyn Fn(&Ctx) -> Vec<Box<dyn Check<Item = Item, Items = Items>>>>;
+type AsyncGeneratorFn<Ctx, Item, Items> =
+    Box<dyn Fn(&Ctx) -> Vec<Box<dyn AsyncCheck<Item = Item, Items = Items>>>>;
+
 /// The discovery registry allows checks to be discovered based on the input
 /// context.
 ///
@@ -105,14 +111,18 @@ where
     Item: crate::Item,
     Items: IntoIterator<Item = Item>,
 {
-    plugins: Vec<(
-        Box<dyn Fn(&Ctx) -> bool>,
-        Box<dyn Fn(&Ctx) -> Vec<Box<dyn Check<Item = Item, Items = Items>>>>,
-    )>,
-    async_plugins: Vec<(
-        Box<dyn Fn(&Ctx) -> bool>,
-        Box<dyn Fn(&Ctx) -> Vec<Box<dyn AsyncCheck<Item = Item, Items = Items>>>>,
-    )>,
+    plugins: Vec<(QueryFn<Ctx>, GeneratorFn<Ctx, Item, Items>)>,
+    async_plugins: Vec<(QueryFn<Ctx>, AsyncGeneratorFn<Ctx, Item, Items>)>,
+}
+
+impl<Ctx, Item, Items> Default for DiscoveryRegistry<Ctx, Item, Items>
+where
+    Item: crate::Item,
+    Items: IntoIterator<Item = Item>,
+{
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl<Ctx, Item, Items> DiscoveryRegistry<Ctx, Item, Items>
