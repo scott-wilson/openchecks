@@ -12,13 +12,13 @@ crate-type = ["cdylib"]
 
 [dependencies]
 
-async-trait = "0.1.83"
-pyo3 = { version = "0.23.3" }
+async-trait = "0.1.88"
+pyo3 = { version = "0.25.1" }
 base_openchecks = { path = "../../", package = "openchecks", features = [
     "async-tokio-scheduler",
     "threaded-scheduler",
 ] }
-pyo3-async-runtimes = { version = "0.23.0", features = [
+pyo3-async-runtimes = { version = "0.25.0", features = [
     "attributes",
     "tokio-runtime",
 ] }

@@ -22,8 +22,8 @@ repository = "https://github.com/scott-wilson/openchecks/"
 
 [project.optional-dependencies]
 build = [
-    "maturin ~= 1.4; platform_system != \"Linux\"",
-    "maturin[patchelf] ~= 1.4; platform_system == \"Linux\"",
+    "maturin ~= 1.9; platform_system != \"Linux\"",
+    "maturin[patchelf] ~= 1.9; platform_system == \"Linux\"",
 ]
 test = [
     "hypothesis",

@@ -12,8 +12,12 @@ impl std::fmt::Display for TestItem {
 }
 
 impl Item for TestItem {
-    type Value = ();
-    fn value(&self) -> Self::Value {
+    type Value<'a>
+        = ()
+    where
+        Self: 'a;
+
+    fn value(&self) -> Self::Value<'_> {
         self.value
     }
 }
@@ -27,5 +31,5 @@ fn test_item_hint() {
 #[test]
 fn test_item_display() {
     let item = TestItem { value: () };
-    assert_eq!(&format!("{}", item), "test");
+    assert_eq!(&format!("{item}"), "test");
 }

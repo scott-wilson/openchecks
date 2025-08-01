@@ -12,9 +12,12 @@ impl std::fmt::Display for TestItem {
 }
 
 impl Item for TestItem {
-    type Value = u8;
+    type Value<'a>
+        = u8
+    where
+        Self: 'a;
 
-    fn value(&self) -> Self::Value {
+    fn value(&self) -> Self::Value<'_> {
         self.value
     }
 }
@@ -51,7 +54,7 @@ fn test_check_result_debug_success() {
     let result: CheckResult<TestItem, Vec<TestItem>> =
         CheckResult::new(status, message, items, can_fix, can_skip, error);
 
-    let debug_msg = format!("{:?}", result);
+    let debug_msg = format!("{result:?}");
     assert_eq!(&debug_msg, "CheckResult { status: Passed, message: \"test\", items: None, can_fix: false, can_skip: true, error: None, check_duration: 0ns, fix_duration: 0ns }")
 }
 
@@ -68,8 +71,8 @@ fn test_check_result_new_passed() {
     assert_eq!(result.status(), &Status::Passed);
     assert_eq!(result.message(), message);
     assert_eq!(result.items(), &None);
-    assert_eq!(result.can_fix(), false);
-    assert_eq!(result.can_skip(), true);
+    assert!(!result.can_fix());
+    assert!(result.can_skip());
 }
 
 #[test]
@@ -85,8 +88,8 @@ fn test_check_result_new_skipped() {
     assert_eq!(result.status(), &Status::Skipped);
     assert_eq!(result.message(), message);
     assert_eq!(result.items(), &None);
-    assert_eq!(result.can_fix(), false);
-    assert_eq!(result.can_skip(), true);
+    assert!(!result.can_fix());
+    assert!(result.can_skip());
 }
 
 #[test]
@@ -102,8 +105,8 @@ fn test_check_result_new_warning() {
     assert_eq!(result.status(), &Status::Warning);
     assert_eq!(result.message(), message);
     assert_eq!(result.items(), &None);
-    assert_eq!(result.can_fix(), false);
-    assert_eq!(result.can_skip(), true);
+    assert!(!result.can_fix());
+    assert!(result.can_skip());
 }
 
 #[test]
@@ -119,8 +122,8 @@ fn test_check_result_new_failed() {
     assert_eq!(result.status(), &Status::Failed);
     assert_eq!(result.message(), message);
     assert_eq!(result.items(), &None);
-    assert_eq!(result.can_fix(), false);
-    assert_eq!(result.can_skip(), true);
+    assert!(!result.can_fix());
+    assert!(result.can_skip());
 }
 
 #[test]
@@ -162,7 +165,7 @@ fn test_can_fix() {
     let result: CheckResult<TestItem, Vec<TestItem>> =
         CheckResult::new(status, message, items, can_fix, can_skip, error);
 
-    assert_eq!(result.can_fix(), false);
+    assert!(!result.can_fix());
 }
 
 #[test]
@@ -204,5 +207,5 @@ fn test_can_skip() {
     let result: CheckResult<TestItem, Vec<TestItem>> =
         CheckResult::new(status, message, items, can_fix, can_skip, error);
 
-    assert_eq!(result.can_skip(), false);
+    assert!(!result.can_skip());
 }

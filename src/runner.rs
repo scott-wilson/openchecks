@@ -25,9 +25,12 @@
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }
@@ -119,9 +122,12 @@ pub async fn async_run<
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }
@@ -248,9 +254,12 @@ pub async fn async_auto_fix<
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }
@@ -338,9 +347,12 @@ pub fn run<
 /// # }
 /// #
 /// # impl Item for IntItem {
-/// #     type Value = i32;
+/// #     type Value<'a>
+/// #             = i32
+/// #         where
+/// #             Self: 'a;
 /// #
-/// #     fn value(&self) -> Self::Value {
+/// #     fn value(&self) -> Self::Value<'_> {
 /// #         self.0
 /// #     }
 /// # }

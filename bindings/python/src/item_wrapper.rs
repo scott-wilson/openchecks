@@ -53,9 +53,12 @@ impl std::cmp::PartialOrd for ItemWrapper {
 }
 
 impl base_openchecks::Item for ItemWrapper {
-    type Value = PyResult<PyObject>;
+    type Value<'a>
+        = PyResult<PyObject>
+    where
+        Self: 'a;
 
-    fn value(&self) -> Self::Value {
+    fn value(&self) -> Self::Value<'_> {
         Python::with_gil(|py| self.item.call_method0(py, intern!(py, "value")))
     }
 }

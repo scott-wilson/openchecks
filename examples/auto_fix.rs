@@ -12,9 +12,12 @@ impl std::fmt::Display for NumberItem {
 // The item container lets a type that is normally not debuggable, displayable,
 // or sortable to be. This is only really useful for graphical user interfaces.
 impl openchecks::Item for NumberItem {
-    type Value = i32;
+    type Value<'a>
+        = i32
+    where
+        Self: 'a;
 
-    fn value(&self) -> Self::Value {
+    fn value(&self) -> Self::Value<'_> {
         self.number
     }
 }
