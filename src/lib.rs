@@ -9,6 +9,8 @@
 #![deny(clippy::unnecessary_safety_doc)]
 #![deny(missing_docs)]
 
+pub mod scheduler;
+
 mod check;
 mod discovery_registry;
 mod error;
