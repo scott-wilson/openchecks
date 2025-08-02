@@ -216,6 +216,10 @@ jobs:
         run: |
           echo "${{ steps.query-release-info.outputs.release-notes }}"
 
+      - name: Write release notes
+        run: |
+          echo "${{ steps.query-release-info.outputs.release-notes }}" > release.log
+
       - name: Display release version
         run: |
           echo "GIT=${{ steps.get-release-version.outputs.release-version }}"
@@ -242,7 +246,7 @@ jobs:
           'v${{ steps.query-release-info.outputs.version }}'
           --repo '${{ github.repository }}'
           --title 'Release ${{ steps.query-release-info.outputs.version }}'
-          --notes ${{ steps.query-release-info.outputs.release-notes }}
+          --notes-file release.log
       - name: Upload artifact signatures to GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
