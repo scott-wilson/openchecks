@@ -22,4 +22,4 @@ pyo3-async-runtimes = { version = "0.25.0", features = [
     "attributes",
     "tokio-runtime",
 ] }
-rayon = "1.10.0"
+rayon = "1.11.0"
