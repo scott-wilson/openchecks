@@ -86,7 +86,7 @@ jobs:
       - name: Lint with Ruff
         run: |
           python -m ruff check --output-format=github .
-      - name: Lint with Ruff
+      - name: Format with Ruff
         run: |
           python -m ruff format --check .
       - name: Build Rust
