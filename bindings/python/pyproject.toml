@@ -1,18 +1,15 @@
-[build-system]
-requires = ["maturin>=1.4,<2.0"]
-build-backend = "maturin"
-
 [project]
 name = "openchecks"
 description = "A simple checks framework"
-authors = [{ name = "Scott Wilson", email = "scott@propersquid.com" }]
+readme = "README.md"
 license = { text = "MIT OR Apache-2.0" }
-requires-python = "~=3.9"
+authors = [{ name = "Scott Wilson", email = "scott@propersquid.com" }]
 classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Programming Language :: Rust",
 ]
+dependencies = ["typing-extensions ~= 4.15"]
 dynamic = ["version"]
 
 [project.urls]
@@ -21,33 +18,26 @@ repository = "https://github.com/scott-wilson/openchecks/"
 
 [project.optional-dependencies]
 build = [
-    "maturin ~= 1.9; platform_system != \"Linux\"",
-    "maturin[patchelf] ~= 1.9; platform_system == \"Linux\"",
-]
-test = [
-    "hypothesis",
-    "pytest",
-    "pytest-asyncio",
-    "pytest-cov",
-    "pytest-xdist",
-    "ruff",
+  "maturin ~= 1.9; platform_system != \"Linux\"",
+  "maturin[patchelf] ~= 1.9; platform_system == \"Linux\"",
 ]
 docs = ["myst-parser", "sphinx", "sphinx-rtd-theme"]
 fuzz = ["openchecks[test]", "atheris"]
+test = [
+  "hypothesis ~= 6.138",
+  "pytest ~= 8.4",
+  "pytest-asyncio ~= 1.2",
+  "pytest-cov ~= 7.0",
+  "pytest-xdist ~= 3.8",
+  "ruff ~= 0.13",
+]
+
+[build-system]
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-
-[tool.ruff]
-lint.select = ["ANN", "BLE", "D", "E", "F", "I", "N", "PT", "S", "YTT"]
-line-length = 88
-lint.ignore = ["ANN101", "ANN102"]
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.pytest.ini_options]
-asyncio_default_fixture_loop_scope = "function"
 
 [tool.mypy]
 # Start off with these
@@ -55,27 +45,38 @@ warn_unused_configs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 no_implicit_optional = true
-
 # Getting these passing should be easy
 strict_equality = true
 strict_concatenate = true
-
 # Strongly recommend enabling this one as soon as you can
 check_untyped_defs = true
-
 # These shouldn't be too much additional work, but may be tricky to
 # get passing if you use a lot of untyped libraries
 disallow_subclassing_any = true
 disallow_untyped_decorators = true
 disallow_any_generics = true
-
 # These next few are various gradations of forcing use of type annotations
 disallow_untyped_calls = true
 disallow_incomplete_defs = true
 disallow_untyped_defs = true
-
 # This one isn't too hard to get passing, but return on investment is lower
 no_implicit_reexport = true
-
 # This one can be tricky to get passing if you use a lot of untyped libraries
 warn_return_any = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests/"]
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+lint.select = ["ALL"]
+lint.ignore = ["COM812"]
+line-length = 88
+
+[tool.ruff.lint.per-file-ignores]
+"**/{tests,fuzz}/*" = ["INP001", "D100", "D103", "S101", "D101", "D102", "D107"]
+"**/examples/*" = ["INP001"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+

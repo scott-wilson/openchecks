@@ -33,12 +33,11 @@ class IsZeroCheck(openchecks.AsyncBaseCheck):
     async def async_check(self) -> openchecks.CheckResult:
         if self.__number == 0:
             return openchecks.CheckResult.passed("The number is zero.")
-        else:
-            return openchecks.CheckResult.failed(
-                "The number is not zero.",
-                [openchecks.Item(self.__number)],
-                can_fix=True,
-            )
+        return openchecks.CheckResult.failed(
+            "The number is not zero.",
+            [openchecks.Item(self.__number)],
+            can_fix=True,
+        )
 
         # Note: The check method must return a CheckResult in all of its
         # branches. If it doesn't, then the system will return a `SystemError`,

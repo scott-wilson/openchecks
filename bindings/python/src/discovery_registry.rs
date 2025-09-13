@@ -8,8 +8,8 @@ use pyo3::prelude::*;
 /// take the context and transform it into checks to be validated against.
 #[pyclass]
 pub(crate) struct DiscoveryRegistry {
-    plugins: Vec<(PyObject, PyObject)>,
-    async_plugins: Vec<(PyObject, PyObject)>,
+    plugins: Vec<(Py<PyAny>, Py<PyAny>)>,
+    async_plugins: Vec<(Py<PyAny>, Py<PyAny>)>,
 }
 
 #[pymethods]
@@ -51,7 +51,7 @@ impl DiscoveryRegistry {
     ///
     /// If two query functions were to return a valid set of checks, then the
     /// first one that was registered will return the associated checks.
-    pub fn gather(&self, py: Python, context: Bound<PyAny>) -> PyResult<Option<PyObject>> {
+    pub fn gather(&self, py: Python, context: Bound<PyAny>) -> PyResult<Option<Py<PyAny>>> {
         for (query, generator) in &self.plugins {
             if query.call1(py, (&context,))?.is_truthy(py)? {
                 return Ok(Some(generator.call1(py, (context,))?));
@@ -68,7 +68,7 @@ impl DiscoveryRegistry {
     ///
     /// If two query functions were to return a valid set of checks, then the
     /// first one that was registered will return the associated checks.
-    pub fn gather_async(&self, py: Python, context: Bound<PyAny>) -> PyResult<Option<PyObject>> {
+    pub fn gather_async(&self, py: Python, context: Bound<PyAny>) -> PyResult<Option<Py<PyAny>>> {
         for (query, generator) in &self.async_plugins {
             if query.call1(py, (&context,))?.is_truthy(py)? {
                 return Ok(Some(generator.call1(py, (context,))?));

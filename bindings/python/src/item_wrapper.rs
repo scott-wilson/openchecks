@@ -2,12 +2,12 @@ use pyo3::{exceptions::PyValueError, intern, prelude::*};
 
 #[derive(Debug)]
 pub(crate) struct ItemWrapper {
-    item: PyObject,
+    item: Py<PyAny>,
 }
 
 impl Clone for ItemWrapper {
     fn clone(&self) -> Self {
-        Python::with_gil(|py| Self {
+        Python::attach(|py| Self {
             item: self.item.clone_ref(py),
         })
     }
@@ -15,7 +15,7 @@ impl Clone for ItemWrapper {
 
 impl std::fmt::Display for ItemWrapper {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match Python::with_gil(|py| match self.item.bind(py).str() {
+        match Python::attach(|py| match self.item.bind(py).str() {
             Ok(result) => write!(f, "{}", result.to_string_lossy())
                 .map_err(|err| PyErr::new::<PyValueError, _>(err.to_string())),
             Err(err) => Err(err),
@@ -28,7 +28,7 @@ impl std::fmt::Display for ItemWrapper {
 
 impl std::cmp::PartialEq for ItemWrapper {
     fn eq(&self, other: &Self) -> bool {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             // This is a bit of a hack, but we need to convert the type to a
             // Python object.
             let self_py = self.item.bind(py);
@@ -41,7 +41,7 @@ impl std::cmp::PartialEq for ItemWrapper {
 
 impl std::cmp::PartialOrd for ItemWrapper {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             // This is a bit of a hack, but we need to convert the type to a
             // Python object.
             let self_py = self.item.bind(py);
@@ -54,21 +54,21 @@ impl std::cmp::PartialOrd for ItemWrapper {
 
 impl base_openchecks::Item for ItemWrapper {
     type Value<'a>
-        = PyResult<PyObject>
+        = PyResult<Py<PyAny>>
     where
         Self: 'a;
 
     fn value(&self) -> Self::Value<'_> {
-        Python::with_gil(|py| self.item.call_method0(py, intern!(py, "value")))
+        Python::attach(|py| self.item.call_method0(py, intern!(py, "value")))
     }
 }
 
 impl ItemWrapper {
-    pub(crate) fn new(item: PyObject) -> Self {
+    pub(crate) fn new(item: Py<PyAny>) -> Self {
         Self { item }
     }
 
-    pub(crate) fn item(&self) -> &PyObject {
+    pub(crate) fn item(&self) -> &Py<PyAny> {
         &self.item
     }
 }

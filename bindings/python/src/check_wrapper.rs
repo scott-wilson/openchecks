@@ -4,12 +4,12 @@ use pyo3::{intern, prelude::*};
 use crate::item_wrapper::ItemWrapper;
 
 pub(crate) struct CheckWrapper {
-    check: PyObject,
+    check: Py<PyAny>,
 }
 
 impl CheckMetadata for CheckWrapper {
-    fn title(&self) -> std::borrow::Cow<str> {
-        Python::with_gil(|py| {
+    fn title(&self) -> std::borrow::Cow<'_, str> {
+        Python::attach(|py| {
             self.check
                 .call_method0(py, intern!(py, "title"))
                 .unwrap()
@@ -19,8 +19,8 @@ impl CheckMetadata for CheckWrapper {
         })
     }
 
-    fn description(&self) -> std::borrow::Cow<str> {
-        Python::with_gil(|py| {
+    fn description(&self) -> std::borrow::Cow<'_, str> {
+        Python::attach(|py| {
             self.check
                 .call_method0(py, intern!(py, "description"))
                 .unwrap()
@@ -31,7 +31,7 @@ impl CheckMetadata for CheckWrapper {
     }
 
     fn hint(&self) -> base_openchecks::CheckHint {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             self.check
                 .call_method0(py, intern!(py, "hint"))
                 .unwrap()
@@ -48,7 +48,7 @@ impl Check for CheckWrapper {
     type Items = Vec<ItemWrapper>;
 
     fn check(&self) -> base_openchecks::CheckResult<Self::Item, Self::Items> {
-        let result = Python::with_gil(|py| {
+        let result = Python::attach(|py| {
             let result = self.check.call_method0(py, intern!(py, "check"))?;
 
             let status = result
@@ -62,7 +62,7 @@ impl Check for CheckWrapper {
 
             let items = result
                 .call_method0(py, intern!(py, "items"))?
-                .extract::<Option<Vec<PyObject>>>(py)?
+                .extract::<Option<Vec<Py<PyAny>>>>(py)?
                 .map(|items| items.into_iter().map(ItemWrapper::new).collect());
 
             let can_fix = result
@@ -91,7 +91,7 @@ impl Check for CheckWrapper {
     }
 
     fn auto_fix(&mut self) -> Result<(), base_openchecks::Error> {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             self.check.call_method0(py, intern!(py, "auto_fix"))?;
             Ok(())
         })
@@ -100,18 +100,18 @@ impl Check for CheckWrapper {
 }
 
 impl CheckWrapper {
-    pub(crate) fn new(check: PyObject) -> Self {
+    pub(crate) fn new(check: Py<PyAny>) -> Self {
         Self { check }
     }
 }
 
 pub(crate) struct AsyncCheckWrapper {
-    check: PyObject,
+    check: Py<PyAny>,
 }
 
 impl CheckMetadata for AsyncCheckWrapper {
-    fn title(&self) -> std::borrow::Cow<str> {
-        Python::with_gil(|py| {
+    fn title(&self) -> std::borrow::Cow<'_, str> {
+        Python::attach(|py| {
             self.check
                 .call_method0(py, intern!(py, "title"))
                 .unwrap()
@@ -121,8 +121,8 @@ impl CheckMetadata for AsyncCheckWrapper {
         })
     }
 
-    fn description(&self) -> std::borrow::Cow<str> {
-        Python::with_gil(|py| {
+    fn description(&self) -> std::borrow::Cow<'_, str> {
+        Python::attach(|py| {
             self.check
                 .call_method0(py, intern!(py, "description"))
                 .unwrap()
@@ -133,7 +133,7 @@ impl CheckMetadata for AsyncCheckWrapper {
     }
 
     fn hint(&self) -> base_openchecks::CheckHint {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             self.check
                 .call_method0(py, intern!(py, "hint"))
                 .unwrap()
@@ -151,7 +151,7 @@ impl AsyncCheck for AsyncCheckWrapper {
     type Items = Vec<ItemWrapper>;
 
     async fn async_check(&self) -> base_openchecks::CheckResult<Self::Item, Self::Items> {
-        let result = match Python::with_gil(|py| {
+        let result = match Python::attach(|py| {
             pyo3_async_runtimes::tokio::into_future(
                 self.check
                     .call_method0(py, intern!(py, "async_check"))?
@@ -167,11 +167,11 @@ impl AsyncCheck for AsyncCheckWrapper {
                     false,
                     false,
                     Some(base_openchecks::Error::new(&err.to_string())),
-                )
+                );
             }
         };
 
-        let result = Python::with_gil(|py| {
+        let result = Python::attach(|py| {
             let result = result?;
 
             let status = result
@@ -185,7 +185,7 @@ impl AsyncCheck for AsyncCheckWrapper {
 
             let items = result
                 .call_method0(py, intern!(py, "items"))?
-                .extract::<Option<Vec<PyObject>>>(py)?
+                .extract::<Option<Vec<Py<PyAny>>>>(py)?
                 .map(|items| items.into_iter().map(ItemWrapper::new).collect());
 
             let can_fix = result
@@ -214,7 +214,7 @@ impl AsyncCheck for AsyncCheckWrapper {
     }
 
     async fn async_auto_fix(&mut self) -> Result<(), base_openchecks::Error> {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             pyo3_async_runtimes::tokio::into_future(
                 self.check
                     .call_method0(py, intern!(py, "async_auto_fix"))?
@@ -230,7 +230,7 @@ impl AsyncCheck for AsyncCheckWrapper {
 }
 
 impl AsyncCheckWrapper {
-    pub(crate) fn new(check: PyObject) -> Self {
+    pub(crate) fn new(check: Py<PyAny>) -> Self {
         Self { check }
     }
 }

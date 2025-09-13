@@ -1,11 +1,10 @@
-# ruff: noqa: D103,D100,S101
-
 from __future__ import annotations
 
 import atheris
 import hypothesis
-import openchecks
 from hypothesis import strategies
+
+import openchecks
 
 
 @hypothesis.given(

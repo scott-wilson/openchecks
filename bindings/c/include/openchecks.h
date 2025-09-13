@@ -882,4 +882,4 @@ bool openchecks_status_is_pending(const enum OpenChecksStatus *status);
  */
 void openchecks_string_destroy(struct OpenChecksString *string);
 
-#endif /* copenchecks_h */
+#endif  /* copenchecks_h */

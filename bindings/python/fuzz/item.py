@@ -1,17 +1,11 @@
-# ruff: noqa: D103,D100,S101
-
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
 
 import atheris
 import hypothesis
-import openchecks
 import pytest
 from hypothesis import strategies
 
-if TYPE_CHECKING:
-    from typing import Optional
+import openchecks
 
 
 @hypothesis.given(
@@ -23,29 +17,29 @@ if TYPE_CHECKING:
 def fuzz(
     value: int,
     other_value: int,
-    type_hint: Optional[str],
+    type_hint: str | None,
 ) -> None:
     item = openchecks.Item(value, type_hint)
 
     assert item.value() == value
     assert item.type_hint() == type_hint
     assert str(item) == str(value)
-    assert repr(item) == f"Item({repr(value)})"
+    assert repr(item) == f"Item({value!r})"
 
     assert (item == value) is False
     assert (item != value) is True
 
     with pytest.raises(TypeError):
-        item < value  # type: ignore
+        item < value  # type: ignore  # noqa: B015, PGH003
 
     with pytest.raises(TypeError):
-        item <= value  # type: ignore
+        item <= value  # type: ignore  # noqa: B015, PGH003
 
     with pytest.raises(TypeError):
-        item > value  # type: ignore
+        item > value  # type: ignore  # noqa: B015, PGH003
 
     with pytest.raises(TypeError):
-        item >= value  # type: ignore
+        item >= value  # type: ignore  # noqa: B015, PGH003
 
     other_item = openchecks.Item(other_value, type_hint)
 

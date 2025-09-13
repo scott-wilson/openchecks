@@ -69,5 +69,8 @@ docs/_build/
 # VSCode
 .vscode/
 
+# Neovim
+.nvim.lua
+
 # Pyenv
 .python-version

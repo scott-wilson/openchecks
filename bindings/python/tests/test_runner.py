@@ -1,9 +1,8 @@
-# ruff: noqa: D103,D100,S101
-
 from __future__ import annotations
 
-import openchecks
 import pytest
+
+import openchecks
 
 
 def test_run_passed_success() -> None:
@@ -45,7 +44,7 @@ def test_run_failed_success() -> None:
 def test_run_failed_check_returns_not_result() -> None:
     class MockCheck(openchecks.BaseCheck):
         def check(self) -> openchecks.CheckResult[int]:
-            return None  # type: ignore
+            return None  # type: ignore  # noqa: PGH003
 
         def title(self) -> str:
             return "title"
@@ -79,12 +78,12 @@ def test_run_failed_check_raises_error() -> None:
     err_result = result.error()
     assert err_result is not None
     assert isinstance(err_result, openchecks.CheckError)
-    assert str(err_result) == str("RuntimeError: test")
+    assert str(err_result) == "RuntimeError: test"
 
 
 def test_run_failed_check_does_not_inherit_base_check() -> None:
     check = None
-    result = openchecks.run(check)  # type: ignore
+    result = openchecks.run(check)  # type: ignore  # noqa: PGH003
 
     assert result.status() == openchecks.Status.SystemError
 
@@ -126,7 +125,7 @@ def test_auto_fix_passed_success() -> None:
 
 def test_auto_fix_failed_check_does_not_inherit_base_check() -> None:
     check = None
-    result = openchecks.auto_fix(check)  # type: ignore
+    result = openchecks.auto_fix(check)  # type: ignore  # noqa: PGH003
 
     assert result.status() == openchecks.Status.SystemError
 
@@ -223,7 +222,7 @@ async def test_async_run_failed_success() -> None:
 async def test_async_run_failed_check_returns_not_result() -> None:
     class MockCheck(openchecks.AsyncBaseCheck):
         async def async_check(self) -> openchecks.CheckResult[int]:
-            return None  # type: ignore
+            return None  # type: ignore  # noqa: PGH003
 
         def title(self) -> str:
             return "title"
@@ -264,7 +263,7 @@ async def test_async_run_failed_check_raises_error() -> None:
 @pytest.mark.asyncio
 async def test_async_run_failed_check_does_not_inherit_base_check() -> None:
     check = None
-    result = await openchecks.async_run(check)  # type: ignore
+    result = await openchecks.async_run(check)  # type: ignore  # noqa: PGH003
 
     assert result.status() == openchecks.Status.SystemError
 
@@ -308,7 +307,7 @@ async def test_async_auto_fix_passed_success() -> None:
 @pytest.mark.asyncio
 async def test_async_auto_fix_failed_check_does_not_inherit_base_check() -> None:
     check = None
-    result = await openchecks.async_auto_fix(check)  # type: ignore
+    result = await openchecks.async_auto_fix(check)  # type: ignore  # noqa: PGH003
 
     assert result.status() == openchecks.Status.SystemError
 

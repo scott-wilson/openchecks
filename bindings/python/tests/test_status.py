@@ -1,9 +1,8 @@
-# ruff: noqa: D103,D100,S101
-
 from __future__ import annotations
 
-import openchecks
 import pytest
+
+import openchecks
 
 
 @pytest.mark.parametrize(
@@ -17,7 +16,7 @@ import pytest
         (openchecks.Status.SystemError, False),
     ],
 )
-def test_status_is_pending_success(status: openchecks.Status, expected: bool) -> None:
+def test_status_is_pending_success(status: openchecks.Status, expected: bool) -> None:  # noqa: FBT001
     assert status.is_pending() == expected
 
 
@@ -32,7 +31,7 @@ def test_status_is_pending_success(status: openchecks.Status, expected: bool) ->
         (openchecks.Status.SystemError, False),
     ],
 )
-def test_status_has_passed_success(status: openchecks.Status, expected: bool) -> None:
+def test_status_has_passed_success(status: openchecks.Status, expected: bool) -> None:  # noqa: FBT001
     assert status.has_passed() == expected
 
 
@@ -47,5 +46,5 @@ def test_status_has_passed_success(status: openchecks.Status, expected: bool) ->
         (openchecks.Status.SystemError, True),
     ],
 )
-def test_status_has_failed_success(status: openchecks.Status, expected: bool) -> None:
+def test_status_has_failed_success(status: openchecks.Status, expected: bool) -> None:  # noqa: FBT001
     assert status.has_failed() == expected

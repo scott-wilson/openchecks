@@ -1,16 +1,10 @@
-# ruff: noqa: D103,D100,S101
-
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
 
 import atheris
 import hypothesis
-import openchecks
 from hypothesis import strategies
 
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import List, Optional
+import openchecks
 
 
 @hypothesis.given(
@@ -33,13 +27,13 @@ if TYPE_CHECKING:  # pragma: no cover
     can_skip=strategies.booleans(),
     error=strategies.one_of(strategies.none(), strategies.builds(Exception)),
 )
-def fuzz(
+def fuzz(  # noqa: PLR0913
     status: openchecks.Status,
     message: str,
-    items: Optional[List[openchecks.Item[int]]],
-    can_fix: bool,
-    can_skip: bool,
-    error: Optional[BaseException],
+    items: list[openchecks.Item[int]] | None,
+    can_fix: bool,  # noqa: FBT001
+    can_skip: bool,  # noqa: FBT001
+    error: BaseException | None,
 ) -> None:
     result = openchecks.CheckResult(status, message, items, can_fix, can_skip, error)
     _validate(result, status, message, items, can_fix, can_skip, error)
@@ -61,14 +55,14 @@ def fuzz(
     _validate(result, openchecks.Status.Failed, message, items, can_fix, can_skip, None)
 
 
-def _validate(
+def _validate(  # noqa: PLR0913
     result: openchecks.CheckResult[int],
     status: openchecks.Status,
     message: str,
-    items: Optional[List[openchecks.Item[int]]],
-    can_fix: bool,
-    can_skip: bool,
-    error: Optional[BaseException],
+    items: list[openchecks.Item[int]] | None,
+    can_fix: bool,  # noqa: FBT001
+    can_skip: bool,  # noqa: FBT001
+    error: BaseException | None,
 ) -> None:
     assert result.status() == status
     assert result.message() == message

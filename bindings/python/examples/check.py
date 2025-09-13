@@ -33,10 +33,9 @@ class IsEvenCheck(openchecks.BaseCheck):
     def check(self) -> openchecks.CheckResult:
         if self.__number % 2 == 0:
             return openchecks.CheckResult.passed("The number is even.")
-        else:
-            return openchecks.CheckResult.failed(
-                "The number is not even.", [openchecks.Item(self.__number)]
-            )
+        return openchecks.CheckResult.failed(
+            "The number is not even.", [openchecks.Item(self.__number)]
+        )
 
         # Note: The check method must return a CheckResult in all of its
         # branches. If it doesn't, then the system will return a `SystemError`,
