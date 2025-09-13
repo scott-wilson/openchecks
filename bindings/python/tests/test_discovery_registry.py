@@ -1,14 +1,8 @@
-# ruff: noqa: D100,D101,D102,D103,S101
-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-import openchecks
 import pytest
 
-if TYPE_CHECKING:  # pragma: no cover
-    pass
+import openchecks
 
 
 class Check(openchecks.BaseCheck):

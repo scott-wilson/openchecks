@@ -2,12 +2,20 @@
 name = "copenchecks"
 version = "0.2.0"
 edition = "2021"
-license = "MIT OR Apache-2.0"
 repository = "https://github.com/scott-wilson/openchecks"
+license = "MIT OR Apache-2.0"
 
 [lib]
+crate-type = ["cdylib", "lib", "staticlib"]
 name = "copenchecks"
-crate-type = ["staticlib", "cdylib", "lib"]
+
+[dependencies]
+base_openchecks = { package = "openchecks", path = "../../" }
+bitflags = "2.9.1"
+libc = "0.2.174"
+
+[build-dependencies]
+cbindgen = "0.29.0"
 
 [profile.release]
 panic = "abort"
@@ -17,10 +25,3 @@ panic = "abort"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-base_openchecks = { path = "../../", package = "openchecks" }
-bitflags = "2.9.1"
-libc = "0.2.174"
-
-[build-dependencies]
-cbindgen = "0.29.0"

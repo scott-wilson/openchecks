@@ -1,5 +1,3 @@
-# ruff: noqa: D103,D100,S101
-
 from __future__ import annotations
 
 import openchecks
@@ -58,7 +56,7 @@ def test_run_failed_success() -> None:
 def test_run_failed_check_returns_not_result() -> None:
     class MockCheck(openchecks.BaseCheck):
         def check(self) -> openchecks.CheckResult[int]:
-            return None  # type: ignore
+            return None  # type: ignore  # noqa: PGH003
 
         def title(self) -> str:
             return "title"
@@ -106,13 +104,13 @@ def test_run_failed_check_raises_error() -> None:
         err_result = result.error()
         assert err_result is not None
         assert isinstance(err_result, openchecks.CheckError)
-        assert str(err_result) == str("RuntimeError: test")
+        assert str(err_result) == "RuntimeError: test"
 
 
 def test_run_failed_check_does_not_inherit_base_check() -> None:
     check = None
     scheduler = openchecks.Scheduler()
-    results = scheduler.run([check])  # type: ignore
+    results = scheduler.run([check])  # type: ignore  # noqa: PGH003
 
     assert len(results) == 1
 
@@ -176,7 +174,7 @@ def test_auto_fix_passed_success() -> None:
 def test_auto_fix_failed_check_does_not_inherit_base_check() -> None:
     check = None
     scheduler = openchecks.Scheduler()
-    results = scheduler.run([check])  # type: ignore
+    results = scheduler.run([check])  # type: ignore  # noqa: PGH003
 
     assert len(results) == 1
 

@@ -1,15 +1,9 @@
-# ruff: noqa: D103,D100,S101
-
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import hypothesis
-import openchecks
 from hypothesis import strategies
 
-if TYPE_CHECKING:
-    from typing import List, Optional
+import openchecks
 
 
 @hypothesis.given(
@@ -32,13 +26,13 @@ if TYPE_CHECKING:
     can_skip=strategies.booleans(),
     error=strategies.one_of(strategies.none(), strategies.builds(Exception)),
 )
-def test_check_result_success(
+def test_check_result_success(  # noqa: PLR0913
     status: openchecks.Status,
     message: str,
-    items: Optional[List[openchecks.Item[int]]],
-    can_fix: bool,
-    can_skip: bool,
-    error: Optional[BaseException],
+    items: list[openchecks.Item[int]] | None,
+    can_fix: bool,  # noqa: FBT001
+    can_skip: bool,  # noqa: FBT001
+    error: BaseException | None,
 ) -> None:
     result = openchecks.CheckResult(status, message, items, can_fix, can_skip, error)
 
@@ -82,9 +76,9 @@ def test_check_result_success(
 )
 def test_check_result_skipped_success(
     message: str,
-    items: Optional[List[openchecks.Item[int]]],
-    can_fix: bool,
-    can_skip: bool,
+    items: list[openchecks.Item[int]] | None,
+    can_fix: bool,  # noqa: FBT001
+    can_skip: bool,  # noqa: FBT001
 ) -> None:
     status = openchecks.Status.Skipped
     result = openchecks.CheckResult.skipped(message, items, can_fix, can_skip)
@@ -115,9 +109,9 @@ def test_check_result_skipped_success(
 )
 def test_check_result_passed_success(
     message: str,
-    items: Optional[List[openchecks.Item[int]]],
-    can_fix: bool,
-    can_skip: bool,
+    items: list[openchecks.Item[int]] | None,
+    can_fix: bool,  # noqa: FBT001
+    can_skip: bool,  # noqa: FBT001
 ) -> None:
     status = openchecks.Status.Passed
     result = openchecks.CheckResult.passed(message, items, can_fix, can_skip)
@@ -148,9 +142,9 @@ def test_check_result_passed_success(
 )
 def test_check_result_warning_success(
     message: str,
-    items: Optional[List[openchecks.Item[int]]],
-    can_fix: bool,
-    can_skip: bool,
+    items: list[openchecks.Item[int]] | None,
+    can_fix: bool,  # noqa: FBT001
+    can_skip: bool,  # noqa: FBT001
 ) -> None:
     status = openchecks.Status.Warning
     result = openchecks.CheckResult.warning(message, items, can_fix, can_skip)
@@ -181,9 +175,9 @@ def test_check_result_warning_success(
 )
 def test_check_result_failed_success(
     message: str,
-    items: Optional[List[openchecks.Item[int]]],
-    can_fix: bool,
-    can_skip: bool,
+    items: list[openchecks.Item[int]] | None,
+    can_fix: bool,  # noqa: FBT001
+    can_skip: bool,  # noqa: FBT001
 ) -> None:
     status = openchecks.Status.Failed
     result = openchecks.CheckResult.failed(message, items, can_fix, can_skip)

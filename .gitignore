@@ -1,4 +1,5 @@
 .vscode/
+.nvim.lua
 
 /target
 /Cargo.lock

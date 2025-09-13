@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use pyo3::{intern, prelude::*, types::PyString, BoundObject};
+use pyo3::{BoundObject, intern, prelude::*, types::PyString};
 
 /// The item is a wrapper to make a result item more user interface friendly.
 ///
@@ -48,7 +48,7 @@ use pyo3::{intern, prelude::*, types::PyString, BoundObject};
 #[pyclass(subclass)]
 #[derive(Debug, Clone)]
 pub(crate) struct Item {
-    value: Arc<PyObject>,
+    value: Arc<Py<PyAny>>,
     type_hint: Option<String>,
 }
 
@@ -56,7 +56,7 @@ pub(crate) struct Item {
 impl Item {
     #[new]
     #[pyo3(signature = (value, type_hint = None))]
-    fn new(value: PyObject, type_hint: Option<String>) -> Self {
+    fn new(value: Py<PyAny>, type_hint: Option<String>) -> Self {
         Self {
             value: Arc::new(value),
             type_hint,

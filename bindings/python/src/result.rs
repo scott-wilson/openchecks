@@ -274,8 +274,8 @@ impl CheckResult {
     ///
     /// Returns:
     ///     Optional[List[Item[T]]]: The items that caused the result.
-    pub(crate) fn items(&self) -> Option<Vec<PyObject>> {
-        Python::with_gil(|py| {
+    pub(crate) fn items(&self) -> Option<Vec<Py<PyAny>>> {
+        Python::attach(|py| {
             self.inner
                 .items()
                 .as_ref()

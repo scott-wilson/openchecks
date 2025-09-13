@@ -37,14 +37,14 @@ pub trait CheckMetadata {
     /// The human readable title for the check.
     ///
     /// User interfaces should use the title for displaying the check.
-    fn title(&self) -> Cow<str>;
+    fn title(&self) -> Cow<'_, str>;
 
     /// The human readable description for the check.
     ///
     /// This should include information about what the check is looking for,
     /// what are the conditions for the different statuses it supports, and if
     /// there's an auto-fix, what the auto-fix will do.
-    fn description(&self) -> Cow<str>;
+    fn description(&self) -> Cow<'_, str>;
 
     /// The hint gives information about what features the check supports.
     fn hint(&self) -> CheckHint {

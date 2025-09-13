@@ -1,20 +1,14 @@
-# ruff: noqa: D103,D100,D101,D102,D107,S101
-
 from __future__ import annotations
-
-from typing import TYPE_CHECKING
 
 import atheris
 import hypothesis
-import openchecks
 from hypothesis import strategies
 
-if TYPE_CHECKING:  # pragma: no cover
-    from typing import List, Optional
+import openchecks
 
 
 class Check(openchecks.BaseCheck):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         title: str,
         description: str,
@@ -22,10 +16,10 @@ class Check(openchecks.BaseCheck):
         status: openchecks.Status,
         fix_status: openchecks.Status,
         message: str,
-        items: Optional[List[openchecks.Item[int]]],
-        can_fix: bool,
-        can_skip: bool,
-        error: Optional[BaseException],
+        items: list[openchecks.Item[int]] | None,
+        can_fix: bool,  # noqa: FBT001
+        can_skip: bool,  # noqa: FBT001
+        error: BaseException | None,
     ) -> None:
         self._title = title
         self._description = description
@@ -122,20 +116,20 @@ def check_hints(draw: strategies.DrawFn) -> openchecks.CheckHint:
 def fuzz(
     check: Check,
 ) -> None:
-    assert check.title() == check._title
-    assert check.description() == check._description
-    assert check.hint() == check._hint
+    assert check.title() == check._title  # noqa: SLF001
+    assert check.description() == check._description  # noqa: SLF001
+    assert check.hint() == check._hint  # noqa: SLF001
 
     result = check.check()
 
-    assert result.status() == check._status
-    assert result.message() == check._message
-    assert result.items() == check._items
+    assert result.status() == check._status  # noqa: SLF001
+    assert result.message() == check._message  # noqa: SLF001
+    assert result.items() == check._items  # noqa: SLF001
 
-    if check._error:
+    if check._error:  # noqa: SLF001
         assert isinstance(result.error(), openchecks.CheckError)
 
-        assert str(result.error()) == str(check._error)
+        assert str(result.error()) == str(check._error)  # noqa: SLF001
     else:
         assert result.error() is None
 
@@ -143,8 +137,8 @@ def fuzz(
         assert result.can_fix() is False
         assert result.can_skip() is False
     else:
-        assert result.can_fix() == check._can_fix
-        assert result.can_skip() == check._can_skip
+        assert result.can_fix() == check._can_fix  # noqa: SLF001
+        assert result.can_skip() == check._can_skip  # noqa: SLF001
 
     if result.status().has_failed() and result.can_fix():
         fix_result = openchecks.auto_fix(check)
@@ -159,27 +153,27 @@ def fuzz(
             assert fix_result.message() == "Error in auto fix."
             assert fix_result.items() is None
 
-            if check._error:
+            if check._error:  # noqa: SLF001
                 assert isinstance(fix_result.error(), openchecks.CheckError)
 
                 assert (
                     str(fix_result.error())
-                    == f"{check._error.__class__.__name__}: {check._error}"
+                    == f"{check._error.__class__.__name__}: {check._error}"  # noqa: SLF001
                 )
             else:
                 assert result.error() is None
         else:
-            assert fix_result.status() == check._fix_status
-            assert fix_result.message() == check._message
-            assert fix_result.items() == check._items
+            assert fix_result.status() == check._fix_status  # noqa: SLF001
+            assert fix_result.message() == check._message  # noqa: SLF001
+            assert fix_result.items() == check._items  # noqa: SLF001
             assert fix_result.error() is None
 
         if fix_result.status() == openchecks.Status.SystemError:
             assert fix_result.can_fix() is False
             assert fix_result.can_skip() is False
         else:
-            assert fix_result.can_fix() == check._can_fix
-            assert fix_result.can_skip() == check._can_skip
+            assert fix_result.can_fix() == check._can_fix  # noqa: SLF001
+            assert fix_result.can_skip() == check._can_skip  # noqa: SLF001
 
 
 if __name__ == "__main__":

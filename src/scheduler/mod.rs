@@ -22,6 +22,8 @@ mod async_tokio_scheduler;
 #[cfg(feature = "async-tokio-scheduler")]
 pub use async_tokio_scheduler::AsyncTokioScheduler;
 
+type BoxCheck<Item, Items> = Box<dyn Check<Item = Item, Items = Items> + Send>;
+
 /// A trait for building schedulers.
 ///
 /// A type implementing the scheduler should avoid requiring any state except
@@ -38,10 +40,7 @@ pub trait Scheduler {
     fn run<Item: crate::Item + Send, Items: std::iter::IntoIterator<Item = Item> + Send>(
         &self,
         checks: Vec<Box<dyn Check<Item = Item, Items = Items> + Send>>,
-    ) -> Vec<(
-        Box<dyn Check<Item = Item, Items = Items> + Send>,
-        CheckResult<Item, Items>,
-    )>;
+    ) -> Vec<(BoxCheck<Item, Items>, CheckResult<Item, Items>)>;
 
     /// Run the auto fix for all of the input checks and return back the checks
     /// and the associated result.
@@ -52,10 +51,7 @@ pub trait Scheduler {
     fn auto_fix<Item: crate::Item + Send, Items: std::iter::IntoIterator<Item = Item> + Send>(
         &self,
         checks: Vec<Box<dyn Check<Item = Item, Items = Items> + Send>>,
-    ) -> Vec<(
-        Box<dyn Check<Item = Item, Items = Items> + Send>,
-        CheckResult<Item, Items>,
-    )>;
+    ) -> Vec<(BoxCheck<Item, Items>, CheckResult<Item, Items>)>;
 }
 
 /// A trait for building asynchronous schedulers.

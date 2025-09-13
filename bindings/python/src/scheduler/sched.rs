@@ -20,7 +20,7 @@ impl Scheduler {
         &self,
         py: Python,
         checks: &Bound<'_, PyAny>,
-    ) -> PyResult<Vec<(PyObject, CheckResult)>> {
+    ) -> PyResult<Vec<(Py<PyAny>, CheckResult)>> {
         let mut results = Vec::with_capacity(checks.len()?);
 
         for check in checks.try_iter()? {
@@ -36,7 +36,7 @@ impl Scheduler {
         &self,
         py: Python,
         checks: &Bound<'_, PyAny>,
-    ) -> PyResult<Vec<(PyObject, CheckResult)>> {
+    ) -> PyResult<Vec<(Py<PyAny>, CheckResult)>> {
         let mut results = Vec::with_capacity(checks.len()?);
 
         for check in checks.try_iter()? {

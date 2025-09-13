@@ -39,7 +39,7 @@ use crate::{check_wrapper::AsyncCheckWrapper, check_wrapper::CheckWrapper, resul
 ///         assert result.status() == Status.Passed
 ///
 #[pyfunction]
-pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
+pub(crate) fn run(py: Python<'_>, check: Py<PyAny>) -> PyResult<CheckResult> {
     if !check.bind(py).is_instance_of::<crate::BaseCheck>() {
         return CheckResult::new(
             py,
@@ -110,7 +110,7 @@ pub(crate) fn run(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
 ///         result = auto_fix(check)
 ///         assert result.status() == Status.Passed
 #[pyfunction]
-pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult> {
+pub(crate) fn auto_fix(py: Python<'_>, check: Py<PyAny>) -> PyResult<CheckResult> {
     if !check.bind(py).is_instance_of::<crate::BaseCheck>() {
         return CheckResult::new(
             py,
@@ -173,9 +173,9 @@ pub(crate) fn auto_fix(py: Python<'_>, check: PyObject) -> PyResult<CheckResult>
 ///         asyncio.run(main())
 ///
 #[pyfunction]
-pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<Bound<'_, PyAny>> {
+pub(crate) fn async_run(py: Python<'_>, check: Py<PyAny>) -> PyResult<Bound<'_, PyAny>> {
     pyo3_async_runtimes::tokio::future_into_py(py, async move {
-        let type_check_result = Python::with_gil(|py| {
+        let type_check_result = Python::attach(|py| {
             if !check.bind(py).is_instance_of::<crate::AsyncBaseCheck>() {
                 Some(CheckResult::new(
                     py,
@@ -261,9 +261,9 @@ pub(crate) fn async_run(py: Python<'_>, check: PyObject) -> PyResult<Bound<'_, P
 ///
 ///     asyncio.run(main())
 #[pyfunction]
-pub(crate) fn async_auto_fix(py: Python<'_>, check: PyObject) -> PyResult<Bound<'_, PyAny>> {
+pub(crate) fn async_auto_fix(py: Python<'_>, check: Py<PyAny>) -> PyResult<Bound<'_, PyAny>> {
     pyo3_async_runtimes::tokio::future_into_py(py, async move {
-        let type_check_result = Python::with_gil(|py| {
+        let type_check_result = Python::attach(|py| {
             if !check.bind(py).is_instance_of::<crate::AsyncBaseCheck>() {
                 Some(CheckResult::new(
                     py,
