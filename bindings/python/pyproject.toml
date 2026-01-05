@@ -24,12 +24,12 @@ build = [
 docs = ["myst-parser", "sphinx", "sphinx-rtd-theme"]
 fuzz = ["openchecks[test]", "atheris"]
 test = [
-  "hypothesis ~= 6.138",
-  "pytest ~= 8.4",
-  "pytest-asyncio ~= 1.2",
+  "hypothesis ~= 6.148",
+  "pytest ~= 9.0",
+  "pytest-asyncio ~= 1.3",
   "pytest-cov ~= 7.0",
   "pytest-xdist ~= 3.8",
-  "ruff ~= 0.13",
+  "ruff ~= 0.14",
 ]
 
 [build-system]
