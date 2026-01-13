@@ -44,7 +44,7 @@ jobs:
         with:
           shared-key: lang-rust-${{runner.os}}
       - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@0e76c5c569f13f7eb21e8e5b26fe710062b57b62 # v2.65.13
+        uses: taiki-e/install-action@03ef6f57d573ca4522fb02950f326083373b85bf # v2.66.2
         with:
           tool: cargo-llvm-cov
       - name: Run Cargo Clippy
@@ -52,7 +52,7 @@ jobs:
       - name: Run Cargo Fmt
         run: cargo fmt --check
       - name: Run Cargo Deny
-        uses: EmbarkStudios/cargo-deny-action@76cd80eb775d7bbbd2d80292136d74d39e1b4918 # v2.0.14
+        uses: EmbarkStudios/cargo-deny-action@3fd3802e88374d3fe9159b834c7714ec57d6c979 # v2.0.15
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Generate coverage report from Rust tests
         run: cargo llvm-cov --all-features --lcov --output-path lcov.info
