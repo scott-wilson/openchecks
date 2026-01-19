@@ -44,7 +44,7 @@ jobs:
         with:
           shared-key: lang-rust-${{runner.os}}
       - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@03ef6f57d573ca4522fb02950f326083373b85bf # v2.66.2
+        uses: taiki-e/install-action@542cebaaed782771e619bd5609d97659d109c492 # v2.66.7
         with:
           tool: cargo-llvm-cov
       - name: Run Cargo Clippy
