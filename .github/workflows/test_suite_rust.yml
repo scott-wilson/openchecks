@@ -34,7 +34,7 @@ jobs:
     runs-on: ${{matrix.os}}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@e3f713f2d8f53843e71c69a996d56f51aa9adfb9 # v2.14.1
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
         with:
           egress-policy: audit
 
@@ -44,7 +44,7 @@ jobs:
         with:
           shared-key: lang-rust-${{runner.os}}
       - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@650c5ca14212efbbf3e580844b04bdccf68dac31 # v2.67.18
+        uses: taiki-e/install-action@1e67dedb5e3c590e1c9d9272ace46ef689da250d # v2.67.27
         with:
           tool: cargo-llvm-cov
       - name: Run Cargo Clippy
