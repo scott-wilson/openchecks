@@ -58,8 +58,6 @@ jobs:
             freethreaded: false
           - version: "3.13"
             freethreaded: false
-          - version: "3.13"
-            freethreaded: true
           - version: "3" # Latest version
             freethreaded: false
           - version: "3" # Latest version
@@ -94,7 +92,7 @@ jobs:
         with:
           python-version: ${{matrix.python-version.version}}
           freethreaded: ${{matrix.python-version.freethreaded}}
-          cache: 'pip'
+          cache: "pip"
       - name: Setup virtual environment
         run: |
           python -m venv .venv
