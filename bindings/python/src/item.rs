@@ -45,7 +45,7 @@ use pyo3::{BoundObject, intern, prelude::*, types::PyString};
 ///         assert a < b
 ///         assert str(a) == "a"
 ///
-#[pyclass(subclass)]
+#[pyclass(subclass, from_py_object)]
 #[derive(Debug, Clone)]
 pub(crate) struct Item {
     value: Arc<Py<PyAny>>,

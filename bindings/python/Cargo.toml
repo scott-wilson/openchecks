@@ -16,9 +16,9 @@ base_openchecks = { features = [
   "async-tokio-scheduler",
   "threaded-scheduler",
 ], package = "openchecks", path = "../../" }
-pyo3 = "0.26.0"
-pyo3-async-runtimes = { version = "0.26.0", features = [
+pyo3 = "0.29.0"
+pyo3-async-runtimes = { version = "0.29.0", features = [
   "attributes",
   "tokio-runtime",
 ] }
-rayon = "1.11.0"
+rayon = "1.12.0"
