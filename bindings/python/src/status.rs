@@ -20,7 +20,7 @@ use pyo3::prelude::*;
 ///   otherwise invalid. If a validation process finds a result with this
 ///   status, then the process should not let the next process after run at all
 ///   until the check has been fixed by a developer.
-#[pyclass(eq, eq_int)]
+#[pyclass(eq, eq_int, from_py_object)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Status {
     /// The check is waiting to run. A check should not return this status, but

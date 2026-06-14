@@ -9,8 +9,9 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
   "Programming Language :: Rust",
 ]
-dependencies = ["typing-extensions ~= 4.15"]
+dependencies = ["typing-extensions >= 4.15,<5"]
 dynamic = ["version"]
+requires-python = ">=3.9,<4"
 
 [project.urls]
 documentation = "https://openchecks.readthedocs.io/"
@@ -18,8 +19,8 @@ repository = "https://github.com/scott-wilson/openchecks/"
 
 [project.optional-dependencies]
 build = [
-  "maturin ~= 1.9; platform_system != \"Linux\"",
-  "maturin[patchelf] ~= 1.9; platform_system == \"Linux\"",
+  "maturin >= 1.13,<2; platform_system != \"Linux\"",
+  "maturin[patchelf] >= 1.13,<2; platform_system == \"Linux\"",
 ]
 docs = ["myst-parser", "sphinx", "sphinx-rtd-theme"]
 fuzz = ["openchecks[test]", "atheris"]
@@ -33,7 +34,7 @@ test = [
 ]
 
 [build-system]
-requires = ["maturin>=1.4,<2.0"]
+requires = ["maturin>=1.13,<2.0"]
 build-backend = "maturin"
 
 [tool.maturin]
@@ -79,4 +80,3 @@ line-length = 88
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-

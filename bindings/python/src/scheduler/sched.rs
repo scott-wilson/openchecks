@@ -12,8 +12,8 @@ impl Scheduler {
     pub(crate) fn new(
         args: &Bound<'_, PyAny>,
         kwargs: Option<&Bound<'_, PyAny>>,
-    ) -> (Self, BaseScheduler) {
-        (Self, BaseScheduler::new(args, kwargs))
+    ) -> PyClassInitializer<Self> {
+        PyClassInitializer::from(BaseScheduler::new(args, kwargs)).add_subclass(Self)
     }
 
     pub(crate) fn run(

@@ -22,7 +22,7 @@ use scheduler::{
 };
 use status::Status;
 
-#[pymodule(gil_used = false)]
+#[pymodule]
 pub mod openchecks {
     #[pymodule_export]
     use super::{async_auto_fix, async_run, auto_fix, run};

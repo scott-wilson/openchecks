@@ -11,7 +11,7 @@ use pyo3::prelude::*;
 /// - :code:`AUTO_FIX`: The check supports auto-fixing. This does not guarantee
 ///   that the auto-fix is implemented, but instead that the auto-fix should be
 ///   implemented.
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct CheckHint {
     inner: base_openchecks::CheckHint,
@@ -114,7 +114,7 @@ impl CheckHint {
     }
 }
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct CheckHintIterator {
     index: usize,
@@ -290,8 +290,8 @@ impl BaseCheck {
     pub(crate) fn new(
         args: &Bound<'_, PyAny>,
         kwargs: Option<&Bound<'_, PyAny>>,
-    ) -> (Self, CheckMetadata) {
-        (Self {}, CheckMetadata::new(args, kwargs))
+    ) -> PyClassInitializer<Self> {
+        PyClassInitializer::from(CheckMetadata::new(args, kwargs)).add_subclass(Self {})
     }
 
     /// Run a validation on the input data and output the result of the
@@ -412,8 +412,8 @@ impl AsyncBaseCheck {
     pub(crate) fn new(
         args: &Bound<'_, PyAny>,
         kwargs: Option<&Bound<'_, PyAny>>,
-    ) -> (Self, CheckMetadata) {
-        (Self {}, CheckMetadata::new(args, kwargs))
+    ) -> PyClassInitializer<Self> {
+        PyClassInitializer::from(CheckMetadata::new(args, kwargs)).add_subclass(Self {})
     }
 
     /// Run a validation on the input data and output the result of the
