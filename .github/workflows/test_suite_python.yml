@@ -47,8 +47,6 @@ jobs:
             freethreaded: false
           - version: "3.13"
             freethreaded: false
-          - version: "3.13"
-            freethreaded: true
           - version: "3" # Latest version
             freethreaded: false
           - version: "3" # Latest version
@@ -80,7 +78,7 @@ jobs:
         with:
           python-version: ${{matrix.python-version.version}}
           freethreaded: ${{matrix.python-version.freethreaded}}
-          cache: 'pip'
+          cache: "pip"
       - name: Install dependencies
         run: python -m pip install .[test,docs]
       - name: Lint with Ruff
@@ -92,7 +90,7 @@ jobs:
       - name: Build Rust
         uses: PyO3/maturin-action@86b9d133d34bc1b40018696f782949dac11bd380 # v1.49.4
         with:
-          sccache: 'true'
+          sccache: "true"
           manylinux: auto
           working-directory: bindings/python
       - name: Prepare tests
